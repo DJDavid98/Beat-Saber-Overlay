@@ -1,0 +1,181 @@
+@import url('https://fonts.googleapis.com/css2?family=Teko:wght@400;600&display=swap');
+
+$text-color: #fff;
+$mapper-text-color: #67C271;
+$font-size: 3.5rem;
+$edge-spacing: 1rem;
+$outline-size: .25rem;
+$outline-color: #30466E;
+$cover-size: 10rem;
+$image-spacing: $cover-size * 0.2;
+$transition-delay: .05s;
+
+@mixin outline {
+  // outline: $outline-size solid $outline-color;
+
+  filter: drop-shadow(0 0 $outline-size $outline-color);
+}
+
+html, body {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+body {
+  font-family: 'Teko', sans-serif;
+  font-style: italic;
+}
+
+#song-name, #song-author, #song-details, #connection {
+  line-height: 1em;
+}
+
+#credits {
+  position: absolute;
+  opacity: 0.2;
+  will-change: opacity;
+  transition: .1s opacity;
+  @include outline;
+  top: 0;
+  left: 0;
+  z-index: -1;
+  flex-flow: column nowrap;
+  justify-content: flex-start;
+  align-items: center;
+  margin: $edge-spacing;
+  font-size: 2rem;
+  color: #fff;
+  text-decoration: none;
+
+  &:hover {
+    opacity: 1;
+  }
+
+  span {
+    display: block;
+  }
+
+  img {
+    width: 13rem;
+  }
+}
+
+#app {
+  color: $text-color;
+  font-size: $font-size;
+  text-align: right;
+  position: absolute;
+  top: $edge-spacing;
+  right: $edge-spacing * 1.5;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  flex-flow: row nowrap;
+
+  &, #song-name, #song-author, #song-details, #connection {
+    opacity: 0;
+    transition-duration: 2s;
+    transition-timing-function: cubic-bezier(0.68, -0.6, 0.32, 1.6);
+    transition-property: transform, opacity;
+    will-change: transform;
+    transform: translate(100%);
+    @include outline;
+  }
+
+  &.show {
+    &, #song-name, #song-author, #song-details, #connection {
+      transform: translate(0%);
+      opacity: 1;
+    }
+  }
+}
+
+#cover-image {
+  display: block;
+  width: $cover-size;
+  height: $cover-size;
+  transform: skew(-10deg);
+  border-radius: $cover-size * 0.1;
+  background: #000;
+  margin-left: $image-spacing;
+}
+
+#song-name {
+  transition-delay: $transition-delay * 1;
+  margin-right: -($image-spacing * .5);
+
+  .sub-name {
+    font-size: .8em;
+  }
+}
+
+#song-author {
+  transition-delay: $transition-delay * 2;
+  color: rgba($text-color, .75);
+  font-size: $font-size * .7;
+  margin-right: -($image-spacing * .25);
+
+  .mapper {
+    color: $mapper-text-color;
+  }
+}
+
+#song-details {
+  transition-delay: $transition-delay * 3;
+  font-size: $font-size * .5;
+
+  &:empty {
+    display: none;
+  }
+
+  > :not(:first-child) {
+    &:before {
+      content: "•";
+      margin: 0 .25em;
+      opacity: .5;
+    }
+  }
+}
+
+#loading {
+  $loader-size: $cover-size * .5;
+  $loader-spacing: .2;
+  $loader-thickness: $loader-size * .15;
+
+  border-radius: 50%;
+  border: $loader-thickness solid rgba($text-color, .35);
+  border-top-color: $text-color;
+  animation: rotate 1.5s cubic-bezier(0.37, 0, 0.63, 1) infinite;
+  transform-origin: 50% 50%;
+  $size: $loader-size - $loader-spacing;
+  width: $size;
+  height: $size;
+  margin: $loader-spacing;
+  margin-left: $image-spacing;
+
+  @keyframes rotate {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(720deg);
+    }
+  }
+}
+
+#connection {
+  transition-delay: $transition-delay * 1;
+  flex-flow: column nowrap;
+  justify-content: center;
+  align-items: flex-end;
+  font-size: $font-size;
+
+  > * {
+    display: block;
+  }
+
+  .status {
+    font-size: $font-size * .5;
+  }
+}
