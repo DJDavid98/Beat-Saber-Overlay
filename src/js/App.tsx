@@ -1,4 +1,4 @@
-import { FunctionComponent, useMemo } from "react";
+import { FunctionComponent, useMemo, useRef } from "react";
 import { CoverImage } from "./CoverImage";
 import useWebSocket, { ReadyState } from "react-use-websocket";
 import { validateMapData } from "./validators";
@@ -8,13 +8,27 @@ import { SongAuthor } from "./SongAuthor";
 import { SongDetails } from "./SongDetails";
 import { Connection } from "./Connection";
 
+const reconnectInterval = 1e3;
+
+const onReconnectStop = () => {
+    window.location.reload();
+}
+
 export const App: FunctionComponent = () => {
+    const reloadTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
     const { lastJsonMessage: rawMapData, readyState } = useWebSocket(`${dataSource}/MapData`, {
         reconnectAttempts: Infinity,
         retryOnError: true,
-        reconnectInterval: 1e3,
-        onReconnectStop: () => {
-            window.location.reload();
+        reconnectInterval,
+        onReconnectStop,
+        onOpen() {
+            if (reloadTimeout.current !== null) {
+                clearTimeout(reloadTimeout.current);
+            }
+        },
+        onClose: () => {
+            // Reload the page in case the connection stops for much longer than the reconnect interval
+            reloadTimeout.current = setTimeout(onReconnectStop, reconnectInterval * 5);
         }
     });
 
