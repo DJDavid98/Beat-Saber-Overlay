@@ -1,4 +1,5 @@
 import Joi from "joi";
+import { dataValidatorFactory } from "./data-validator-factory";
 
 export interface MapData {
     InLevel: boolean;
@@ -32,17 +33,4 @@ const mapDataSchema = Joi.object<MapData>({
     CoverImage: Joi.string().allow(null),
 });
 
-export const validateMapData = (data: unknown): MapData | null => {
-    if (data === null) return null;
-    const validation = mapDataSchema.validate(data, {
-        abortEarly: true,
-        stripUnknown: true,
-    })
-    if (validation.error) {
-        console.error(validation.error);
-        return null;
-    }
-    return validation.value;
-}
-
-
+export const validateMapData = dataValidatorFactory(mapDataSchema);
