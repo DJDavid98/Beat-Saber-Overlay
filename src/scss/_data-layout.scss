@@ -1,0 +1,125 @@
+@mixin float-in-idle {
+  opacity: 0;
+  transition-duration: 2s;
+  transition-timing-function: cubic-bezier(0.68, -0.6, 0.32, 1.6);
+  transition-property: transform, opacity;
+  will-change: transform;
+  transform: translate(100%);
+}
+
+@mixin float-in-shown {
+  transform: translate(0%);
+  opacity: 1;
+}
+
+#data-layout {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  flex-flow: row nowrap;
+  margin-bottom: 1rem;
+
+  &, #song-name, #song-author, #song-details, #connection {
+    @include float-in-idle;
+  }
+
+  &.show {
+    &, #song-name, #song-author, #song-details, #connection {
+      @include float-in-shown;
+    }
+  }
+}
+
+#cover-image {
+  display: block;
+  width: $cover-size;
+  height: $cover-size;
+  transform: skew(-10deg);
+  border-radius: $cover-size * 0.1;
+  background: #000;
+  margin-left: $image-spacing;
+}
+
+#song-name {
+  transition-delay: $transition-delay * 1;
+  margin-right: -($image-spacing * .5);
+
+  .sub-name {
+    font-size: .8em;
+  }
+}
+
+#song-author {
+  transition-delay: $transition-delay * 2;
+  color: rgba($text-color, .75);
+  font-size: $font-size * .7;
+  margin-right: -($image-spacing * .25);
+
+  .mapper {
+    color: $mapper-text-color;
+  }
+}
+
+#song-details {
+  transition-delay: $transition-delay * 3;
+  font-size: $font-size * .5;
+
+  &:empty {
+    display: none;
+  }
+
+  > :not(:first-child) {
+    &:before {
+      content: "•";
+      margin: 0 .25em;
+      opacity: .5;
+    }
+  }
+}
+
+#additional-data {
+  transition-delay: $transition-delay * 4;
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: flex-end;
+
+  @include float-in-idle;
+
+  &.show {
+    @include float-in-shown;
+  }
+
+  > div {
+    display: flex;
+    flex-flow: column nowrap;
+    align-items: flex-end;
+
+    &:not(:last-child) {
+      margin-right: 2rem;
+    }
+  }
+
+  .additional-data-label {
+    font-size: 2.5rem;
+  }
+}
+
+#accuracy-graph-wrapper {
+  display: block;
+  transform: skew(-8deg);
+  border-radius: .25rem;
+  overflow: hidden;
+  background-image: linear-gradient(to bottom, rgba(white, .5) 0%, rgba(white, .15) 100%);
+
+  canvas {
+    display: block;
+  }
+}
+
+#modifier-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 2rem;
+  line-height: 1em;
+}

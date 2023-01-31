@@ -1,0 +1,41 @@
+#loading {
+  $loader-size: $cover-size * .5;
+  $loader-spacing: .2;
+  $loader-thickness: $loader-size * .15;
+
+  border-radius: 50%;
+  border: $loader-thickness solid rgba($text-color, .35);
+  border-top-color: $text-color;
+  animation: rotate 1.5s cubic-bezier(0.37, 0, 0.63, 1) infinite;
+  transform-origin: 50% 50%;
+  $size: $loader-size - $loader-spacing;
+  width: $size;
+  height: $size;
+  margin: $loader-spacing;
+  margin-left: $image-spacing;
+
+  @keyframes rotate {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(720deg);
+    }
+  }
+}
+
+#connection {
+  transition-delay: $transition-delay * 1;
+  flex-flow: column nowrap;
+  justify-content: center;
+  align-items: flex-end;
+  font-size: $font-size;
+
+  > * {
+    display: block;
+  }
+
+  .status {
+    font-size: $font-size * .5;
+  }
+}

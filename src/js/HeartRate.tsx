@@ -1,14 +1,15 @@
 import { CSSProperties, FC, useMemo } from "react";
 import { ReadyState } from "react-use-websocket";
-import { useFailsafeWebsocket } from "./utils/use-failsafe-websocket";
+import { failsafeWebsocketHookFactory } from "./utils/failsafe-websocket-hook-factory";
 import { validateHeartRate } from "./utils/validate-heart-rate";
 
 const backgroundPosition = (value: number) => value === 0 ? 0 : `-${value}em`;
 export const HeartRate: FC<{ accessToken: string }> = ({ accessToken }) => {
+    const useFailsafeWebsocket = useMemo(() => failsafeWebsocketHookFactory(validateHeartRate), []);
     const {
         message: pulsoidData,
         readyState
-    } = useFailsafeWebsocket(`wss://dev.pulsoid.net/api/v1/data/real_time?access_token=${encodeURIComponent(accessToken)}`, validateHeartRate);
+    } = useFailsafeWebsocket(`wss://dev.pulsoid.net/api/v1/data/real_time?access_token=${encodeURIComponent(accessToken)}`);
 
 
     const heartRate = pulsoidData?.data.heart_rate;
