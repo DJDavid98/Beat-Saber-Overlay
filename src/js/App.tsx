@@ -11,7 +11,7 @@ import { useFailsafeWebsocket } from "./utils/use-failsafe-websocket";
 import { HeartRate } from "./HeartRate";
 
 export const App: FunctionComponent = () => {
-    const { message: mapData, readyState } = useFailsafeWebsocket(`${dataSource}/MapData`, validateMapData);
+    const { message: mapData, readyState } = useFailsafeWebsocket(`${dataSource}/MapData`, validateMapData, true);
     const pulsoidToken = useMemo(() => {
         const params = new URLSearchParams(window.location.search);
         return params.get('pt');
