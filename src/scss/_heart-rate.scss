@@ -1,14 +1,103 @@
+@use "sass:math";
+
+$height: 3rem;
 
 #heart-rate {
-  $height: 3rem;
-
   position: absolute;
-  bottom: 0;
-  left: 0;
-  margin: $edge-spacing;
-  height: $height;
+  bottom: $edge-spacing;
+  left: $edge-spacing;
+  display: flex;
+  flex-flow: column nowrap;
+  align-items: flex-start;
+  z-index: map-get($z-index-map, 'heart-rate');
+  opacity: 0;
+  transition: opacity .2s linear;
+
+  &.show, &:hover {
+    opacity: 1;
+  }
+
+  &:hover {
+    .device-name {
+      opacity: 1;
+    }
+  }
+
+  .device-name {
+    border: 0;
+    background-color: transparent;
+    padding: 0;
+    margin: 0;
+    color: #fff;
+    bottom: 10rem;
+    font-family: inherit;
+    font-style: inherit;
+    font-size: 1.5rem;
+    opacity: 0;
+    transition: opacity .2s linear;
+    cursor: pointer;
+
+    + {
+      cursor: help;
+    }
+
+    .device-icon {
+      display: inline-block;
+      width: .7em;
+      height: .7em;
+      margin-right: .1em;
+      background-color: transparent;
+      background-repeat: no-repeat;
+      background-position: center;
+      background-size: contain;
+      vertical-align: baseline;
+    }
+
+  }
+}
+
+.bluetooth-bg {
+  background-image: url("./img/bluetooth.svg");
+}
+
+.pulsoid-bg {
+  background-image: url("./img/pulsoid.svg");
+}
+
+#heart-rate .connections {
   display: flex;
   flex-flow: row nowrap;
+
+  button {
+    appearance: none;
+    color: transparent;
+    font-size: 0;
+    overflow: hidden;
+    width: $height * .66;
+    height: $height;
+    border-width: 0;
+    cursor: pointer;
+    background-color: transparent;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+    transition: opacity .2s linear;
+    opacity: .5;
+
+    &:hover {
+      opacity: 1;
+    }
+
+    &:not(:last-child) {
+      margin-right: 1rem;
+    }
+  }
+}
+
+#heart-rate .display {
+  display: flex;
+  flex-flow: row nowrap;
+  height: $height;
 
   .heart, .rate-number {
     display: block;

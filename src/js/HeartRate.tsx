@@ -1,18 +1,18 @@
 import { CSSProperties, FC, useMemo } from "react";
-import { ReadyState } from "react-use-websocket";
-import { failsafeWebsocketHookFactory } from "./utils/failsafe-websocket-hook-factory";
-import { validateHeartRate } from "./utils/validate-heart-rate";
+import { usePulsoidHeartRate } from "./utils/use-pulsoid-heart-rate";
+import { useBleHeartRate } from "./utils/use-ble-heart-rate";
 
 const backgroundPosition = (value: number) => value === 0 ? 0 : `-${value}em`;
-export const HeartRate: FC<{ accessToken: string }> = ({ accessToken }) => {
-    const useFailsafeWebsocket = useMemo(() => failsafeWebsocketHookFactory(validateHeartRate), []);
+export const HeartRate: FC<{ accessToken?: string }> = () => {
+    const pulsoidHeartRate = usePulsoidHeartRate();
+    const bleHeartRate = useBleHeartRate();
+
     const {
-        message: pulsoidData,
-        readyState
-    } = useFailsafeWebsocket(`wss://dev.pulsoid.net/api/v1/data/real_time?access_token=${encodeURIComponent(accessToken)}`);
-
-
-    const heartRate = pulsoidData?.data.heart_rate;
+        heartRate,
+        className: heartRateDeviceClass,
+        deviceName,
+        disconnect,
+    } = bleHeartRate.heartRate ? bleHeartRate : pulsoidHeartRate;
 
     const numbers = useMemo(() => {
         if (!heartRate) return undefined;
@@ -32,14 +32,39 @@ export const HeartRate: FC<{ accessToken: string }> = ({ accessToken }) => {
         return { hundreds, tens, units };
     }, [numbers]);
 
-    if (!numbers || !styles || readyState !== ReadyState.OPEN) return null;
+    const heartRateNumberShown = numbers && styles;
 
-    return <div id="heart-rate">
-        <span className="heart" />
-        {!!numbers?.hundreds && (
-            <span className="rate-number hundreds" style={styles.hundreds} data-value={numbers.hundreds} />
-        )}
-        <span className="rate-number tens" style={styles.tens} data-value={numbers.tens} />
-        <span className="rate-number units" style={styles.units} data-value={numbers.units} />
+    return <div id="heart-rate" className={heartRateNumberShown ? 'show' : undefined}>
+        {heartRateNumberShown ? (
+            <>
+                {deviceName && (
+                    <button className="device-name" onClick={disconnect} title="Change source">
+                        <span className={`device-icon ${heartRateDeviceClass}`} />
+                        {deviceName}
+                    </button>
+                )}
+                <div className="display">
+                    <span className="heart" />
+                    {!!numbers?.hundreds && (
+                        <span className="rate-number hundreds" style={styles.hundreds} data-value={numbers.hundreds} />
+                    )}
+                    <span className="rate-number tens" style={styles.tens} data-value={numbers.tens} />
+                    <span className="rate-number units" style={styles.units} data-value={numbers.units} />
+                </div>
+            </>
+        ) : (
+            <>
+                <span className="device-name">Heart Rate Sources</span>
+                <div className="connections">
+                    <button id="ble-connect"
+                            className={bleHeartRate.className}
+                            onClick={bleHeartRate.connect}
+                            title="Connect BLE Heart Rate Sensor" />
+                    <button id="pulsoid-token"
+                            className={pulsoidHeartRate.className}
+                            onClick={pulsoidHeartRate.changeToken}
+                            title="Set Pulsoid Token" />
+                </div>
+            </>)}
     </div>
 };

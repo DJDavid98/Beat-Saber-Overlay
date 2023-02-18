@@ -1,12 +1,9 @@
 import useWebSocket, { ReadyState } from "react-use-websocket";
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import type { Options as WebsocketOptions } from "react-use-websocket/src/lib/types";
+import { useAppContext } from "./app-context";
 
 const reconnectInterval = 1e3;
-
-const onReconnectStop = () => {
-    window.location.reload();
-}
 
 /**
  * Creates a failsafe websocket hook with an optional message handler, which, when defined, is used
@@ -17,10 +14,14 @@ export const failsafeWebsocketHookFactory = <ReturnValue>(
     messageHandler?: (message: ReturnValue | null) => void
 ) =>
     (
-        url: string,
+        url?: string,
         reloadOnFail = false,
     ): { message: null | ReturnValue; readyState: ReadyState } => {
         const reloadTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+        const { remount } = useAppContext();
+        const onReconnectStop = useCallback(() => {
+            remount();
+        }, []);
         const clearReloadTimeout = useCallback(() => {
             if (reloadTimeout.current !== null) {
                 clearTimeout(reloadTimeout.current);
@@ -53,7 +54,7 @@ export const failsafeWebsocketHookFactory = <ReturnValue>(
             onOpen: clearReloadTimeout,
             onClose: startReloadTimeout,
         }), [messageHandler, reloadOnFail, clearReloadTimeout, startReloadTimeout]);
-        const { lastJsonMessage, readyState } = useWebSocket(url, websocketOptions);
+        const { lastJsonMessage, readyState } = useWebSocket(url ?? 'ws://0.0.0.0', websocketOptions);
 
         // Technically this is a conditional hook call, but it's mitigated by using a factory function to get the hook
         const message = messageHandler ? null : useMemo(() => validator(lastJsonMessage), [validator, lastJsonMessage]);

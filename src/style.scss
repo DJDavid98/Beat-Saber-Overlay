@@ -10,6 +10,13 @@ $cover-size: 10rem;
 $image-spacing: $cover-size * 0.2;
 $transition-delay: .05s;
 
+$z-index-map: (
+        "bg-color-label": 1,
+        "credits": 2,
+        "heart-rate": 3,
+        "app": 4,
+);
+
 @mixin outline {
   // outline: $outline-size solid $outline-color;
 
@@ -27,6 +34,8 @@ html, body {
 body {
   font-family: 'Teko', sans-serif;
   font-style: italic;
+  background-color: #000;
+  user-select: none;
 }
 
 #song-name, #song-author, #song-details, #connection {
@@ -41,7 +50,7 @@ body {
   @include outline;
   top: 0;
   left: 0;
-  z-index: -1;
+  z-index: map-get($z-index-map, 'credits');
   flex-flow: column nowrap;
   justify-content: flex-start;
   align-items: center;
@@ -70,10 +79,12 @@ body {
   position: absolute;
   top: $edge-spacing;
   right: $edge-spacing * 1.5;
+  z-index: map-get($z-index-map, 'app');
   @include outline;
 }
 
 
+@import "scss/bg-color";
 @import "scss/data-layout";
 @import "scss/connection";
 @import "scss/heart-rate";
