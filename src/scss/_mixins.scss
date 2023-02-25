@@ -1,0 +1,52 @@
+@mixin outline {
+  filter: drop-shadow(0 0 $outline-size $outline-color);
+}
+
+@mixin loading-element($loader-size, $color: $text-color) {
+  $loader-spacing: .2;
+  $loader-thickness-multiplier: .12;
+  $loader-rotations-per-cycle: 3;
+  $loader-border-opacity: .35;
+  $loader-thickness: $loader-size * $loader-thickness-multiplier;
+
+  position: relative;
+  border-radius: 50%;
+  border: $loader-thickness solid rgba($color, $loader-border-opacity);
+  border-top-color: $color;
+  animation: rotate 2s cubic-bezier(0.37, 0, 0.63, 1) infinite;
+  transform-origin: 50% 50%;
+  $size: $loader-size * (1 - $loader-spacing);
+  width: $size;
+  height: $size;
+  margin: ($loader-size - $size) * 0.5;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  @keyframes rotate {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(#{360 * $loader-rotations-per-cycle}deg);
+    }
+  }
+}
+
+
+@mixin input {
+  color: $dialog-fg;
+  background-color: transparent;
+  border: 2px solid $dialog-input-border;
+  border-radius: .25rem;
+  padding: .25rem .75rem;
+  line-height: 1em;
+  transform: skew(-12deg);
+  box-sizing: border-box;
+  text-align: center;
+
+  &:active {
+    border-color: $dialog-input-border-focus;
+  }
+}

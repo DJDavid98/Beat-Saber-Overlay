@@ -1,6 +1,9 @@
+import { ReadyState } from "react-use-websocket";
+
 export interface HeartRateHookCommonFields {
+    readyState: ReadyState;
     heartRate: number | null;
-    className: string;
+    deviceClass: string;
     deviceName: string;
     disconnect: VoidFunction;
 }

@@ -20,7 +20,7 @@ export const Connection: FunctionComponent<{ readyState: ReadyState }> = ({ read
                 <span className="status">Overlay status</span>
                 <span className="status-value">{mapConnectionState(readyState)}</span>
             </div>
-            <Loading />
+            <Loading id="connection-loading" />
         </>
     )
 }

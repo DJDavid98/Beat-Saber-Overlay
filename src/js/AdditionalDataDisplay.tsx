@@ -4,28 +4,14 @@ import { LiveData, validateLiveData } from "./utils/validate-live-data";
 import { FC, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Modifiers } from "./utils/validate-map-data";
 import { DataPoint, drawAccuracyGraph } from "./utils/draw-accuracy-graph";
-
-const modifierNames: Record<keyof Modifiers, string> = {
-    DisappearingArrows: 'Disappearing Arrows',
-    FasterSong: 'Faster Song',
-    FourLives: '4 Lives',
-    GhostNotes: 'Ghost Notes',
-    NoArrows: 'No Arrows',
-    ProMode: 'Pro Mode',
-    NoBombs: 'No Bombs',
-    NoWalls: 'No Walls',
-    NoFailOn0Energy: 'No Fail',
-    OneLife: '1 Life',
-    SlowerSong: 'Slower Song',
-    SmallNotes: 'Small Notes',
-    StrictAngles: 'Strict Angles',
-    SuperFastSong: 'Super Fast Song',
-    ZenMode: 'Zen Mode',
-};
+import { AdditionalDataModifiers } from "./AdditionalDataModifiers";
 
 interface LiveDataProps {
     modifiers?: Modifiers;
     songLength?: number;
+    /**
+     * Signal boolean which is flipped each time the aditional data component should reset its internal state
+     */
     reset?: boolean;
 }
 
@@ -69,16 +55,6 @@ export const AdditionalDataDisplay: FC<LiveDataProps> = ({ modifiers, songLength
         startFromSeconds.current = null;
     }, [reset]);
 
-    const modifierLabels = useMemo(() => {
-        if (!modifiers) return [];
-
-        const modifierKeys = Object.keys(modifiers) as Array<keyof typeof modifiers>;
-        return modifierKeys.reduce(
-            (keys, key) => modifiers[key] ? [...keys, modifierNames[key]] : keys,
-            [] as string[]
-        );
-    }, [modifiers]);
-
     // Change accuracy graph width based on song length, between a sane minimum and maximum value
     const accuracyGraphLength = useMemo(() => songLength ? Math.max(60, Math.min(400, songLength * 2)) : 0, [songLength]);
 
@@ -91,13 +67,6 @@ export const AdditionalDataDisplay: FC<LiveDataProps> = ({ modifiers, songLength
                 </div>
             </div>
         )}
-        {modifierLabels.length > 0 && (
-            <div>
-                <span className="additional-data-label">Modifiers</span>
-                <ul id="modifier-list">
-                    {modifierLabels.map(label => <li key={label}>{label}</li>)}
-                </ul>
-            </div>
-        )}
+        <AdditionalDataModifiers modifiers={modifiers} />
     </>
 }

@@ -6,7 +6,7 @@ import { Connection } from "./Connection";
 import { failsafeWebsocketHookFactory } from "./utils/failsafe-websocket-hook-factory";
 import { AdditionalDataDisplay } from "./AdditionalDataDisplay";
 import { SongInfoDisplay } from "./SongInfoDisplay";
-import { AppContext, AppContextProider } from "./utils/app-context";
+import { AppContext, AppContextProvider } from "./utils/app-context";
 
 export const App: FunctionComponent<AppContext> = (contextValue) => {
     const useFailsafeWebsocket = useMemo(() => failsafeWebsocketHookFactory(validateMapData), []);
@@ -21,6 +21,7 @@ export const App: FunctionComponent<AppContext> = (contextValue) => {
     const wsConnected = readyState === ReadyState.OPEN;
     const showApp = mapData?.InLevel || !wsConnected;
     const showClass = showApp ? 'show' : undefined;
+    const showAdditionalDataClass = showApp && wsConnected ? 'show' : undefined;
 
     useEffect(() => {
         setReset(inLevel && !lastInLevel.current);
@@ -29,7 +30,7 @@ export const App: FunctionComponent<AppContext> = (contextValue) => {
         }
     }, [inLevel]);
 
-    return <AppContextProider value={contextValue}>
+    return <AppContextProvider value={contextValue}>
         <div id="app">
             <div id="data-layout" className={showClass}>
                 {wsConnected && mapData
@@ -37,11 +38,15 @@ export const App: FunctionComponent<AppContext> = (contextValue) => {
                     : <Connection readyState={readyState} />
                 }
             </div>
-            <div id="additional-data" className={showClass}>
-                <AdditionalDataDisplay modifiers={mapData?.Modifiers} songLength={mapData?.Duration} reset={reset} />
+            <div id="additional-data" className={showAdditionalDataClass}>
+                <AdditionalDataDisplay
+                    modifiers={mapData?.Modifiers}
+                    songLength={mapData?.Duration}
+                    reset={reset}
+                />
             </div>
         </div>
-    </AppContextProider>;
+    </AppContextProvider>;
 }
 
 

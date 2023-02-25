@@ -1,12 +1,11 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { failsafeWebsocketHookFactory } from "./failsafe-websocket-hook-factory";
 import { validateHeartRate } from "./validate-heart-rate";
-import { ReadyState } from "react-use-websocket";
 import { HeartRateHookCommonFields } from "./heart-rate-hook-common-fields";
 
 export interface PulsoidHeartRate extends HeartRateHookCommonFields {
-    readyState: ReadyState;
-    changeToken: VoidFunction;
+    changeToken: (newToken: string) => void;
+    getToken: () => string | null;
 }
 
 const pulsoidTokenKey = 'pulsoid-token';
@@ -25,29 +24,32 @@ export const usePulsoidHeartRate = (): PulsoidHeartRate => {
         // Temporarily set access token to null to avoid connection
         setAccessToken(null);
     }, []);
-    const changeToken = useCallback(() => {
-        const result = prompt('Enter Pulsoid API token:', accessToken ?? undefined);
-        if (result === null) return;
-
+    const getToken = useCallback(() => localStorage.getItem(pulsoidTokenKey), []);
+    const changeToken = useCallback((result: string) => {
         const newToken = result.trim();
+        console.debug('newToken', newToken);
         if (/^[a-f\d-]+$/.test(newToken)) {
             saveToken(newToken);
             return;
         } else {
+            if (newToken === '') {
+                localStorage.removeItem(pulsoidTokenKey);
+            }
             disconnect();
         }
-    }, [accessToken, saveToken, disconnect]);
+    }, [saveToken, disconnect]);
 
     useEffect(() => {
-        setAccessToken(localStorage.getItem(pulsoidTokenKey));
-    }, []);
+        setAccessToken(getToken());
+    }, [getToken]);
 
     return {
         heartRate: pulsoidData?.data.heart_rate ?? null,
-        className: 'pulsoid-bg',
+        deviceClass: 'pulsoid-bg',
         deviceName: 'Pulsoid',
         disconnect,
         readyState,
         changeToken,
+        getToken,
     };
 }

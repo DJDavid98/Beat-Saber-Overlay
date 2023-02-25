@@ -21,7 +21,7 @@ export const failsafeWebsocketHookFactory = <ReturnValue>(
         const { remount } = useAppContext();
         const onReconnectStop = useCallback(() => {
             remount();
-        }, []);
+        }, [remount]);
         const clearReloadTimeout = useCallback(() => {
             if (reloadTimeout.current !== null) {
                 clearTimeout(reloadTimeout.current);
@@ -34,7 +34,7 @@ export const failsafeWebsocketHookFactory = <ReturnValue>(
             if (reloadOnFail) {
                 reloadTimeout.current = setTimeout(onReconnectStop, reconnectInterval * 5);
             }
-        }, [reloadOnFail]);
+        }, [clearReloadTimeout, onReconnectStop, reloadOnFail]);
         const websocketOptions: WebsocketOptions = useMemo(() => ({
             reconnectAttempts: Infinity,
             retryOnError: true,
@@ -53,11 +53,11 @@ export const failsafeWebsocketHookFactory = <ReturnValue>(
             onReconnectStop: reloadOnFail ? onReconnectStop : undefined,
             onOpen: clearReloadTimeout,
             onClose: startReloadTimeout,
-        }), [messageHandler, reloadOnFail, clearReloadTimeout, startReloadTimeout]);
-        const { lastJsonMessage, readyState } = useWebSocket(url ?? 'ws://0.0.0.0', websocketOptions);
+        }), [reloadOnFail, onReconnectStop, clearReloadTimeout, startReloadTimeout]);
+        const { lastJsonMessage, readyState } = useWebSocket(url ?? null, websocketOptions);
 
         // Technically this is a conditional hook call, but it's mitigated by using a factory function to get the hook
-        const message = messageHandler ? null : useMemo(() => validator(lastJsonMessage), [validator, lastJsonMessage]);
+        const message = messageHandler ? null : useMemo(() => validator(lastJsonMessage), [lastJsonMessage]);
 
         useEffect(() => {
             switch (readyState) {
@@ -68,7 +68,7 @@ export const failsafeWebsocketHookFactory = <ReturnValue>(
                 default:
                     startReloadTimeout();
             }
-        }, [readyState, startReloadTimeout]);
+        }, [clearReloadTimeout, readyState, startReloadTimeout]);
 
         return { message, readyState };
     };

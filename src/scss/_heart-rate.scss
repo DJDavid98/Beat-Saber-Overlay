@@ -1,6 +1,6 @@
 @use "sass:math";
 
-$height: 3rem;
+$connect-icon-size: 3rem;
 
 #heart-rate {
   position: absolute;
@@ -13,12 +13,16 @@ $height: 3rem;
   opacity: 0;
   transition: opacity .2s linear;
 
+  > :not(:last-child) {
+    margin-bottom: .5rem;
+  }
+
   &.show, &:hover {
     opacity: 1;
   }
 
   &:hover {
-    .device-name {
+    .device-name.connected {
       opacity: 1;
     }
   }
@@ -33,12 +37,19 @@ $height: 3rem;
     font-family: inherit;
     font-style: inherit;
     font-size: 1.5rem;
-    opacity: 0;
     transition: opacity .2s linear;
-    cursor: pointer;
 
-    + {
-      cursor: help;
+    &.connected {
+      cursor: pointer;
+      opacity: 0;
+
+      &:hover::after {
+        content: "×";
+        padding-left: .5rem;
+        color: red;
+        font-family: sans-serif;
+        font-style: normal;
+      }
     }
 
     .device-icon {
@@ -68,28 +79,25 @@ $height: 3rem;
   display: flex;
   flex-flow: row nowrap;
 
-  button {
+  .connection-button {
     appearance: none;
     color: transparent;
     font-size: 0;
     overflow: hidden;
-    width: $height * .66;
-    height: $height;
+    width: $connect-icon-size;
+    height: $connect-icon-size;
     border-width: 0;
     cursor: pointer;
     background-color: transparent;
     background-repeat: no-repeat;
     background-position: center;
-    background-size: cover;
+    background-size: contain;
     transition: opacity .2s linear;
     opacity: .5;
+    margin-right: 1rem;
 
     &:hover {
       opacity: 1;
-    }
-
-    &:not(:last-child) {
-      margin-right: 1rem;
     }
   }
 }
@@ -97,7 +105,7 @@ $height: 3rem;
 #heart-rate .display {
   display: flex;
   flex-flow: row nowrap;
-  height: $height;
+  height: $connect-icon-size;
 
   .heart, .rate-number {
     display: block;
@@ -105,8 +113,8 @@ $height: 3rem;
   }
 
   .heart {
-    height: $height;
-    width: $height;
+    height: $connect-icon-size;
+    width: $connect-icon-size;
     transform: scale(1.15);
     background: url(img/heart.svg) no-repeat center;
     background-size: contain;
@@ -115,7 +123,7 @@ $height: 3rem;
 
   .rate-number {
     $spacing: -0.25em;
-    font-size: $height;
+    font-size: $connect-icon-size;
     height: 1em;
     width: 1em;
     background-image: url(img/humbers.svg);
@@ -127,5 +135,34 @@ $height: 3rem;
     &[data-value="1"] {
       margin-right: $spacing * 2;
     }
+  }
+}
+
+#heart-rate-loading {
+  @include loading-element($connect-icon-size, #bb98d2);
+}
+
+#ble-loading {
+  @include loading-element($connect-icon-size, lighten(#0a3d91, 20%));
+}
+
+#pulsoid-loading {
+  @include loading-element($connect-icon-size, #10a3b0);
+}
+
+#bouncy-video, #bouncy-video-blep {
+  $bouncy-image-size: 112px;
+  display: block;
+  position: absolute;
+  width: $bouncy-image-size;
+  height: $bouncy-image-size;
+  margin: $edge-spacing;
+  bottom: 0;
+  right: 0;
+  z-index: map-get($z-index-map, 'bouncy');
+  opacity: 0;
+
+  &.show {
+    opacity: 1;
   }
 }

@@ -1,5 +1,6 @@
-import { MutableRefObject, useCallback, useRef, useState } from "react";
+import { MutableRefObject, useCallback, useEffect, useRef, useState } from "react";
 import { HeartRateHookCommonFields } from "./heart-rate-hook-common-fields";
+import { ReadyState } from "react-use-websocket";
 
 interface CharacteristicEvent extends Event {
     target: Event['target'] & {
@@ -21,18 +22,30 @@ const isCharacteristicEvent = (ev: Event): ev is CharacteristicEvent =>
 const HEART_RATE_SERVICE = 0x180D;
 const HEART_RATE_MEASUREMENT_CHARACTERISTIC = 0x2A37;
 
-async function connectToBleSensor(
-    gattConnection: MutableRefObject<BluetoothRemoteGATTServer | null>,
-    heartRateCharacteristic: MutableRefObject<BluetoothRemoteGATTCharacteristic | null>,
-    setHeartRate: (value: number | null) => void,
-    setDeviceName: (value: string | null) => void,
-    reset: VoidFunction) {
+interface ConnectToBleSensorParams {
+    gattConnection: MutableRefObject<BluetoothRemoteGATTServer | null>;
+    heartRateCharacteristic: MutableRefObject<BluetoothRemoteGATTCharacteristic | null>;
+    setHeartRate: (value: (number | null)) => void;
+    setDeviceName: (value: (string | null)) => void;
+    readyStateChange: (newState: ReadyState) => void;
+    reset: VoidFunction;
+}
+
+async function connectToBleSensor({
+    gattConnection,
+    heartRateCharacteristic,
+    setHeartRate,
+    setDeviceName,
+    readyStateChange,
+    reset
+}: ConnectToBleSensorParams) {
+    readyStateChange(ReadyState.CONNECTING);
 
     // Request Bluetooth device with Heart Rate Service
     navigator.bluetooth.requestDevice({
         filters: [{ services: [HEART_RATE_SERVICE] }]
     }).then(device => {
-        console.log('Device Name:', device.name);
+        console.info('Device Name:', device.name);
         if (device.name) {
             setDeviceName(device.name);
         }
@@ -43,16 +56,17 @@ async function connectToBleSensor(
         gattConnection.current = device.gatt;
 
         return gattConnection.current.connect().then(server => {
-            console.log('Connected to GATT Server');
+            console.info('Connected to GATT Server');
 
             return server.getPrimaryService(HEART_RATE_SERVICE).then(service => {
-                console.log('Heart Rate Service found');
+                console.info('Heart Rate Service found');
 
                 return service.getCharacteristic(HEART_RATE_MEASUREMENT_CHARACTERISTIC).then(characteristic => {
                     heartRateCharacteristic.current = characteristic;
-                    console.log('Heart Rate Measurement Characteristic found');
+                    console.info('Heart Rate Measurement Characteristic found');
 
                     heartRateCharacteristic.current.startNotifications();
+                    readyStateChange(ReadyState.OPEN);
                     heartRateCharacteristic.current.addEventListener('characteristicvaluechanged', function handleHeartRate(event) {
                         if (!isCharacteristicEvent(event)) {
                             throw new Error('Cannot find event target value');
@@ -65,6 +79,7 @@ async function connectToBleSensor(
         });
     })
         .catch(error => {
+            readyStateChange(ReadyState.CLOSED);
             console.error(error);
             reset();
         });
@@ -72,16 +87,23 @@ async function connectToBleSensor(
 
 export interface BleHeartRate extends HeartRateHookCommonFields {
     connect: VoidFunction;
+    supported: boolean;
 }
 
 export const useBleHeartRate = (): BleHeartRate => {
+    const [supported, setSupported] = useState(false);
     const [heartRate, setHeartRate] = useState<number | null>(null);
     const [deviceName, setDeviceName] = useState<string | null>(null);
     const gattConnection = useRef<BluetoothRemoteGATTServer | null>(null);
     const heartRateCharacteristic = useRef<BluetoothRemoteGATTCharacteristic | null>(null);
-    const disconnect = useCallback(() => {
+    const [readyState, setReadyState] = useState<ReadyState>(ReadyState.UNINSTANTIATED);
+    const disconnect = useCallback(async () => {
         if (heartRateCharacteristic.current) {
-            heartRateCharacteristic.current.stopNotifications();
+            try {
+                await heartRateCharacteristic.current.stopNotifications();
+            } catch (e) {
+                console.error(e);
+            }
             heartRateCharacteristic.current = null;
         }
         if (gattConnection.current) {
@@ -90,18 +112,33 @@ export const useBleHeartRate = (): BleHeartRate => {
         }
         setHeartRate(null);
         setDeviceName(null);
+        setReadyState(ReadyState.CLOSED);
     }, []);
     const connect = useCallback(() => {
-        connectToBleSensor(gattConnection, heartRateCharacteristic, setHeartRate, setDeviceName, disconnect);
+        connectToBleSensor({
+            gattConnection: gattConnection,
+            heartRateCharacteristic: heartRateCharacteristic,
+            setHeartRate: setHeartRate,
+            setDeviceName: setDeviceName,
+            reset: disconnect,
+            readyStateChange: setReadyState,
+        });
 
         return disconnect;
+    }, [disconnect]);
+
+    useEffect(() => {
+        // Feature detection
+        setSupported('bluetooth' in navigator);
     }, []);
 
     return {
+        readyState,
         heartRate,
         deviceName: deviceName ?? 'Bluetooth',
         connect,
-        className: 'bluetooth-bg',
+        deviceClass: 'bluetooth-bg',
         disconnect,
+        supported,
     };
 }

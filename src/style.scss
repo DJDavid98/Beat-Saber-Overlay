@@ -9,19 +9,21 @@ $outline-color: #30466E;
 $cover-size: 10rem;
 $image-spacing: $cover-size * 0.2;
 $transition-delay: .05s;
+$special-font: 'Teko', sans-serif;
+
+@mixin special-font {
+  font-family: $special-font;
+  font-style: italic;
+}
 
 $z-index-map: (
-        "bg-color-label": 1,
-        "credits": 2,
-        "heart-rate": 3,
-        "app": 4,
+        "bouncy": 1,
+        "credits": 1,
+        "heart-rate": 2,
+        "app": 3,
 );
 
-@mixin outline {
-  // outline: $outline-size solid $outline-color;
-
-  filter: drop-shadow(0 0 $outline-size $outline-color);
-}
+@import "scss/mixins";
 
 html, body {
   width: 100vw;
@@ -32,8 +34,7 @@ html, body {
 }
 
 body {
-  font-family: 'Teko', sans-serif;
-  font-style: italic;
+  @include special-font;
   background-color: #000;
   user-select: none;
 }
@@ -44,23 +45,29 @@ body {
 
 #credits {
   position: absolute;
-  opacity: 0.2;
-  will-change: opacity;
-  transition: .1s opacity;
   @include outline;
   top: 0;
   left: 0;
   z-index: map-get($z-index-map, 'credits');
-  flex-flow: column nowrap;
-  justify-content: flex-start;
-  align-items: center;
   margin: $edge-spacing;
-  font-size: 2rem;
-  color: #fff;
-  text-decoration: none;
 
-  &:hover {
-    opacity: 1;
+  a {
+    display: block;
+    opacity: 0.2;
+    will-change: opacity;
+    transition: .1s opacity;
+    font-size: 2rem;
+    color: #fff;
+    text-decoration: none;
+    line-height: 1.3rem;
+
+    &:hover {
+      opacity: 1;
+    }
+
+    &:not(:last-child) {
+      margin-bottom: .5rem;
+    }
   }
 
   span {
@@ -83,8 +90,7 @@ body {
   @include outline;
 }
 
-
-@import "scss/bg-color";
 @import "scss/data-layout";
+@import "scss/dialog";
 @import "scss/connection";
 @import "scss/heart-rate";

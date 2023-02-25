@@ -8,8 +8,12 @@ interface Bounds {
     height: number;
 }
 
-const pointPosition = (canvas: Bounds, songLengthSeconds: number, startSeconds: number,
-    dataPoint: DataPoint): [number, number] => {
+const getPointPosition = (
+    canvas: Bounds,
+    songLengthSeconds: number,
+    startSeconds: number,
+    dataPoint: DataPoint
+): [number, number] => {
     const songProgressFloat = dataPoint.seconds / songLengthSeconds;
     const x: number = canvas.width * songProgressFloat;
     const accuracyFloat = dataPoint.accuracy / 100;
@@ -17,44 +21,53 @@ const pointPosition = (canvas: Bounds, songLengthSeconds: number, startSeconds: 
     return [x, y];
 }
 
-export const drawAccuracyGraph = (canvas: HTMLCanvasElement, dataPoints: DataPoint[], songLengthSeconds: number,
-    startFromSeconds: number) => {
+export const drawAccuracyGraph = (
+    canvas: HTMLCanvasElement,
+    dataPoints: DataPoint[],
+    songLengthSeconds: number,
+    startFromSeconds: number
+) => {
     const ctx = canvas.getContext('2d');
     if (!ctx) {
         console.error('Failed to get canvas rendering context');
         return;
     }
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    const { width: canvasRightX, height: canvasBottomY } = canvas;
+    ctx.clearRect(0, 0, canvasRightX, canvasBottomY);
     ctx.lineWidth = 0;
 
-    const initialPosition = pointPosition(canvas, songLengthSeconds, 0, { seconds: startFromSeconds, accuracy: 0 });
+    const [initialPositionX, initialPositionY] = getPointPosition(canvas, songLengthSeconds, 0, {
+        seconds: startFromSeconds,
+        accuracy: 0
+    });
 
-    // Data does not start at 0, draw missing data filled in
-    if (initialPosition[0] > 1) {
+    if (initialPositionX > 1) {
+        // Data does not start at 0, draw missing data filled in
         ctx.fillStyle = 'rgba(0,0,0,.5)';
-        ctx.fillRect(0, 0, initialPosition[0], canvas.height);
+        ctx.fillRect(0, 0, initialPositionX, canvasBottomY);
     }
 
     ctx.fillStyle = '#fff';
     ctx.beginPath();
-    // Move to initial position
-    ctx.moveTo(initialPosition[0], canvas.height);
-    // Draw line to initial position
-    ctx.lineTo(...initialPosition);
+    // Move to initial X position at the bottom of the canvas
+    ctx.moveTo(initialPositionX, canvasBottomY);
+    // Draw line to actual initial position
+    ctx.lineTo(initialPositionX, initialPositionY);
 
-    // Draw each point in sequence
-    let lastX: number = 0;
+    // Draw line to each point in sequence
+    let lastX = 0;
     dataPoints.forEach(dataPoint => {
-        const position = pointPosition(canvas, songLengthSeconds, startFromSeconds, dataPoint);
-        // Do not draw lines between virtually identical X positions
-        if (position[0] - lastX > 0.5) {
-            ctx.lineTo(...position);
-            lastX = position[0];
+        const position = getPointPosition(canvas, songLengthSeconds, startFromSeconds, dataPoint);
+        if (position[0] - lastX < 0.5) {
+            // Skip drawing lines between virtually identical X positions
+            return;
         }
+        ctx.lineTo(...position);
+        lastX = position[0];
     });
 
-    // Draw final line from lastX to bottom fo canvas and close path
-    ctx.lineTo(lastX, canvas.height);
+    // Draw final line from lastX to bottom of canvas and close path
+    ctx.lineTo(lastX, canvasBottomY);
     ctx.closePath();
 
     ctx.fill();

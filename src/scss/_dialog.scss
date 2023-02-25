@@ -1,0 +1,58 @@
+$dialog-bg: #101010;
+$dialog-fg: #ddd;
+$dialog-edge: #555;
+$dialog-input-border: #808080;
+$dialog-input-border-focus: $dialog-fg;
+
+dialog {
+  border: .15rem solid $dialog-edge;
+  box-shadow: 0 0 1rem $dialog-edge;
+  border-radius: 1rem;
+  color: $dialog-fg;
+  background-color: $dialog-bg;
+  padding: 2rem;
+  text-align: center;
+  font-style: normal;
+  font-size: 1.5rem;
+  cursor: initial;
+
+  h1 {
+    margin: 0 0 1rem;
+    font-weight: normal;
+    @include special-font;
+  }
+
+  p {
+    margin: 0 0 .25rem;
+  }
+
+  a {
+    color: rgba(220, 220, 255);
+
+    &:visited {
+      color: rgba(255, 220, 255);
+    }
+  }
+
+  input {
+    display: block;
+    width: 100%;
+    margin-bottom: 1rem;
+    @include input;
+
+    &:focus {
+      border-bottom-color: $dialog-input-border-focus;
+    }
+  }
+
+  button {
+    @include special-font;
+    font-style: normal;
+    @include input;
+    font-size: 1.5rem;
+
+    &:not(:last-child) {
+      margin-right: 1rem;
+    }
+  }
+}

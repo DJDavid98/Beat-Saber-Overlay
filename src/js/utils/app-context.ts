@@ -6,5 +6,5 @@ export interface AppContext {
 
 const appContext = createContext<AppContext>({ remount: () => undefined })
 
-export const AppContextProider = appContext.Provider;
+export const AppContextProvider = appContext.Provider;
 export const useAppContext = () => useContext(appContext);
