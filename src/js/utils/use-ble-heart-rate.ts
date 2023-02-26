@@ -1,6 +1,7 @@
 import { MutableRefObject, useCallback, useEffect, useRef, useState } from "react";
 import { HeartRateHookCommonFields } from "./heart-rate-hook-common-fields";
 import { ReadyState } from "react-use-websocket";
+import { isInBrowserSource } from "./is-in-browser-source";
 
 interface CharacteristicEvent extends Event {
     target: Event['target'] & {
@@ -129,7 +130,7 @@ export const useBleHeartRate = (): BleHeartRate => {
 
     useEffect(() => {
         // Feature detection
-        setSupported('bluetooth' in navigator);
+        setSupported('bluetooth' in navigator && !isInBrowserSource());
     }, []);
 
     return {
