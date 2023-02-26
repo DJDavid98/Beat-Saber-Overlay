@@ -12,7 +12,7 @@ export interface HeartRateSourcesProps {
 
 export const HeartRateSources: FC<HeartRateSourcesProps> = ({ bleHeartRate, pulsoidHeartRate }) => {
     return <>
-        <span className="device-name">Available Heart Rate Sources</span>
+        <span className="label">Available Heart Rate Sources</span>
         <div className="connections">
             {bleHeartRate.supported && (
                 bleHeartRate.readyState === ReadyState.CONNECTING

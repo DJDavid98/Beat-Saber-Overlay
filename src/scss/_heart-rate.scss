@@ -27,7 +27,7 @@ $connect-icon-size: 3rem;
     }
   }
 
-  .device-name {
+  .label {
     border: 0;
     background-color: transparent;
     padding: 0;
@@ -39,9 +39,12 @@ $connect-icon-size: 3rem;
     font-size: 1.5rem;
     transition: opacity .2s linear;
 
-    &.connected {
+    &.device-name {
       cursor: pointer;
-      opacity: 0;
+
+      &.connected {
+        opacity: 0;
+      }
 
       &:hover::after {
         content: "×";

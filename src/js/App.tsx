@@ -1,18 +1,17 @@
-import { FunctionComponent, useEffect, useMemo, useRef, useState } from "react";
+import { FunctionComponent, useEffect, useRef, useState } from "react";
 import { ReadyState } from "react-use-websocket";
 import { validateMapData } from "./utils/validate-map-data";
 import { dataSource } from "./utils/constants";
 import { Connection } from "./Connection";
-import { failsafeWebsocketHookFactory } from "./utils/failsafe-websocket-hook-factory";
+import { useFailsafeWebsocket } from "./utils/use-failsafe-websocket";
 import { AdditionalDataDisplay } from "./AdditionalDataDisplay";
 import { SongInfoDisplay } from "./SongInfoDisplay";
 
 export const App: FunctionComponent = () => {
-    const useFailsafeWebsocket = useMemo(() => failsafeWebsocketHookFactory(validateMapData), []);
     const {
         message: mapData,
         readyState
-    } = useFailsafeWebsocket(`${dataSource}/MapData`, true);
+    } = useFailsafeWebsocket(`${dataSource}/MapData`, validateMapData, true);
 
     const [reset, setReset] = useState(false);
     const lastInLevel = useRef<boolean | null>(null);

@@ -36,7 +36,7 @@ export const HeartRateDisplay: FC<HeartRateDisplayProps> = ({
     return <>
         {deviceName && (
             <button
-                className={classNames("device-name", { connected: !isLoading })}
+                className={classNames("label device-name", { connected: !isLoading })}
                 onClick={disconnect}
                 title="Change source"
             >

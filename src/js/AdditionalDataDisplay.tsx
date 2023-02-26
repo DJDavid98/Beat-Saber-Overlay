@@ -1,7 +1,7 @@
-import { failsafeWebsocketHookFactory } from "./utils/failsafe-websocket-hook-factory";
+import { useFailsafeWebsocket } from "./utils/use-failsafe-websocket";
 import { dataSource } from "./utils/constants";
-import { LiveData, validateLiveData } from "./utils/validate-live-data";
-import { FC, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { validateLiveData } from "./utils/validate-live-data";
+import { FC, useEffect, useMemo, useRef, useState } from "react";
 import { Modifiers } from "./utils/validate-map-data";
 import { DataPoint, drawAccuracyGraph } from "./utils/draw-accuracy-graph";
 import { AdditionalDataModifiers } from "./AdditionalDataModifiers";
@@ -10,7 +10,7 @@ interface LiveDataProps {
     modifiers?: Modifiers;
     songLength?: number;
     /**
-     * Signal boolean which is flipped each time the aditional data component should reset its internal state
+     * Signal boolean which is flipped each time the additional data component should reset its internal state
      */
     reset?: boolean;
 }
@@ -19,12 +19,15 @@ export const AdditionalDataDisplay: FC<LiveDataProps> = ({ modifiers, songLength
     const dataPoints = useRef<DataPoint[] | null>();
     const startFromSeconds = useRef<number | null>(null);
     const [accuracy, setAccuracy] = useState<string | undefined>();
+    const accCanvas = useRef<HTMLCanvasElement | null>(null);
     const nf = useMemo(() => new Intl.NumberFormat('en-US', {
         style: 'percent',
         minimumFractionDigits: 0,
         maximumFractionDigits: 2
     }), []);
-    const messageHandler = useCallback((liveData: LiveData | null) => {
+    const { message: liveData } = useFailsafeWebsocket(`${dataSource}/LiveData`, validateLiveData);
+
+    useEffect(() => {
         if (!liveData) {
             return;
         }
@@ -35,17 +38,13 @@ export const AdditionalDataDisplay: FC<LiveDataProps> = ({ modifiers, songLength
         }
         const dataPoint: DataPoint = { seconds: liveData.TimeElapsed, accuracy: liveData.Accuracy };
         if (startFromSeconds.current === null) {
-            startFromSeconds.current = liveData.TimeElapsed > 1 ? liveData.TimeElapsed : 0;
+            startFromSeconds.current = dataPoint.seconds;
         }
         dataPoints.current.push(dataPoint);
         if (accCanvas.current && songLength) {
             drawAccuracyGraph(accCanvas.current, dataPoints.current, songLength, startFromSeconds.current);
         }
-    }, [nf, songLength]);
-    const useFailsafeWebsocket = useMemo(() => failsafeWebsocketHookFactory(validateLiveData, messageHandler), [messageHandler]);
-    useFailsafeWebsocket(`${dataSource}/LiveData`);
-    const accCanvas = useRef<HTMLCanvasElement>(null);
-
+    }, [liveData, nf, songLength]);
 
     useEffect(() => {
         if (!reset) return;

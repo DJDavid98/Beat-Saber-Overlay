@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { failsafeWebsocketHookFactory } from "./failsafe-websocket-hook-factory";
+import { useCallback, useEffect, useState } from "react";
+import { useFailsafeWebsocket } from "./use-failsafe-websocket";
 import { validateHeartRate } from "./validate-heart-rate";
 import { HeartRateHookCommonFields } from "./heart-rate-hook-common-fields";
 
@@ -11,11 +11,10 @@ export interface PulsoidHeartRate extends HeartRateHookCommonFields {
 const pulsoidTokenKey = 'pulsoid-token';
 export const usePulsoidHeartRate = (): PulsoidHeartRate => {
     const [accessToken, setAccessToken] = useState<string | null>(null);
-    const useFailsafeWebsocket = useMemo(() => failsafeWebsocketHookFactory(validateHeartRate), []);
     const {
         message: pulsoidData,
         readyState,
-    } = useFailsafeWebsocket(accessToken ? `wss://dev.pulsoid.net/api/v1/data/real_time?access_token=${encodeURIComponent(accessToken)}` : null, true);
+    } = useFailsafeWebsocket(accessToken ? `wss://dev.pulsoid.net/api/v1/data/real_time?access_token=${encodeURIComponent(accessToken)}` : null, validateHeartRate, true);
     const saveToken = useCallback((value: string) => {
         setAccessToken(value);
         localStorage.setItem(pulsoidTokenKey, value);
