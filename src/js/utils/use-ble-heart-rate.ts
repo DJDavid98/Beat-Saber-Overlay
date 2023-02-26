@@ -115,7 +115,7 @@ export const useBleHeartRate = (): BleHeartRate => {
         setReadyState(ReadyState.CLOSED);
     }, []);
     const connect = useCallback(() => {
-        connectToBleSensor({
+        void connectToBleSensor({
             gattConnection: gattConnection,
             heartRateCharacteristic: heartRateCharacteristic,
             setHeartRate: setHeartRate,

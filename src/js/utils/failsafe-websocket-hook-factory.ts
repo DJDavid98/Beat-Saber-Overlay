@@ -1,7 +1,7 @@
 import useWebSocket, { ReadyState } from "react-use-websocket";
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import type { Options as WebsocketOptions } from "react-use-websocket/src/lib/types";
-import { useAppContext } from "./app-context";
+import { useRemountContext } from "./remount-context";
 
 const reconnectInterval = 1e3;
 
@@ -14,27 +14,27 @@ export const failsafeWebsocketHookFactory = <ReturnValue>(
     messageHandler?: (message: ReturnValue | null) => void
 ) =>
     (
-        url?: string,
-        reloadOnFail = false,
+        url: string | null,
+        remountOnFail = false,
     ): { message: null | ReturnValue; readyState: ReadyState } => {
-        const reloadTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
-        const { remount } = useAppContext();
+        const remountTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+        const { remount } = useRemountContext();
         const onReconnectStop = useCallback(() => {
             remount();
         }, [remount]);
         const clearReloadTimeout = useCallback(() => {
-            if (reloadTimeout.current !== null) {
-                clearTimeout(reloadTimeout.current);
-                reloadTimeout.current = null;
+            if (remountTimeout.current !== null) {
+                clearTimeout(remountTimeout.current);
+                remountTimeout.current = null;
             }
         }, []);
         const startReloadTimeout = useCallback(() => {
-            // Reload the page in case the connection stops for much longer than the reconnect interval
+            // Remount the app in case the connection stops for much longer than the reconnect interval
             clearReloadTimeout();
-            if (reloadOnFail) {
-                reloadTimeout.current = setTimeout(onReconnectStop, reconnectInterval * 5);
+            if (remountOnFail) {
+                remountTimeout.current = setTimeout(onReconnectStop, reconnectInterval * 5);
             }
-        }, [clearReloadTimeout, onReconnectStop, reloadOnFail]);
+        }, [clearReloadTimeout, onReconnectStop, remountOnFail]);
         const websocketOptions: WebsocketOptions = useMemo(() => ({
             reconnectAttempts: Infinity,
             retryOnError: true,
@@ -50,11 +50,11 @@ export const failsafeWebsocketHookFactory = <ReturnValue>(
                 }
                 messageHandler(validator(jsonData));
             }),
-            onReconnectStop: reloadOnFail ? onReconnectStop : undefined,
+            onReconnectStop: remountOnFail ? onReconnectStop : undefined,
             onOpen: clearReloadTimeout,
             onClose: startReloadTimeout,
-        }), [reloadOnFail, onReconnectStop, clearReloadTimeout, startReloadTimeout]);
-        const { lastJsonMessage, readyState } = useWebSocket(url ?? null, websocketOptions);
+        }), [remountOnFail, onReconnectStop, clearReloadTimeout, startReloadTimeout]);
+        const { lastJsonMessage, readyState } = useWebSocket(url, websocketOptions);
 
         // Technically this is a conditional hook call, but it's mitigated by using a factory function to get the hook
         const message = messageHandler ? null : useMemo(() => validator(lastJsonMessage), [lastJsonMessage]);

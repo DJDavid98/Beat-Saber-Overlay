@@ -13,7 +13,8 @@ dialog {
   padding: 2rem;
   text-align: center;
   font-style: normal;
-  font-size: 1.5rem;
+  // OBS Browser Source interaction window is tiny by default, so this has a larger font-size
+  font-size: 2rem;
   cursor: initial;
 
   h1 {
@@ -49,7 +50,6 @@ dialog {
     @include special-font;
     font-style: normal;
     @include input;
-    font-size: 1.5rem;
 
     &:not(:last-child) {
       margin-right: 1rem;

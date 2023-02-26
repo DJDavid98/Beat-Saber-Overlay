@@ -15,7 +15,7 @@ export const usePulsoidHeartRate = (): PulsoidHeartRate => {
     const {
         message: pulsoidData,
         readyState,
-    } = useFailsafeWebsocket(accessToken ? `wss://dev.pulsoid.net/api/v1/data/real_time?access_token=${encodeURIComponent(accessToken)}` : undefined);
+    } = useFailsafeWebsocket(accessToken ? `wss://dev.pulsoid.net/api/v1/data/real_time?access_token=${encodeURIComponent(accessToken)}` : null, true);
     const saveToken = useCallback((value: string) => {
         setAccessToken(value);
         localStorage.setItem(pulsoidTokenKey, value);

@@ -1,6 +1,16 @@
+$connection-loading-size: $cover-size * .65;
+
 #connection-loading {
-  @include loading-element($cover-size * .65);
+  @include loading-element($connection-loading-size);
   margin-left: $image-spacing;
+}
+
+// Placeholder loading indicator ring displayed while the app re-mounts
+#app-root:empty {
+  position: absolute;
+  top: $edge-spacing;
+  right: $edge-spacing;
+  @include loading-element($connection-loading-size, darken($text-color, 50%), true);
 }
 
 #connection {
