@@ -6,6 +6,7 @@ import { Connection } from "./Connection";
 import { useFailsafeWebsocket } from "./utils/use-failsafe-websocket";
 import { AdditionalDataDisplay } from "./AdditionalDataDisplay";
 import { SongInfoDisplay } from "./SongInfoDisplay";
+import { useObsControl } from "./utils/use-obs-control";
 
 export const App: FunctionComponent = () => {
     const {
@@ -20,6 +21,8 @@ export const App: FunctionComponent = () => {
     const showApp = mapData?.InLevel || !wsConnected;
     const showClass = showApp ? 'show' : undefined;
     const showAdditionalDataClass = showApp && wsConnected ? 'show' : undefined;
+
+    useObsControl(readyState, mapData?.LevelFinished, mapData?.BSRKey);
 
     useEffect(() => {
         setReset(inLevel && !lastInLevel.current);

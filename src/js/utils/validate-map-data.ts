@@ -40,14 +40,18 @@ export interface MapData {
 
 const mapDataSchema = Joi.object<MapData>({
     InLevel: Joi.boolean(),
+    LevelPaused: Joi.boolean(),
+    LevelFinished: Joi.boolean(),
+    LevelFailed: Joi.boolean(),
+    LevelQuit: Joi.boolean(),
     SongName: Joi.string().allow(''),
     SongSubName: Joi.string().allow(''),
     SongAuthor: Joi.string().allow(''),
     Mapper: Joi.string().allow(''),
     Difficulty: Joi.string().allow(''),
+    Duration: Joi.number(),
     Star: Joi.number(),
     PP: Joi.number(),
-    Duration: Joi.number(),
     BSRKey: Joi.string().allow(null),
     CoverImage: Joi.string().allow(null),
     Modifiers: Joi.object({
