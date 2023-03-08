@@ -4,6 +4,7 @@ import bouncyBlep from '../img/bouncy-blep.webm';
 
 const HEART_RATE_BLEP_THRESHOLD = 120;
 const RESTING_HEART_RATE = 60;
+const INITIAL_PLAYBACK_RATE_OFFSET = -0.5;
 
 /**
  * Attempts to make a sensible `playbackRate` out of the provided `heartRate` value
@@ -13,7 +14,7 @@ const RESTING_HEART_RATE = 60;
  */
 const getNewPlaybackRate = (heartRate: number | null): number => {
     if (heartRate !== null && heartRate > 0) {
-        return (RESTING_HEART_RATE / HEART_RATE_BLEP_THRESHOLD) + (heartRate / HEART_RATE_BLEP_THRESHOLD);
+        return INITIAL_PLAYBACK_RATE_OFFSET + (RESTING_HEART_RATE / HEART_RATE_BLEP_THRESHOLD) + (heartRate / HEART_RATE_BLEP_THRESHOLD);
     }
     return 1;
 }
