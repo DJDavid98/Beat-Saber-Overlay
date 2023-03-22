@@ -1,25 +1,29 @@
 import { FC, useMemo } from "react";
-import { Modifiers } from "./utils/validate-map-data";
+import { Modifiers } from "./model/modifiers";
 
 const modifierNames: Record<keyof Modifiers, string> = {
-    DisappearingArrows: 'Disappearing Arrows',
-    FasterSong: 'Faster Song',
-    FourLives: '4 Lives',
-    GhostNotes: 'Ghost Notes',
-    NoArrows: 'No Arrows',
-    NoBombs: 'No Bombs',
-    NoFailOn0Energy: 'No Fail',
-    NoWalls: 'No Walls',
-    OneLife: '1 Life',
-    ProMode: 'Pro Mode',
-    SlowerSong: 'Slower Song',
-    SmallNotes: 'Small Notes',
-    StrictAngles: 'Strict Angles',
-    SuperFastSong: 'Super Fast Song',
-    ZenMode: 'Zen Mode',
+    disappearingArrows: 'Disappearing Arrows',
+    fasterSong: 'Faster Song',
+    fourLives: '4 Lives',
+    ghostNotes: 'Ghost Notes',
+    noArrows: 'No Arrows',
+    noBombs: 'No Bombs',
+    noFail: 'No Fail',
+    noWalls: 'No Walls',
+    oneLife: '1 Life',
+    proMode: 'Pro Mode',
+    slowerSong: 'Slower Song',
+    smallNotes: 'Small Notes',
+    strictAngles: 'Strict Angles',
+    superFastSong: 'Super Fast Song',
+    zenMode: 'Zen Mode',
 };
 
-export const AdditionalDataModifiers: FC<{ modifiers?: Modifiers }> = ({ modifiers }) => {
+export interface AdditionalDataModifiersProps {
+    modifiers?: Modifiers;
+}
+
+export const AdditionalDataModifiers: FC<AdditionalDataModifiersProps> = ({ modifiers }) => {
     const modifierLabels = useMemo(() => {
         if (!modifiers) return [];
 

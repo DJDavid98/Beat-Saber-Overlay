@@ -1,6 +1,11 @@
 import { FunctionComponent } from "react";
 
-export const SongName: FunctionComponent<{ name?: string, subName?: string }> = ({ name, subName }) => {
+export interface SongNameProps {
+    name?: string,
+    subName?: string
+}
+
+export const SongName: FunctionComponent<SongNameProps> = ({ name, subName }) => {
     return (
         <div id="song-name">
             <span className="main-name">{name}</span>

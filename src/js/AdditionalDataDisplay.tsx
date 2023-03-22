@@ -1,21 +1,25 @@
-import { useFailsafeWebsocket } from "./utils/use-failsafe-websocket";
-import { dataSource } from "./utils/constants";
-import { validateLiveData } from "./utils/validate-live-data";
 import { FC, useEffect, useMemo, useRef, useState } from "react";
-import { Modifiers } from "./utils/validate-map-data";
 import { DataPoint, drawAccuracyGraph } from "./utils/draw-accuracy-graph";
 import { AdditionalDataModifiers } from "./AdditionalDataModifiers";
+import { Modifiers } from "./model/modifiers";
+import { LiveData } from "./model/live-data";
 
-interface LiveDataProps {
+export interface AdditionalDataDisplayProps {
     modifiers?: Modifiers;
     songLength?: number;
+    liveData?: LiveData;
     /**
      * Signal boolean which is flipped each time the additional data component should reset its internal state
      */
     reset?: boolean;
 }
 
-export const AdditionalDataDisplay: FC<LiveDataProps> = ({ modifiers, songLength, reset }) => {
+export const AdditionalDataDisplay: FC<AdditionalDataDisplayProps> = ({
+    modifiers,
+    songLength,
+    liveData,
+    reset
+}) => {
     const dataPoints = useRef<DataPoint[] | null>();
     const startFromSeconds = useRef<number | null>(null);
     const [accuracy, setAccuracy] = useState<string | undefined>();
@@ -25,18 +29,17 @@ export const AdditionalDataDisplay: FC<LiveDataProps> = ({ modifiers, songLength
         minimumFractionDigits: 0,
         maximumFractionDigits: 2
     }), []);
-    const { message: liveData } = useFailsafeWebsocket(`${dataSource}/LiveData`, validateLiveData);
 
     useEffect(() => {
         if (!liveData) {
             return;
         }
-        setAccuracy(nf.format(liveData.Accuracy / 100));
+        setAccuracy(nf.format(liveData.accuracy / 100));
 
         if (!dataPoints.current) {
             return;
         }
-        const dataPoint: DataPoint = { seconds: liveData.TimeElapsed, accuracy: liveData.Accuracy };
+        const dataPoint: DataPoint = { seconds: liveData.timeElapsed, accuracy: liveData.accuracy };
         if (startFromSeconds.current === null) {
             startFromSeconds.current = dataPoint.seconds;
         }

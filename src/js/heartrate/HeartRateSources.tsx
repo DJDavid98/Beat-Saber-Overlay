@@ -1,6 +1,6 @@
 import { FC } from "react";
-import { BleHeartRate } from "../utils/use-ble-heart-rate";
-import { PulsoidHeartRate } from "../utils/use-pulsoid-heart-rate";
+import { BleHeartRate } from "../hooks/use-ble-heart-rate";
+import { PulsoidHeartRate } from "../hooks/use-pulsoid-heart-rate";
 import { HeartRateConnectionPulsoid } from "./HeartRateConnectionPulsoid";
 import { ReadyState } from "react-use-websocket";
 import { Loading } from "../Loading";

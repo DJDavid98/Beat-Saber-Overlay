@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { isInBrowserSource } from "./is-in-browser-source";
+import { isInBrowserSource } from "../utils/is-in-browser-source";
 import { ReadyState } from "react-use-websocket";
 
 const brbSceneName = 'BRB';
@@ -7,7 +7,7 @@ const mainSceneName = 'Main';
 const farewellSceneName = 'Farewell';
 const outroSongBsr = '39';
 
-export const useObsControl = (mapDataReadyState: ReadyState, levelFinished: unknown, bsrKey: unknown) => {
+export const useObsControl = (mapDataReadyState: ReadyState, bsrKey: unknown) => {
     const [controlLevel, setControlLevel] = useState<OBSControlLevel>(0);
     const [streaming, setStreaming] = useState<OBSStatus['streaming']>(false);
     const [currentSceneName, setCurrentSceneName] = useState<OBSSceneInfo['name']>('');
@@ -62,13 +62,4 @@ export const useObsControl = (mapDataReadyState: ReadyState, levelFinished: unkn
             window.obsstudio.setCurrentScene(targetSceneName);
         }
     }, [controlLevel, currentSceneName, getTargetSceneName, streaming]);
-
-    useEffect(() => {
-        // At sufficient control level, end the stream after finishing song played during farewell scene
-        if (controlLevel < 5 || !streaming) return;
-
-        if (currentSceneName === farewellSceneName && levelFinished === true) {
-            window.obsstudio.stopStreaming();
-        }
-    }, [controlLevel, currentSceneName, levelFinished, streaming]);
 }

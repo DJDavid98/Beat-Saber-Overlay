@@ -1,24 +1,36 @@
 import { FC } from "react";
-import { MapData } from "./utils/validate-map-data";
-import { SongName } from "./SongName";
-import { SongAuthor } from "./SongAuthor";
+import { SongName, SongNameProps } from "./SongName";
+import { SongAuthor, SongAuthorProps } from "./SongAuthor";
 import { SongDetails } from "./SongDetails";
-import { CoverImage } from "./CoverImage";
+import { CoverImage, CoverImageProps } from "./CoverImage";
 import { defaultCoverImage } from "./utils/constants";
 
-export const SongInfoDisplay: FC<{ mapData: MapData }> = ({ mapData }) => {
+export type SongInfoDisplayProps = SongNameProps & SongAuthorProps & SongDetails & CoverImageProps;
+
+export const SongInfoDisplay: FC<SongInfoDisplayProps> = ({
+    author,
+    bsr,
+    difficulty,
+    duration,
+    mapper,
+    name,
+    pp,
+    star,
+    subName,
+    url,
+}) => {
     return <>
         <div>
-            <SongName name={mapData.SongName} subName={mapData.SongSubName} />
-            <SongAuthor author={mapData.SongAuthor} mapper={mapData.Mapper} />
+            <SongName name={name} subName={subName} />
+            <SongAuthor author={author} mapper={mapper} />
             <SongDetails
-                difficulty={mapData.Difficulty}
-                bsr={mapData.BSRKey}
-                star={mapData.Star}
-                duration={mapData.Duration}
-                pp={mapData.PP}
+                difficulty={difficulty}
+                bsr={bsr}
+                star={star}
+                duration={duration}
+                pp={pp}
             />
         </div>
-        <CoverImage url={mapData.CoverImage || defaultCoverImage} />
+        <CoverImage url={url || defaultCoverImage} />
     </>;
 }

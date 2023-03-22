@@ -1,5 +1,5 @@
 import { ChangeEventHandler, FC, FormEventHandler, MouseEvent, useCallback, useRef, useState } from "react";
-import { PulsoidHeartRate } from "../utils/use-pulsoid-heart-rate";
+import { PulsoidHeartRate } from "../hooks/use-pulsoid-heart-rate";
 import { ReadyState } from "react-use-websocket";
 import { Loading } from "../Loading";
 

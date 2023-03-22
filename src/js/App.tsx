@@ -1,53 +1,24 @@
-import { FunctionComponent, useEffect, useRef, useState } from "react";
-import { ReadyState } from "react-use-websocket";
-import { validateMapData } from "./utils/validate-map-data";
-import { dataSource } from "./utils/constants";
-import { Connection } from "./Connection";
-import { useFailsafeWebsocket } from "./utils/use-failsafe-websocket";
-import { AdditionalDataDisplay } from "./AdditionalDataDisplay";
-import { SongInfoDisplay } from "./SongInfoDisplay";
-import { useObsControl } from "./utils/use-obs-control";
+import { FunctionComponent } from "react";
+import { DataDisplay } from "./DataDisplay";
+import { useBsdpData } from "./hooks/use-bsdp-data";
+import { useBsPlusData } from "./hooks/use-bs-plus-data";
 
-export const App: FunctionComponent = () => {
-    const {
-        message: mapData,
-        readyState
-    } = useFailsafeWebsocket(`${dataSource}/MapData`, validateMapData, true);
+export interface AppProps {
+    /**
+     * When `true` the BeatSaberPlus SongOverlay data source will be used
+     */
+    bsPlus: boolean;
+}
 
-    const [reset, setReset] = useState(false);
-    const lastInLevel = useRef<boolean | null>(null);
-    const inLevel = mapData ? mapData.InLevel : false;
-    const wsConnected = readyState === ReadyState.OPEN;
-    const showApp = mapData?.InLevel || !wsConnected;
-    const showClass = showApp ? 'show' : undefined;
-    const showAdditionalDataClass = showApp && wsConnected ? 'show' : undefined;
+export const App: FunctionComponent<AppProps> = ({ bsPlus }) => {
+    const bsdpDataSource = useBsdpData(!bsPlus);
+    const bsPlusDataSource = useBsPlusData(bsPlus);
 
-    useObsControl(readyState, mapData?.LevelFinished, mapData?.BSRKey);
-
-    useEffect(() => {
-        setReset(inLevel && !lastInLevel.current);
-        if (lastInLevel.current === null) {
-            lastInLevel.current = inLevel;
-        }
-    }, [inLevel]);
-
-    return <>
+    return (
         <div id="app">
-            <div id="data-layout" className={showClass}>
-                {wsConnected && mapData
-                    ? <SongInfoDisplay mapData={mapData} />
-                    : <Connection readyState={readyState} />
-                }
-            </div>
-            <div id="additional-data" className={showAdditionalDataClass}>
-                <AdditionalDataDisplay
-                    modifiers={mapData?.Modifiers}
-                    songLength={mapData?.Duration}
-                    reset={reset}
-                />
-            </div>
+            <DataDisplay {...(bsPlus ? bsPlusDataSource : bsdpDataSource)} />
         </div>
-    </>;
+    );
 }
 
 

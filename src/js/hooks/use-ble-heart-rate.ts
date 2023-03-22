@@ -1,7 +1,7 @@
 import { MutableRefObject, useCallback, useEffect, useRef, useState } from "react";
-import { HeartRateHookCommonFields } from "./heart-rate-hook-common-fields";
+import { HeartRateHookCommonFields } from "../utils/heart-rate-hook-common-fields";
 import { ReadyState } from "react-use-websocket";
-import { isInBrowserSource } from "./is-in-browser-source";
+import { isInBrowserSource } from "../utils/is-in-browser-source";
 
 interface CharacteristicEvent extends Event {
     target: Event['target'] & {

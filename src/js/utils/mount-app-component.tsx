@@ -1,8 +1,14 @@
 import { createRoot, Root } from "react-dom/client";
 import { RemountContextProvider } from "./remount-context";
-import { ComponentType } from "react";
+import { FunctionComponent } from "react";
 
-export const mountAppComponent = (rootId: string, Component: ComponentType, delayRemount?: number) => {
+// eslint-disable-next-line @typescript-eslint/ban-types
+export const mountAppComponent = <P extends {}>(
+    rootId: string,
+    Component: FunctionComponent<P>,
+    props: P,
+    delayRemount?: number
+) => {
     const appRootEl = document.getElementById(rootId);
     if (appRootEl) {
         let appRoot: Root | null = null;
@@ -19,7 +25,7 @@ export const mountAppComponent = (rootId: string, Component: ComponentType, dela
             appRoot = createRoot(appRootEl);
             appRoot.render(
                 <RemountContextProvider value={{ remount: remountApp }}>
-                    <Component />
+                    <Component {...props} />
                 </RemountContextProvider>
             );
         }

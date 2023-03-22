@@ -3,7 +3,15 @@ import DurationUnitFormat from "intl-unofficial-duration-unit-format";
 
 const mapDifficulty = (difficulty?: string) => difficulty === 'ExpertPlus' ? 'Expert+' : difficulty;
 
-export const SongDetails: FunctionComponent<{ difficulty?: string; bsr?: string | null; star?: number; pp?: number; duration?: number }> = ({
+export interface SongDetails {
+    difficulty?: string;
+    bsr?: string | null;
+    star?: number;
+    pp?: number;
+    duration?: number
+}
+
+export const SongDetails: FunctionComponent<SongDetails> = ({
     difficulty,
     bsr,
     star,

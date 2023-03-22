@@ -1,44 +1,8 @@
 import Joi from "joi";
-import { dataValidatorFactory } from "./data-validator-factory";
+import { dataValidatorFactory } from "../utils/data-validator-factory";
+import { BsdpMapData } from "../model/bsdp";
 
-export interface Modifiers {
-    NoFailOn0Energy: boolean;
-    OneLife: boolean;
-    FourLives: boolean;
-    NoBombs: boolean;
-    NoWalls: boolean;
-    NoArrows: boolean;
-    GhostNotes: boolean;
-    DisappearingArrows: boolean;
-    SmallNotes: boolean;
-    ProMode: boolean;
-    StrictAngles: boolean;
-    ZenMode: boolean;
-    SlowerSong: boolean;
-    FasterSong: boolean;
-    SuperFastSong: boolean;
-}
-
-export interface MapData {
-    InLevel: boolean;
-    LevelPaused: boolean;
-    LevelFinished: boolean;
-    LevelFailed: boolean;
-    LevelQuit: boolean;
-    SongName: string;
-    SongSubName: string;
-    SongAuthor: string;
-    Mapper: string;
-    Difficulty: string;
-    Duration: number;
-    Star: number;
-    PP: number;
-    BSRKey: string | null;
-    CoverImage: string | null;
-    Modifiers: Modifiers;
-}
-
-const mapDataSchema = Joi.object<MapData>({
+const mapDataSchema = Joi.object<BsdpMapData>({
     InLevel: Joi.boolean(),
     LevelPaused: Joi.boolean(),
     LevelFinished: Joi.boolean(),
@@ -73,4 +37,4 @@ const mapDataSchema = Joi.object<MapData>({
     }),
 });
 
-export const validateMapData = dataValidatorFactory(mapDataSchema);
+export const validateBsdpMapData = dataValidatorFactory(mapDataSchema);

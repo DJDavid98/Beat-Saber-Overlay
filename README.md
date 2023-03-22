@@ -1,8 +1,16 @@
 # DJDavid98's BSDP Overlay
 
-An overlay for the [BSDataPuller](https://github.com/ReadieFur/BSDataPuller/) Beat Saber Mod for my personal use.
+An overlay for the [BSDataPuller](https://github.com/ReadieFur/BSDataPuller/)
+and [BeatSaberPlus](https://github.com/hardcpp/BeatSaberPlus) mods for my personal use.
 
 ## Features
+
+The overlay works with either of the two mods, but in order to use BSDataPuller (which now appears to be unmaintained)
+as the data source add `?bsdp` to the URL. BeatSaberPlus is used as the default source.
+
+While playing, the current song will appear in the top-right corner along with some supplemental information like
+difficulty, length, ranked stars and PP. Additionally, an accuracy graph and the currently selected modifiers are
+displayed.
 
 If given advanced access to OBS through the browser source settings, the overlay will automatically switch between two
 scenes called `Main` and `BRB`, the first is used while the overlay connection is open, and the second in any other

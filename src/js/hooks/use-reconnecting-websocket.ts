@@ -1,19 +1,21 @@
 import useWebSocket, { ReadyState } from "react-use-websocket";
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import type { Options as WebsocketOptions } from "react-use-websocket/src/lib/types";
-import { useRemountContext } from "./remount-context";
+import { useRemountContext } from "../utils/remount-context";
+import { JsonValue, WebSocketHook } from "react-use-websocket/src/lib/types";
 
 const reconnectInterval = 1e3;
 
 /**
- * Creates a failsafe websocket hook with an optional message handler, which, when defined, is used
- * to receive the data on the caller side instead of keeping the last json value memoized.
+ * Creates a reconnecting websocket hook which can be used to receive the data on the caller side
+ * and attempts to automatically recover when the connection closes, potentially by remounting
+ * teh entire component
  */
-export const useFailsafeWebsocket = <ReturnValue, >(
+export const useReconnectingWebsocket = <T extends JsonValue | null = JsonValue | null>(
     url: string | null,
-    validator: (data: unknown) => ReturnValue | null,
     remountOnFail = false,
-): { message: null | ReturnValue; readyState: ReadyState } => {
+    onMessage?: WebsocketOptions['onMessage']
+): WebSocketHook<T> => {
     const remountTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
     const remountingRef = useRef(false);
     const { remount } = useRemountContext();
@@ -27,7 +29,7 @@ export const useFailsafeWebsocket = <ReturnValue, >(
             remountTimeout.current = null;
         }
     }, []);
-    const startReloadTimeout = useCallback(() => {
+    const startRemountTimeout = useCallback(() => {
         // Remount the app in case the connection stops for much longer than the reconnect interval
         clearRemountTimeout();
         if (remountOnFail && !remountingRef.current) {
@@ -40,11 +42,11 @@ export const useFailsafeWebsocket = <ReturnValue, >(
         reconnectInterval,
         onReconnectStop: remountOnFail ? beginRemount : undefined,
         onOpen: clearRemountTimeout,
-        onClose: startReloadTimeout,
-    }), [remountOnFail, beginRemount, clearRemountTimeout, startReloadTimeout]);
-    const { lastJsonMessage, readyState } = useWebSocket(url, websocketOptions);
-
-    const message = useMemo(() => validator(lastJsonMessage), [validator, lastJsonMessage]);
+        onMessage,
+        onClose: startRemountTimeout,
+    }), [remountOnFail, beginRemount, clearRemountTimeout, onMessage, startRemountTimeout]);
+    const webSocket = useWebSocket<T>(url, websocketOptions);
+    const { readyState } = webSocket;
 
     useEffect(() => {
         switch (readyState) {
@@ -53,14 +55,14 @@ export const useFailsafeWebsocket = <ReturnValue, >(
                 clearRemountTimeout();
                 break;
             default:
-                startReloadTimeout();
+                startRemountTimeout();
         }
-    }, [clearRemountTimeout, readyState, startReloadTimeout]);
+    }, [clearRemountTimeout, readyState, startRemountTimeout]);
 
     useEffect(() => {
         // Clear the timeout on remount
         return clearRemountTimeout;
     }, [clearRemountTimeout]);
 
-    return { message, readyState };
+    return webSocket;
 };
