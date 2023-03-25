@@ -2,6 +2,8 @@ import { BsPlusHandshake } from "../validators/validate-bs-plus-handshake";
 import { BsPlusGameStateEvent } from "../validators/validate-bs-plus-game-state-event";
 import { BsPlusMapInfoEvent } from "../validators/validate-bs-plus-map-info-event";
 import { BsPlusScoreEvent } from "../validators/validate-bs-plus-score-event";
+import { BsPlusPauseEvent } from "../validators/validate-bs-plus-pause-event";
+import { BsPlusResumeEvent } from "../validators/validate-bs-plus-resume-event";
 
 /**
  * @fileOverview
@@ -106,10 +108,23 @@ export interface BsPlusScore {
     currentHealth: number;
 }
 
+export const BsPlusResumeEventName = 'resume';
+export const BsPlusPauseEventName = 'pause';
+
+export const BsPlusTickEventName = 'tick';
+
 export interface BsPlusDataState {
     gameState?: BsPlusGameState;
     mapInfo?: BsPlusMapInfo;
-    score?: BsPlusScore;
+    score?: BsPlusScore & { ts: Date; visualTime: number };
 }
 
-export type BsPlusAction = null | BsPlusHandshake | BsPlusGameStateEvent | BsPlusMapInfoEvent | BsPlusScoreEvent;
+export type BsPlusAction =
+    null
+    | BsPlusHandshake
+    | BsPlusGameStateEvent
+    | BsPlusMapInfoEvent
+    | BsPlusScoreEvent
+    | BsPlusResumeEvent
+    | BsPlusPauseEvent
+    | typeof BsPlusTickEventName;

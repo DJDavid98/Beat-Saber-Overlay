@@ -8,6 +8,11 @@ interface Bounds {
     height: number;
 }
 
+/**
+ * Data points that have a difference lower than this threshold will not be rendered on the graph
+ */
+export const SCORE_UPDATE_MAX_GRANULARITY = 0.5;
+
 const getPointPosition = (
     canvas: Bounds,
     songLengthSeconds: number,
@@ -58,7 +63,7 @@ export const drawAccuracyGraph = (
     let lastX = 0;
     dataPoints.forEach(dataPoint => {
         const position = getPointPosition(canvas, songLengthSeconds, startFromSeconds, dataPoint);
-        if (position[0] - lastX < 0.5) {
+        if (position[0] - lastX < SCORE_UPDATE_MAX_GRANULARITY) {
             // Skip drawing lines between virtually identical X positions
             return;
         }

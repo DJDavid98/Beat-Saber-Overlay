@@ -38,6 +38,10 @@ export const AdditionalDataDisplay: FC<AdditionalDataDisplayProps> = ({
 
         if (!dataPoints.current) {
             return;
+        } else if (liveData.timeElapsed === 0) {
+            // This is the first score update for the current map, assume we must clear the data points
+            dataPoints.current = [];
+            startFromSeconds.current = null;
         }
         const dataPoint: DataPoint = { seconds: liveData.timeElapsed, accuracy: liveData.accuracy };
         if (startFromSeconds.current === null) {
