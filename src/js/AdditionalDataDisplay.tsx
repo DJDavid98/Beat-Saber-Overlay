@@ -11,11 +11,11 @@ import { mapAccuracyRating } from "./utils/mappers";
 const accuracyGradient: GradientStop[] = [
     new GradientStop('#ff0000', 0),
     new GradientStop('#ff0000', 20),
-    new GradientStop('#ffdd00', 35),
-    new GradientStop('#00dd00', 65),
-    new GradientStop('#00ddff', 80),
+    new GradientStop('#ff8000', 35),
+    new GradientStop('#ffeb00', 65),
+    new GradientStop('#00ff00', 80),
     new GradientStop('#ffffff', 90),
-    new GradientStop('#ffffff', 100),
+    new GradientStop('#00ffff', 100),
 ];
 
 export interface AdditionalDataDisplayProps {
