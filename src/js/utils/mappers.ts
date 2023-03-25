@@ -21,6 +21,11 @@ const enum AccuracyRating {
     SSS = 'SSS',
 }
 
+/**
+ * Numbers represent lower end of the accuracy score interval, inclusive
+ *
+ * @see https://bsaber.com/indepth-guide/
+ */
 const accuracyValues: Array<[number, AccuracyRating]> = [
     [0, AccuracyRating.E],
     [20, AccuracyRating.D],
