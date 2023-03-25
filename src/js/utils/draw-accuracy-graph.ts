@@ -11,7 +11,7 @@ interface Bounds {
 /**
  * Data points that have a difference lower than this threshold will not be rendered on the graph
  */
-export const SCORE_UPDATE_MAX_GRANULARITY = 0.5;
+export const SCORE_UPDATE_MAX_GRANULARITY = 1;
 
 const getPointPosition = (
     canvas: Bounds,
@@ -26,11 +26,28 @@ const getPointPosition = (
     return [x, y];
 }
 
+export const drawStroke = (ctx: CanvasRenderingContext2D, startX: number, startY: number, endX: number,
+    endY: number): void => {
+    ctx.beginPath();
+    ctx.moveTo(startX, startY);
+    ctx.lineTo(endX, endY);
+    ctx.stroke();
+};
+
+export type GraphStyle = (
+    ctx: CanvasRenderingContext2D,
+    initialPosition: [number, number],
+    canvasBottomY: number,
+    dataPoints: DataPoint[],
+    getPosition: (dataPont: DataPoint) => [number, number]
+) => void;
+
 export const drawAccuracyGraph = (
     canvas: HTMLCanvasElement,
     dataPoints: DataPoint[],
     songLengthSeconds: number,
-    startFromSeconds: number
+    startFromSeconds: number,
+    style: GraphStyle
 ) => {
     const ctx = canvas.getContext('2d');
     if (!ctx) {
@@ -39,41 +56,24 @@ export const drawAccuracyGraph = (
     }
     const { width: canvasRightX, height: canvasBottomY } = canvas;
     ctx.clearRect(0, 0, canvasRightX, canvasBottomY);
-    ctx.lineWidth = 0;
 
-    const [initialPositionX, initialPositionY] = getPointPosition(canvas, songLengthSeconds, 0, {
+    const initialPosition = getPointPosition(canvas, songLengthSeconds, 0, {
         seconds: startFromSeconds,
         accuracy: 0
     });
 
-    if (initialPositionX > 1) {
+    const initialPositionX = initialPosition[0];
+    if (initialPositionX > 0) {
         // Data does not start at 0, draw missing data filled in
         ctx.fillStyle = 'rgba(0,0,0,.5)';
         ctx.fillRect(0, 0, initialPositionX, canvasBottomY);
     }
 
-    ctx.fillStyle = '#fff';
-    ctx.beginPath();
-    // Move to initial X position at the bottom of the canvas
-    ctx.moveTo(initialPositionX, canvasBottomY);
-    // Draw line to actual initial position
-    ctx.lineTo(initialPositionX, initialPositionY);
-
-    // Draw line to each point in sequence
-    let lastX = 0;
-    dataPoints.forEach(dataPoint => {
-        const position = getPointPosition(canvas, songLengthSeconds, startFromSeconds, dataPoint);
-        if (position[0] - lastX < SCORE_UPDATE_MAX_GRANULARITY) {
-            // Skip drawing lines between virtually identical X positions
-            return;
-        }
-        ctx.lineTo(...position);
-        lastX = position[0];
-    });
-
-    // Draw final line from lastX to bottom of canvas and close path
-    ctx.lineTo(lastX, canvasBottomY);
-    ctx.closePath();
-
-    ctx.fill();
+    style(
+        ctx,
+        initialPosition,
+        canvasBottomY,
+        dataPoints,
+        dataPoint => getPointPosition(canvas, songLengthSeconds, startFromSeconds, dataPoint)
+    );
 };

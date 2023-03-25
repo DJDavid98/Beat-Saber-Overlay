@@ -78,7 +78,7 @@ const bsPlusDataReducer: Reducer<BsPlusDataState, BsPlusAction> = (state, action
 const bsPlusDataDefaultState: BsPlusDataState = {};
 
 export const useBsPlusData = (enabled: boolean): DataDisplayProps => {
-    const updateInterval = useRef<number | null>(null);
+    const updateInterval = useRef<ReturnType<typeof setInterval> | null>(null);
     const [{ mapInfo, gameState, score }, dispatch] = useReducer(bsPlusDataReducer, bsPlusDataDefaultState);
     const updateTick = useCallback(() => {
         // Send "fake" score updates with existing data based on the time elapsed
@@ -148,7 +148,7 @@ export const useBsPlusData = (enabled: boolean): DataDisplayProps => {
             default:
                 console.info(`Unhandled BS+ Socket Message of type ${messageType}`, data);
         }
-    }, [updateTick]);
+    }, [startUpdateTicking, stopUpdateTicking]);
     const webSocket = useReconnectingWebsocket(enabled ? bsPlusDataSource : null, enabled, handleMessage);
 
     const mapData: DataDisplayProps['mapData'] = useMemo(() => mapInfo ? {

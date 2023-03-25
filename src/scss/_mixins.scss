@@ -35,6 +35,17 @@
   }
 }
 
+@mixin dots-between-children {
+  > :not(:first-child) {
+    &:before {
+      content: "•";
+      margin: 0 .25em;
+      opacity: .5;
+      color: #fff;
+    }
+  }
+}
+
 
 @mixin input {
   color: $dialog-fg;

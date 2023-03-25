@@ -9,6 +9,14 @@ module.exports = {
         },
     },
     rules: {
-        'react/react-in-jsx-scope': 'off'
+        'react/react-in-jsx-scope': 'off',
+        "no-restricted-imports": "off",
+        "@typescript-eslint/no-restricted-imports": ["error", {
+            "paths": [{
+                "name": "timers",
+                "message": "You do not need this import",
+                "allowTypeImports": false
+            }]
+        }]
     }
 };

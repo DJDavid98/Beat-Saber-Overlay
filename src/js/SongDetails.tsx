@@ -1,7 +1,6 @@
 import { FunctionComponent, useMemo } from "react";
 import DurationUnitFormat from "intl-unofficial-duration-unit-format";
-
-const mapDifficulty = (difficulty?: string) => difficulty === 'ExpertPlus' ? 'Expert+' : difficulty;
+import { mapDifficulty } from "./utils/mappers";
 
 export interface SongDetails {
     difficulty?: string;

@@ -3,6 +3,20 @@ import { DataPoint, drawAccuracyGraph } from "./utils/draw-accuracy-graph";
 import { AdditionalDataModifiers } from "./AdditionalDataModifiers";
 import { Modifiers } from "./model/modifiers";
 import { LiveData } from "./model/live-data";
+import { accuracyColorGraphStyleFactory } from "./utils/graph-styles";
+import { weightedColorMixerFactory } from "./utils/weighted-color-mix";
+import { GradientStop } from "./class/gradient-stop.class";
+import { mapAccuracyRating } from "./utils/mappers";
+
+const accuracyGradient: GradientStop[] = [
+    new GradientStop('#ff0000', 0),
+    new GradientStop('#ff0000', 20),
+    new GradientStop('#ffdd00', 35),
+    new GradientStop('#00dd00', 65),
+    new GradientStop('#00ddff', 80),
+    new GradientStop('#ffffff', 90),
+    new GradientStop('#ffffff', 100),
+];
 
 export interface AdditionalDataDisplayProps {
     modifiers?: Modifiers;
@@ -29,6 +43,14 @@ export const AdditionalDataDisplay: FC<AdditionalDataDisplayProps> = ({
         minimumFractionDigits: 0,
         maximumFractionDigits: 2
     }), []);
+    const colorMixer = useMemo(() => weightedColorMixerFactory(accuracyGradient), []);
+    const [accuracyRating, accuracyStyle] = useMemo(() => {
+        const accuracyInt = accuracy ? parseInt(accuracy, 10) : 0;
+        return [
+            mapAccuracyRating(accuracyInt),
+            { color: colorMixer(accuracyInt) }
+        ];
+    }, [accuracy, colorMixer]);
 
     useEffect(() => {
         if (!liveData) {
@@ -49,9 +71,15 @@ export const AdditionalDataDisplay: FC<AdditionalDataDisplayProps> = ({
         }
         dataPoints.current.push(dataPoint);
         if (accCanvas.current && songLength) {
-            drawAccuracyGraph(accCanvas.current, dataPoints.current, songLength, startFromSeconds.current);
+            drawAccuracyGraph(
+                accCanvas.current,
+                dataPoints.current,
+                songLength,
+                startFromSeconds.current,
+                accuracyColorGraphStyleFactory(colorMixer)
+            );
         }
-    }, [liveData, nf, songLength]);
+    }, [colorMixer, liveData, nf, songLength]);
 
     useEffect(() => {
         if (!reset) return;
@@ -67,7 +95,10 @@ export const AdditionalDataDisplay: FC<AdditionalDataDisplayProps> = ({
     return <>
         {accuracyGraphLength > 0 && (
             <div>
-                <span className="additional-data-label">{accuracy} Accuracy</span>
+                <div id="accuracy-label">
+                    <span>{accuracy} Accuracy</span>
+                    <span style={accuracyStyle}>{accuracyRating}</span>
+                </div>
                 <div id="accuracy-graph-wrapper">
                     <canvas width={accuracyGraphLength} height={40} ref={accCanvas} />
                 </div>

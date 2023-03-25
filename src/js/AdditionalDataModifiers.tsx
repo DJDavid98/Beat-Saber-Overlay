@@ -40,7 +40,7 @@ export const AdditionalDataModifiers: FC<AdditionalDataModifiersProps> = ({ modi
 
     return (
         <div>
-            <span className="additional-data-label">Modifiers</span>
+            <span id="modifiers-label">Modifiers</span>
             <ul id="modifier-list">
                 {modifierLabels.map(label => <li key={label}>{label}</li>)}
             </ul>
