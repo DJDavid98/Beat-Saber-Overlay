@@ -1,4 +1,4 @@
-# DJDavid98's BSDP Overlay
+# DJDavid98's Beat Saber Overlay
 
 An overlay for the [BSDataPuller](https://github.com/ReadieFur/BSDataPuller/)
 and [BeatSaberPlus](https://github.com/hardcpp/BeatSaberPlus) mods for my personal use.

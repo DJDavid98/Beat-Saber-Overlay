@@ -1,7 +1,7 @@
 {
-  "name": "@djdavid98/personal-bsdp-overlay",
+  "name": "@djdavid98/beat-saber-overlay",
   "version": "1.0.0",
-  "description": "An overlay for the BSDataPuller Beat Saber Mod for my personal use",
+  "description": "DJDavid98's overlay for Beat Saber streaming",
   "scripts": {
     "lint": "eslint \"src/**/*.{ts,tsx}\" --max-warnings=0",
     "start": "parcel src/index.html",
