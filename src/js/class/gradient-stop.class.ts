@@ -1,5 +1,5 @@
 import { sortAscending } from "../utils/sort-ascending";
-import { hexToRgb, RGBArray, rgbToHex, getGradientStopWeights } from "../utils/colors";
+import { getGradientStopWeights, hexToRgb, RGBArray, rgbToHex } from "../utils/colors";
 
 export class GradientStop {
     public readonly value: number;
@@ -22,11 +22,16 @@ export class GradientStop {
      * Mix the current and provided gradient stops based on the provided position
      * @param stops
      * @param position 0-100
+     * @param smooth if `true`, return the weighted average of the two colors, otherwise return the closest color
      */
-    static mix(stops: [GradientStop, GradientStop], position: number): GradientStop {
+    static mix(stops: [GradientStop, GradientStop], position: number, smooth: boolean): GradientStop {
         const [earlierStop, laterStop] = sortAscending(stops, stop => stop.position);
-        const [earlierStopWeight, laterStopWeight] = getGradientStopWeights(earlierStop.position, laterStop.position, position);
 
+        if (!smooth) {
+            return earlierStop;
+        }
+
+        const [earlierStopWeight, laterStopWeight] = getGradientStopWeights(earlierStop.position, laterStop.position, position);
         const earlierStopRgb = hexToRgb(earlierStop.value);
         const laterStopRgb = hexToRgb(laterStop.value);
         const newValue = rgbToHex(earlierStopRgb.map((n, i) => {

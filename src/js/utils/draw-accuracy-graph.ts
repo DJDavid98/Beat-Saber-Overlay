@@ -11,7 +11,7 @@ interface Bounds {
 /**
  * Data points that have a difference lower than this threshold will not be rendered on the graph
  */
-export const SCORE_UPDATE_MAX_GRANULARITY = 1;
+export const SCORE_UPDATE_MAX_GRANULARITY = .2;
 
 const getPointPosition = (
     canvas: Bounds,
@@ -34,12 +34,20 @@ export const drawStroke = (ctx: CanvasRenderingContext2D, startX: number, startY
     ctx.stroke();
 };
 
+export const drawRect = (ctx: CanvasRenderingContext2D, lastX: number, canvasBottomY: number, positionX: number,
+    positionY: number): void => {
+    const coords = [Math.floor(lastX), Math.floor(positionY), Math.ceil(positionX - lastX), Math.ceil(canvasBottomY - positionY)] as const;
+    ctx.fillRect(...coords);
+};
+
+export type PositionGetter = (dataPont: DataPoint) => [number, number];
+
 export type GraphStyle = (
     ctx: CanvasRenderingContext2D,
     initialPosition: [number, number],
     canvasBottomY: number,
     dataPoints: DataPoint[],
-    getPosition: (dataPont: DataPoint) => [number, number]
+    getPosition: PositionGetter
 ) => void;
 
 export const drawAccuracyGraph = (

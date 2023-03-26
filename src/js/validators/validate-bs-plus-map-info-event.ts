@@ -12,7 +12,7 @@ const schema = Joi.object<BsPlusMapInfoEvent>({
     _type: Joi.string().allow(BsPlusEventMessageType),
     _event: Joi.string().allow(BsPlusMapInfoEventName),
     mapInfoChanged: Joi.object({
-        level_id: Joi.string(),
+        level_id: Joi.string().allow(''),
         name: Joi.string().allow(''),
         sub_name: Joi.string().allow(''),
         artist: Joi.string().allow(''),
@@ -23,7 +23,7 @@ const schema = Joi.object<BsPlusMapInfoEvent>({
         BPM: Joi.number(),
         PP: Joi.number(),
         BSRKey: Joi.string().allow(''),
-        coverRaw: Joi.string(),
+        coverRaw: Joi.string().allow(''),
         time: Joi.number(),
         timeMultiplier: Joi.number(),
     }),

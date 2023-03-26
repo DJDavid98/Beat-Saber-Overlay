@@ -12,14 +12,13 @@ export type WeightedColorMixer = (value: number) => string;
 
 /**
  * Takes a set of gradient stops and returns a weighted color mixer function
- * @param gradient
  */
-export const weightedColorMixerFactory = (gradient: GradientStop[]): WeightedColorMixer => {
+export const weightedColorMixerFactory = (gradient: GradientStop[], smooth = false): WeightedColorMixer => {
     const sortedGradient = sortAscending(gradient, gradientStopPositionMapper);
 
     return (value) => {
         const stop = findClosestValues(sortedGradient, value, gradientStopPositionMapper);
-        const valueStop = stop.length === 1 ? stop[0] : GradientStop.mix(stop, value);
+        const valueStop = stop.length === 1 ? stop[0] : GradientStop.mix(stop, value, smooth);
         return valueStop.toString();
     };
 };

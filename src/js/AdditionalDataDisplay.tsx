@@ -12,9 +12,10 @@ const accuracyGradient: GradientStop[] = [
     new GradientStop('#ff0000', 0),
     new GradientStop('#ff0000', 20),
     new GradientStop('#ff8000', 35),
-    new GradientStop('#ffeb00', 65),
-    new GradientStop('#00ff00', 80),
-    new GradientStop('#ffffff', 90),
+    new GradientStop('#ffeb00', 50),
+    new GradientStop('#00ff00', 65),
+    new GradientStop('#ffffff', 80),
+    new GradientStop('#00ffff', 90),
     new GradientStop('#00ffff', 100),
 ];
 
@@ -45,12 +46,12 @@ export const AdditionalDataDisplay: FC<AdditionalDataDisplayProps> = ({
     }), []);
     const colorMixer = useMemo(() => weightedColorMixerFactory(accuracyGradient), []);
     const [accuracyRating, accuracyStyle] = useMemo(() => {
-        const accuracyInt = accuracy ? parseInt(accuracy, 10) : 0;
+        const accuracyValue = liveData?.accuracy ?? 0;
         return [
-            mapAccuracyRating(accuracyInt),
-            { color: colorMixer(accuracyInt) }
+            mapAccuracyRating(accuracyValue),
+            { color: colorMixer(accuracyValue) }
         ];
-    }, [accuracy, colorMixer]);
+    }, [colorMixer, liveData?.accuracy]);
 
     useEffect(() => {
         if (!liveData) {
