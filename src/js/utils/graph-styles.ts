@@ -1,5 +1,5 @@
 import {
-    DataPoint,
+    DataPoint, drawCross,
     drawRect,
     GraphStyle,
     PositionGetter,
@@ -7,7 +7,7 @@ import {
     ValueGetter
 } from "./draw-graphs";
 import { WeightedColorMixer } from "./weighted-color-mix";
-import { GradientStop } from "../class/gradient-stop.class";
+import { GradientStop, HexColorString } from "../class/gradient-stop.class";
 import { getCanvasLinearGradient } from "./colors";
 
 type DrawOnCanvasFunction = (
@@ -17,12 +17,15 @@ type DrawOnCanvasFunction = (
     dataPoint: DataPoint
 ) => void;
 
+interface DrawPointsParams {
+    initialX: number;
+    dataPoints: DataPoint[];
+    getPosition: PositionGetter;
+    drawOnCanvas: DrawOnCanvasFunction;
+}
+
 const drawPoints = (
-    canvasBottomY: number,
-    initialX: number,
-    dataPoints: DataPoint[],
-    getPosition: PositionGetter,
-    drawOnCanvas: DrawOnCanvasFunction,
+    { initialX, dataPoints, getPosition, drawOnCanvas }: DrawPointsParams,
 ): number => {
     let lastX = initialX > 0 && dataPoints[0] ? getPosition(dataPoints[0])[0] : 0;
     dataPoints.forEach(dataPoint => {
@@ -41,10 +44,13 @@ const drawPoints = (
 };
 
 
-export const lineGraphStyleFactory = (strokeGradient: GradientStop[], lineWidth: number,
-    alpha: number): GraphStyle =>
-    (ctx, initialPosition, canvasBottomY, dataPoints, getPosition) => {
-        ctx.lineWidth = lineWidth;
+export const lineGraphStyleFactory = (
+    strokeGradient: GradientStop[],
+    lineWidth: number,
+    alpha: number
+): GraphStyle =>
+    (ctx, scale, initialPosition, canvasBottomY, dataPoints, getPosition) => {
+        ctx.lineWidth = lineWidth * scale;
         ctx.strokeStyle = getCanvasLinearGradient(ctx, strokeGradient, alpha);
         ctx.beginPath();
 
@@ -54,8 +60,13 @@ export const lineGraphStyleFactory = (strokeGradient: GradientStop[], lineWidth:
 
 
         // Create line to each point in sequence
-        drawPoints(canvasBottomY, initialPosition[0], dataPoints, getPosition, (positionX, positionY) => {
-            ctx.lineTo(positionX, positionY);
+        drawPoints({
+            initialX: initialPosition[0],
+            dataPoints,
+            getPosition,
+            drawOnCanvas: (positionX, positionY) => {
+                ctx.lineTo(positionX, positionY);
+            }
         });
 
         // Draw line
@@ -67,11 +78,67 @@ export const barGraphStyleFactory = (
     getColorValue: ValueGetter,
     alpha: number
 ): GraphStyle =>
-    (ctx, initialPosition, canvasBottomY, dataPoints, getPosition) => {
+    (ctx, scale, initialPosition, canvasBottomY, dataPoints, getPosition) => {
         // Draw rectangle for each point in sequence
-        drawPoints(canvasBottomY, initialPosition[0], dataPoints, getPosition, (positionX, positionY, lastX,
-            dataPoint) => {
-            ctx.fillStyle = mixer(getColorValue(dataPoint)).toString(alpha);
-            drawRect(ctx, lastX, canvasBottomY, positionX, positionY);
+        drawPoints({
+            initialX: initialPosition[0],
+            dataPoints,
+            getPosition,
+            drawOnCanvas: (positionX, positionY, lastX, dataPoint) => {
+                ctx.fillStyle = mixer(getColorValue(dataPoint)).toString(alpha);
+                drawRect(ctx, lastX, canvasBottomY, positionX, positionY);
+            }
+        });
+    };
+
+interface CrossGraphStyleFactoryParams {
+    getValue: ValueGetter;
+    color: HexColorString;
+    alpha: number;
+    border?: {
+        color: HexColorString;
+        alpha: number;
+    };
+    lineWidth: number;
+    size: number;
+}
+
+export const crossGraphStyleFactory = ({
+    getValue,
+    color,
+    alpha,
+    border,
+    lineWidth,
+    size
+}: CrossGraphStyleFactoryParams): GraphStyle =>
+    (ctx, scale, initialPosition, canvasBottomY, dataPoints, getPosition) => {
+        const scaledSize = size * scale;
+        const baseStyle = new GradientStop(color, 0).toString(alpha);
+        const borderStyle = border ? new GradientStop(border.color, 0).toString(border.alpha) : null;
+        const baseLineWidth = lineWidth * scale;
+
+        // Draw cross for each non-zero point in sequence
+        let lastValue = 0;
+        drawPoints({
+            initialX: initialPosition[0],
+            dataPoints,
+            getPosition,
+            drawOnCanvas: (positionX, positionY, lastX, dataPoint) => {
+                const value = getValue(dataPoint);
+                if (lastValue === value || value === 0) {
+                    return;
+                }
+                if (borderStyle) {
+                    // Draw border
+                    ctx.strokeStyle = borderStyle;
+                    ctx.lineWidth = baseLineWidth * 3;
+                    drawCross(ctx, positionX, positionY, scaledSize * 1.25);
+                }
+                // Draw base cross
+                ctx.strokeStyle = baseStyle;
+                ctx.lineWidth = baseLineWidth;
+                drawCross(ctx, positionX, positionY, scaledSize);
+                lastValue = value;
+            }
         });
     };

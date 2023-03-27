@@ -47,3 +47,5 @@ export const mapAccuracyRating = (value: number): AccuracyRating =>
 export const dataPointToAccuracy = (dataPoint: DataPoint) => dataPoint.accuracy;
 
 export const dataPointToEnergy = (dataPoint: DataPoint) => dataPoint.energy;
+
+export const dataPointToMisses = (dataPoint: DataPoint) => dataPoint.misses;

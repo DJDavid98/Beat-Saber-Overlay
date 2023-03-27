@@ -170,6 +170,7 @@ export const useBsPlusData = (enabled: boolean): DataDisplayProps => {
         accuracy: score.accuracy * 100,
         seconds: score.visualTime,
         energy: score.currentHealth,
+        misses: score.missCount,
     } : undefined, [score]);
 
     return { mapData, liveData, readyState: webSocket.readyState };

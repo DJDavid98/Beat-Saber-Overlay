@@ -3,10 +3,10 @@ import { DataPoint, drawGraphs } from "./utils/draw-graphs";
 import { AdditionalDataModifiers } from "./AdditionalDataModifiers";
 import { Modifiers } from "./model/modifiers";
 import { LiveData } from "./model/live-data";
-import { barGraphStyleFactory, lineGraphStyleFactory } from "./utils/graph-styles";
+import { barGraphStyleFactory, crossGraphStyleFactory, lineGraphStyleFactory } from "./utils/graph-styles";
 import { weightedColorMixerFactory } from "./utils/weighted-color-mix";
 import { GradientStop } from "./class/gradient-stop.class";
-import { dataPointToAccuracy, mapAccuracyRating } from "./utils/mappers";
+import { dataPointToAccuracy, dataPointToMisses, mapAccuracyRating } from "./utils/mappers";
 import { EnergyIcon } from "./EnergyIcon";
 
 const accuracyGradient: GradientStop[] = [
@@ -24,8 +24,15 @@ const energyGradient: GradientStop[] = [
     new GradientStop('#ff0000', 0),
     new GradientStop('#ffff00', 25),
     new GradientStop('#ffffff', 50),
-    new GradientStop('#ffffff', 100),
+    new GradientStop('#ffffff', 85),
+    new GradientStop('#00ffff', 100),
 ];
+
+/**
+ * Used to perform super sampling (rendering the canvas at a larger side but displaying it scaled down)
+ */
+const graphScale = 2;
+const graphHeight = 50;
 
 export interface AdditionalDataDisplayProps {
     modifiers?: Modifiers;
@@ -86,23 +93,33 @@ export const AdditionalDataDisplay: FC<AdditionalDataDisplayProps> = ({
             // This is the first score update for the current map, assume we must clear the data points
             resetLocalState();
         }
-        const dataPoint: DataPoint = {
-            seconds: liveData.seconds,
-            accuracy: liveData.accuracy,
-            energy: liveData.energy
-        };
+        const dataPoint: DataPoint = liveData;
         if (startFromSeconds.current === null) {
             startFromSeconds.current = dataPoint.seconds;
         }
         dataPoints.current.push(dataPoint);
         if (graphCanvas.current && songLength) {
             drawGraphs(
-                graphCanvas.current,
-                dataPoints.current,
-                songLength,
-                startFromSeconds.current,
-                barGraphStyleFactory(accuracyColorMixer, dataPointToAccuracy, .5),
-                lineGraphStyleFactory(energyGradient, 2, .8),
+                {
+                    canvas: graphCanvas.current,
+                    graphScale,
+                    dataPoints: dataPoints.current,
+                    songLengthSeconds: songLength,
+                    startFromSeconds: startFromSeconds.current,
+                    accuracyStyle: barGraphStyleFactory(accuracyColorMixer, dataPointToAccuracy, .5),
+                    energyStyle: lineGraphStyleFactory(energyGradient, 2, .8),
+                    missStyle: crossGraphStyleFactory({
+                        getValue: dataPointToMisses,
+                        color: '#ff0000',
+                        alpha: 1,
+                        border: {
+                            color: '#ffffff',
+                            alpha: 1,
+                        },
+                        lineWidth: 1,
+                        size: 5
+                    })
+                },
             );
         }
     }, [accuracyColorMixer, liveData, nf, resetLocalState, songLength]);
@@ -115,12 +132,14 @@ export const AdditionalDataDisplay: FC<AdditionalDataDisplayProps> = ({
     }, [reset, resetLocalState]);
 
     // Change graph width based on song length, between a sane minimum and maximum value
-    const graphLength = useMemo(() => songLength ? Math.max(100, Math.min(400, songLength * 2)) : 0, [songLength]);
+    const graphWidth = useMemo(() => songLength ? Math.max(100, Math.min(400, songLength * 2)) : 0, [songLength]);
+    const graphStyle = useMemo(() => ({ width: `${graphWidth}px`, height: `${graphHeight}px` }), [graphWidth]);
 
     return <>
-        {graphLength > 0 && (
+        {graphWidth > 0 && (
             <div>
                 <div id="accuracy-label">
+                    {!!liveData?.misses && <span>{liveData.misses} Miss{liveData.misses !== 1 && 'es'}</span>}
                     <span><span className="fixed-width accuracy-percent">{accuracy}</span> Accuracy</span>
                     <span style={accuracyStyle} className="fixed-width accuracy-rating">{accuracyRating}</span>
                     {energy && (
@@ -131,7 +150,12 @@ export const AdditionalDataDisplay: FC<AdditionalDataDisplayProps> = ({
                     )}
                 </div>
                 <div id="accuracy-graph-wrapper">
-                    <canvas width={graphLength} height={40} ref={graphCanvas} />
+                    <canvas
+                        style={graphStyle}
+                        width={graphWidth * graphScale}
+                        height={graphHeight * graphScale}
+                        ref={graphCanvas}
+                    />
                 </div>
             </div>
         )}

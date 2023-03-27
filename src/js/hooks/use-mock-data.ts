@@ -3,7 +3,6 @@ import { useEffect, useRef, useState } from "react";
 import { ReadyState } from "react-use-websocket";
 import { getRandomBool, getRandomInt } from "../utils/random";
 import { defaultDataPoint, SCORE_UPDATE_MAX_GRANULARITY } from "../utils/draw-graphs";
-import { timeToMockCosCycleValue, timeToMockCosRevolvingValue } from "../utils/mappers";
 
 interface MockDataEmitterStep {
     /**
@@ -48,12 +47,16 @@ export const useMockData = (enabled: boolean): DataDisplayProps => {
             let mockSongDuration: number;
             let startedPlayingTs: number;
             let songSpeedMultiplier: number;
+            let missCount: number;
+            let accuracyValue: number;
+            let energyValue: number;
+            let missNextNotes: number;
             const steps: MockDataEmitterStep[] = [
                 { debug: 'Connecting', timeout: () => [0, () => setReadyState(ReadyState.CONNECTING)] },
                 { debug: 'Connected', timeout: () => [getRandomInt(1e3, 2e3), () => setReadyState(ReadyState.OPEN)] },
                 {
                     debug: 'Loading level', timeout: () => [getRandomInt(1e3, 2e3), () => {
-                        mockSongDuration = getRandomInt(30, 300);
+                        mockSongDuration = getRandomInt(60, 300);
                         const zenMode = getRandomBool();
                         const lives = zenMode ? Infinity : getRandomInt(0, 2);
                         const noFail = lives === 0;
@@ -94,12 +97,12 @@ export const useMockData = (enabled: boolean): DataDisplayProps => {
                                 superFastSong,
                             }
                         });
-                        setLiveData({
-                            seconds: 0,
-                            accuracy: defaultDataPoint.accuracy,
-                            energy: defaultDataPoint.energy
-                        });
+                        setLiveData(defaultDataPoint);
                         startedPlayingTs = Date.now();
+                        missNextNotes = 0;
+                        missCount = defaultDataPoint.misses;
+                        accuracyValue = defaultDataPoint.accuracy;
+                        energyValue = defaultDataPoint.energy;
                         console.debug(`Song Speed: ${songSpeedMultiplier}x`);
                         console.debug(`Song Length: ${mockSongDuration}s`);
                         console.debug(`Realtime Length: ${mockSongDuration / songSpeedMultiplier}s`);
@@ -110,10 +113,28 @@ export const useMockData = (enabled: boolean): DataDisplayProps => {
                     timeout: () => (mockSongDuration * 1e3) / songSpeedMultiplier,
                     interval: () => [() => {
                         const timeElapsed = (Date.now() - startedPlayingTs) / 1e3;
-                        const accuracy = timeToMockCosCycleValue(timeElapsed, mockSongDuration / songSpeedMultiplier, 0, 100);
-                        const energy = timeToMockCosRevolvingValue(timeElapsed, mockSongDuration / songSpeedMultiplier, 0, 100);
-                        setLiveData({ seconds: timeElapsed * songSpeedMultiplier, accuracy, energy });
-                    }, SCORE_UPDATE_MAX_GRANULARITY]
+                        const noteEncounter = getRandomBool(.66);
+                        const skillIssue = missNextNotes > 0;
+                        if (noteEncounter) {
+                            // Simulated 85% accuracy
+                            const isMiss = skillIssue || (accuracyValue > 85 && energyValue > 20 && getRandomBool(.85));
+                            if (skillIssue) missNextNotes--;
+                            if (isMiss) missCount++;
+                            console.info(isMiss ? 'Note missed' : 'Note hit');
+                            accuracyValue = Math.max(0, Math.min(100, isMiss ? accuracyValue * .9 : accuracyValue + ((Math.random() - 0.33)) * 5));
+                            energyValue = Math.max(0, Math.min(100, isMiss ? energyValue - 10 : energyValue + 1));
+                        }
+                        if (!skillIssue && energyValue > 50 && getRandomBool(.99)) {
+                            missNextNotes = getRandomInt(1, 5);
+                            console.info(`Uh-oh, skill issue! The next ${missNextNotes} note${missNextNotes !== 1 ? 's' : ''} will be missed`);
+                        }
+                        setLiveData({
+                            seconds: timeElapsed * songSpeedMultiplier,
+                            accuracy: accuracyValue,
+                            energy: energyValue,
+                            misses: missCount
+                        });
+                    }, (SCORE_UPDATE_MAX_GRANULARITY * 1e3) / songSpeedMultiplier]
                 },
                 {
                     debug: 'Level finished',
@@ -121,7 +142,7 @@ export const useMockData = (enabled: boolean): DataDisplayProps => {
                 },
                 {
                     debug: 'Random disconnect',
-                    timeout: () => getRandomInt(5e3, 15e3),
+                    timeout: () => getRandomInt(0, 15e3),
                     interval: () => [() => setReadyState(Date.now() % 10e3 < 5 ? ReadyState.CONNECTING : ReadyState.CLOSED), 5e3],
                 },
                 {

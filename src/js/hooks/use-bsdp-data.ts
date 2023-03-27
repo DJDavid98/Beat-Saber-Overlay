@@ -43,10 +43,11 @@ export const useBsdpData = (enabled: boolean): DataDisplayProps => {
     } : undefined, [bsdpMapData]);
     const { message: bsdpLiveData } = useFailsafeWebsocket(enabled ? `${bsdpDataSource}/LiveData` : null, validateBsdpLiveData);
 
-    const liveData = useMemo(() => bsdpLiveData ? {
+    const liveData: DataDisplayProps['liveData'] = useMemo(() => bsdpLiveData ? {
         accuracy: bsdpLiveData.Accuracy,
-        timeElapsed: bsdpLiveData.TimeElapsed,
+        seconds: bsdpLiveData.TimeElapsed,
         energy: bsdpLiveData.PlayerHealth,
+        misses: bsdpLiveData.Misses,
     } : undefined, [bsdpLiveData]);
 
     return { mapData, liveData, readyState };

@@ -1,6 +1,8 @@
 import { sortAscending } from "../utils/sort-ascending";
 import { getGradientStopWeights, hexToRgb, RGBArray, rgbToHex } from "../utils/colors";
 
+export type HexColorString = `#${string}`;
+
 export class GradientStop {
     public readonly value: number;
 
@@ -8,8 +10,8 @@ export class GradientStop {
      * @param hex HEX string or numeric value
      * @param position 0-100
      */
-    constructor(hex: string | number, public readonly position: number) {
-        this.value = typeof hex === 'string' ? parseInt(hex.replace(/[^a-f\d]/g, ''), 16) : hex;
+    constructor(hex: HexColorString | number, public readonly position: number) {
+        this.value = typeof hex === 'number' ? hex : parseInt(hex.replace(/[^a-f\d]/g, ''), 16);
     }
 
     toString(alpha?: number) {
