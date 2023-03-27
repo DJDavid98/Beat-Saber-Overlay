@@ -23,4 +23,14 @@ describe('weightedColorMix', () => {
         expect(mixer(1)).toEqual('#808000');
         expect(mixer(3)).toEqual('#008080');
     });
+
+    it('should return earlier stop when smoothing is disabled', () => {
+        const mixer = weightedColorMixerFactory([
+            new GradientStop('#ff0000', 0),
+            new GradientStop('#00ff00', 2),
+            new GradientStop('#0000ff', 4)
+        ], false);
+        expect(mixer(1)).toEqual('#ff0000');
+        expect(mixer(3)).toEqual('#00ff00');
+    });
 });

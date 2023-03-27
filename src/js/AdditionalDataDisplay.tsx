@@ -44,7 +44,7 @@ export const AdditionalDataDisplay: FC<AdditionalDataDisplayProps> = ({
         minimumFractionDigits: 0,
         maximumFractionDigits: 2
     }), []);
-    const colorMixer = useMemo(() => weightedColorMixerFactory(accuracyGradient), []);
+    const colorMixer = useMemo(() => weightedColorMixerFactory(accuracyGradient, false), []);
     const [accuracyRating, accuracyStyle] = useMemo(() => {
         const accuracyValue = liveData?.accuracy ?? 0;
         return [
