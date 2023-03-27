@@ -19,11 +19,15 @@ export interface AppProps {
 
 export const App: FunctionComponent<AppProps> = ({ dataSourceName }) => {
     const enabledSources: Record<DataSource, boolean> = useMemo(() => {
-        const bsdpEnabled = dataSourceName === DataSource.BSDP;
+        let bsdpEnabled = dataSourceName === DataSource.BSDP;
         const mockEnabled = dataSourceName === DataSource.MOCK;
+        const bsPlusEnabled = dataSourceName === DataSource.BS_PLUS;
+        if (!dataSourceName) {
+            bsdpEnabled = true;
+        }
         return ({
             [DataSource.BSDP]: bsdpEnabled,
-            [DataSource.BS_PLUS]: !bsdpEnabled && !mockEnabled,
+            [DataSource.BS_PLUS]: bsPlusEnabled,
             [DataSource.MOCK]: mockEnabled,
         });
     }, [dataSourceName]);

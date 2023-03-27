@@ -5,8 +5,12 @@ and [BeatSaberPlus](https://github.com/hardcpp/BeatSaberPlus) mods for my person
 
 ## Features
 
-The overlay works with either of the two mods, but in order to use BSDataPuller (which now appears to be unmaintained)
-as the data source add `?source=BSDP` to the URL. BeatSaberPlus (`?source=BSPlus`) is used as the default source.
+The overlay works with either of the two mods. In order to use a specific one as the data source, add `?source=`
+followed by a data source's code to the URL. Available codes:
+
+* `BSDP` - BSDataPuller (default, supports all features)
+* `BSPlus` - BeatSaberPlus (unreliable BSR IDs, no ranked stars)
+* `MOCK` - Virtual source which uses pre-defined events (for testing).
 
 While playing, the current song will appear in the top-right corner along with some supplemental information like
 difficulty, length, ranked stars and PP. Additionally, an accuracy graph and the currently selected modifiers are
