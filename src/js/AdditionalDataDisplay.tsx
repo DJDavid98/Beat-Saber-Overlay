@@ -1,12 +1,13 @@
-import { FC, useEffect, useMemo, useRef, useState } from "react";
-import { DataPoint, drawAccuracyGraph } from "./utils/draw-accuracy-graph";
+import { FC, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { DataPoint, drawGraphs } from "./utils/draw-graphs";
 import { AdditionalDataModifiers } from "./AdditionalDataModifiers";
 import { Modifiers } from "./model/modifiers";
 import { LiveData } from "./model/live-data";
-import { accuracyColorGraphStyleFactory } from "./utils/graph-styles";
+import { barGraphStyleFactory, lineGraphStyleFactory } from "./utils/graph-styles";
 import { weightedColorMixerFactory } from "./utils/weighted-color-mix";
 import { GradientStop } from "./class/gradient-stop.class";
-import { mapAccuracyRating } from "./utils/mappers";
+import { dataPointToAccuracy, mapAccuracyRating } from "./utils/mappers";
+import { EnergyIcon } from "./EnergyIcon";
 
 const accuracyGradient: GradientStop[] = [
     new GradientStop('#ff0000', 0),
@@ -17,6 +18,13 @@ const accuracyGradient: GradientStop[] = [
     new GradientStop('#ffffff', 80),
     new GradientStop('#00ffff', 90),
     new GradientStop('#00ffff', 100),
+];
+
+const energyGradient: GradientStop[] = [
+    new GradientStop('#ff0000', 0),
+    new GradientStop('#ffff00', 25),
+    new GradientStop('#ffffff', 50),
+    new GradientStop('#ffffff', 100),
 ];
 
 export interface AdditionalDataDisplayProps {
@@ -38,70 +46,92 @@ export const AdditionalDataDisplay: FC<AdditionalDataDisplayProps> = ({
     const dataPoints = useRef<DataPoint[] | null>();
     const startFromSeconds = useRef<number | null>(null);
     const [accuracy, setAccuracy] = useState<string | undefined>();
-    const accCanvas = useRef<HTMLCanvasElement | null>(null);
+    const [energy, setEnergy] = useState<number | undefined>();
+    const graphCanvas = useRef<HTMLCanvasElement | null>(null);
     const nf = useMemo(() => new Intl.NumberFormat('en-US', {
         style: 'percent',
         minimumFractionDigits: 0,
         maximumFractionDigits: 2
     }), []);
-    const colorMixer = useMemo(() => weightedColorMixerFactory(accuracyGradient, false), []);
+    const accuracyColorMixer = useMemo(() => weightedColorMixerFactory(accuracyGradient, false), []);
+    const energyColorMixer = useMemo(() => weightedColorMixerFactory(energyGradient), []);
     const [accuracyRating, accuracyStyle] = useMemo(() => {
         const accuracyValue = liveData?.accuracy ?? 0;
         return [
             mapAccuracyRating(accuracyValue),
-            { color: colorMixer(accuracyValue) }
+            { color: accuracyColorMixer(accuracyValue).toString() }
         ];
-    }, [colorMixer, liveData?.accuracy]);
+    }, [accuracyColorMixer, liveData?.accuracy]);
+    const energyStyle = useMemo(() => {
+        const energyValue = liveData?.energy ?? 0;
+        return { color: energyColorMixer(energyValue).toString() };
+    }, [energyColorMixer, liveData?.energy]);
+    const resetLocalState = useCallback(() => {
+        dataPoints.current = [];
+        startFromSeconds.current = null;
+        setAccuracy(undefined);
+        setEnergy(undefined);
+    }, []);
 
     useEffect(() => {
         if (!liveData) {
             return;
         }
         setAccuracy(nf.format(liveData.accuracy / 100));
+        setEnergy(liveData.energy);
 
         if (!dataPoints.current) {
             return;
-        } else if (liveData.timeElapsed === 0) {
+        } else if (liveData.seconds === 0) {
             // This is the first score update for the current map, assume we must clear the data points
-            dataPoints.current = [];
-            startFromSeconds.current = null;
+            resetLocalState();
         }
-        const dataPoint: DataPoint = { seconds: liveData.timeElapsed, accuracy: liveData.accuracy };
+        const dataPoint: DataPoint = {
+            seconds: liveData.seconds,
+            accuracy: liveData.accuracy,
+            energy: liveData.energy
+        };
         if (startFromSeconds.current === null) {
             startFromSeconds.current = dataPoint.seconds;
         }
         dataPoints.current.push(dataPoint);
-        if (accCanvas.current && songLength) {
-            drawAccuracyGraph(
-                accCanvas.current,
+        if (graphCanvas.current && songLength) {
+            drawGraphs(
+                graphCanvas.current,
                 dataPoints.current,
                 songLength,
                 startFromSeconds.current,
-                accuracyColorGraphStyleFactory(colorMixer)
+                barGraphStyleFactory(accuracyColorMixer, dataPointToAccuracy, .5),
+                lineGraphStyleFactory(energyGradient, 2, .8),
             );
         }
-    }, [colorMixer, liveData, nf, songLength]);
+    }, [accuracyColorMixer, liveData, nf, resetLocalState, songLength]);
 
     useEffect(() => {
         if (!reset) return;
 
         // Clear data points on song change
-        dataPoints.current = [];
-        startFromSeconds.current = null;
-    }, [reset]);
+        resetLocalState();
+    }, [reset, resetLocalState]);
 
-    // Change accuracy graph width based on song length, between a sane minimum and maximum value
-    const accuracyGraphLength = useMemo(() => songLength ? Math.max(60, Math.min(400, songLength * 2)) : 0, [songLength]);
+    // Change graph width based on song length, between a sane minimum and maximum value
+    const graphLength = useMemo(() => songLength ? Math.max(100, Math.min(400, songLength * 2)) : 0, [songLength]);
 
     return <>
-        {accuracyGraphLength > 0 && (
+        {graphLength > 0 && (
             <div>
                 <div id="accuracy-label">
-                    <span>{accuracy} Accuracy</span>
-                    <span style={accuracyStyle}>{accuracyRating}</span>
+                    <span><span className="fixed-width accuracy-percent">{accuracy}</span> Accuracy</span>
+                    <span style={accuracyStyle} className="fixed-width accuracy-rating">{accuracyRating}</span>
+                    {energy && (
+                        <span className="energy" style={energyStyle}>
+                            <span className="fixed-width energy-amount">{energy.toFixed(0)}</span>
+                            <EnergyIcon />
+                        </span>
+                    )}
                 </div>
                 <div id="accuracy-graph-wrapper">
-                    <canvas width={accuracyGraphLength} height={40} ref={accCanvas} />
+                    <canvas width={graphLength} height={40} ref={graphCanvas} />
                 </div>
             </div>
         )}

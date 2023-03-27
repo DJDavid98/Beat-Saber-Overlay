@@ -20,7 +20,7 @@ import { validateBsPlusMapInfoEvent } from "../validators/validate-bs-plus-map-i
 import { validateBsPlusScoreEvent } from "../validators/validate-bs-plus-score-event";
 import { validateBsPlusPauseEvent } from "../validators/validate-bs-plus-pause-event";
 import { validateBsPlusResumeEvent } from "../validators/validate-bs-plus-resume-event";
-import { SCORE_UPDATE_MAX_GRANULARITY } from "../utils/draw-accuracy-graph";
+import { SCORE_UPDATE_MAX_GRANULARITY } from "../utils/draw-graphs";
 
 const tickUpdateFrequency = 1e3 * SCORE_UPDATE_MAX_GRANULARITY;
 
@@ -168,7 +168,8 @@ export const useBsPlusData = (enabled: boolean): DataDisplayProps => {
 
     const liveData: DataDisplayProps['liveData'] = useMemo(() => score ? {
         accuracy: score.accuracy * 100,
-        timeElapsed: score.visualTime,
+        seconds: score.visualTime,
+        energy: score.currentHealth,
     } : undefined, [score]);
 
     return { mapData, liveData, readyState: webSocket.readyState };

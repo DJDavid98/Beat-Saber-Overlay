@@ -8,7 +8,7 @@ import { gradientStopPositionMapper } from "./mappers";
  *
  * @param value Ranges from 0-100 (integer).
  */
-export type WeightedColorMixer = (value: number) => string;
+export type WeightedColorMixer = (value: number) => GradientStop;
 
 /**
  * Takes a set of gradient stops and returns a weighted color mixer function
@@ -18,7 +18,6 @@ export const weightedColorMixerFactory = (gradient: GradientStop[], smooth = tru
 
     return (value) => {
         const stop = findClosestValues(sortedGradient, value, gradientStopPositionMapper);
-        const valueStop = stop.length === 1 ? stop[0] : GradientStop.mix(stop, value, smooth);
-        return valueStop.toString();
+        return stop.length === 1 ? stop[0] : GradientStop.mix(stop, value, smooth);
     };
 };

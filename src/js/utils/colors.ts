@@ -1,10 +1,16 @@
-export type RGBArray = [number, number, number];
+import { GradientStop } from "../class/gradient-stop.class";
 
-export const hexToRgb = (hex: number): RGBArray => {
+export type RGBArray = [number, number, number];
+export type RGBAlphaArray = [number, number, number, number];
+
+export function hexToRgb(hex: number, alpha?: undefined): RGBArray
+export function hexToRgb(hex: number, alpha: number): RGBAlphaArray
+export function hexToRgb(hex: number, alpha?: number): RGBArray | RGBAlphaArray {
     const r = (hex >> 16) & 255;
     const g = (hex >> 8) & 255;
     const b = hex & 255;
 
+    if (alpha) return [r, g, b, alpha];
     return [r, g, b];
 }
 
@@ -31,4 +37,17 @@ export const getGradientStopWeights = (
     const earlierStopWeight = 1 - laterStopWeight;
 
     return [earlierStopWeight, laterStopWeight];
+}
+
+export const getCanvasLinearGradient = (
+    ctx: CanvasRenderingContext2D,
+    stops: GradientStop[],
+    alpha?: number
+): CanvasGradient => {
+    const gradient = ctx.createLinearGradient(0, 0, 0, ctx.canvas.height);
+    stops.forEach(stop => {
+        gradient.addColorStop(1 - (stop.position / 100), stop.toString(alpha))
+    })
+
+    return gradient;
 }

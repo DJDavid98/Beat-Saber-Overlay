@@ -6,6 +6,13 @@ describe('hexToRgb', () => {
         expect(hexToRgb(0x808080)).toEqual([128, 128, 128]);
         expect(hexToRgb(0xffffff)).toEqual([255, 255, 255]);
     })
+
+    it('should add alpha value t output if provided', () => {
+        const alpha = Math.random();
+        expect(hexToRgb(0, alpha)).toEqual([0, 0, 0, alpha]);
+        expect(hexToRgb(0x808080, alpha)).toEqual([128, 128, 128, alpha]);
+        expect(hexToRgb(0xffffff, alpha)).toEqual([255, 255, 255, alpha]);
+    })
 });
 
 describe('rgbToHex', () => {

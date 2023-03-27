@@ -1,12 +1,16 @@
 import { GradientStop } from "../class/gradient-stop.class";
 import { findClosestValues } from "./find-closest-values";
+import { DataPoint } from "./draw-graphs";
 
 export const identityMapper = <T>(value: T): T => value;
 
 export const gradientStopPositionMapper = (input: GradientStop): number => input.position;
 
-export const timeToMockAccuracy = (t: number, tMax: number, min: number, max: number): number =>
+export const timeToMockCosCycleValue = (t: number, tMax: number, min: number, max: number): number =>
     min + (max - min) * (0.5 + (Math.cos(Math.PI * (t / tMax) * 2) / 2));
+
+export const timeToMockCosRevolvingValue = (t: number, tMax: number, min: number, max: number): number =>
+    min + (max - min) * (0.5 + (Math.cos(t * .25) / 2));
 
 export const mapDifficulty = (difficulty?: string) => difficulty === 'ExpertPlus' ? 'Expert+' : difficulty;
 
@@ -39,3 +43,7 @@ const accuracyValues: Array<[number, AccuracyRating]> = [
 
 export const mapAccuracyRating = (value: number): AccuracyRating =>
     findClosestValues(accuracyValues, value, (accuracyValue) => accuracyValue[0])[0][1];
+
+export const dataPointToAccuracy = (dataPoint: DataPoint) => dataPoint.accuracy;
+
+export const dataPointToEnergy = (dataPoint: DataPoint) => dataPoint.energy;

@@ -1,7 +1,13 @@
-export interface DataPoint {
-    seconds: number;
-    accuracy: number;
-}
+import { dataPointToAccuracy, dataPointToEnergy } from "./mappers";
+import { LiveData } from "../model/live-data";
+
+export type DataPoint = Pick<LiveData, 'seconds' | 'accuracy' | 'energy'>;
+
+export const defaultDataPoint: DataPoint = {
+    seconds: 0,
+    accuracy: 100,
+    energy: 100,
+};
 
 interface Bounds {
     width: number;
@@ -13,26 +19,23 @@ interface Bounds {
  */
 export const SCORE_UPDATE_MAX_GRANULARITY = .2;
 
+/**
+ * @return 0-100
+ */
+export type ValueGetter = (dataPoint: DataPoint) => number;
+
 const getPointPosition = (
     canvas: Bounds,
     songLengthSeconds: number,
-    startSeconds: number,
-    dataPoint: DataPoint
+    dataPoint: DataPoint,
+    getValue?: ValueGetter
 ): [number, number] => {
     const songProgressFloat = dataPoint.seconds / songLengthSeconds;
     const x: number = canvas.width * songProgressFloat;
-    const accuracyFloat = dataPoint.accuracy / 100;
-    const y: number = canvas.height * (1 - accuracyFloat);
+    const valueFloat = getValue ? getValue(dataPoint) / 100 : 100;
+    const y: number = canvas.height * (1 - valueFloat);
     return [x, y];
 }
-
-export const drawStroke = (ctx: CanvasRenderingContext2D, startX: number, startY: number, endX: number,
-    endY: number): void => {
-    ctx.beginPath();
-    ctx.moveTo(startX, startY);
-    ctx.lineTo(endX, endY);
-    ctx.stroke();
-};
 
 export const drawRect = (ctx: CanvasRenderingContext2D, lastX: number, canvasBottomY: number, positionX: number,
     positionY: number): void => {
@@ -40,7 +43,7 @@ export const drawRect = (ctx: CanvasRenderingContext2D, lastX: number, canvasBot
     ctx.fillRect(...coords);
 };
 
-export type PositionGetter = (dataPont: DataPoint) => [number, number];
+export type PositionGetter = (dataPoint: DataPoint) => [number, number];
 
 export type GraphStyle = (
     ctx: CanvasRenderingContext2D,
@@ -50,12 +53,13 @@ export type GraphStyle = (
     getPosition: PositionGetter
 ) => void;
 
-export const drawAccuracyGraph = (
+export const drawGraphs = (
     canvas: HTMLCanvasElement,
     dataPoints: DataPoint[],
     songLengthSeconds: number,
     startFromSeconds: number,
-    style: GraphStyle
+    accuracyStyle: GraphStyle,
+    energyStyle: GraphStyle
 ) => {
     const ctx = canvas.getContext('2d');
     if (!ctx) {
@@ -65,9 +69,9 @@ export const drawAccuracyGraph = (
     const { width: canvasRightX, height: canvasBottomY } = canvas;
     ctx.clearRect(0, 0, canvasRightX, canvasBottomY);
 
-    const initialPosition = getPointPosition(canvas, songLengthSeconds, 0, {
+    const initialPosition = getPointPosition(canvas, songLengthSeconds, {
+        ...defaultDataPoint,
         seconds: startFromSeconds,
-        accuracy: 0
     });
 
     const initialPositionX = initialPosition[0];
@@ -77,11 +81,19 @@ export const drawAccuracyGraph = (
         ctx.fillRect(0, 0, initialPositionX, canvasBottomY);
     }
 
-    style(
+    accuracyStyle(
         ctx,
         initialPosition,
         canvasBottomY,
         dataPoints,
-        dataPoint => getPointPosition(canvas, songLengthSeconds, startFromSeconds, dataPoint)
+        dataPoint => getPointPosition(canvas, songLengthSeconds, dataPoint, dataPointToAccuracy)
+    );
+
+    energyStyle(
+        ctx,
+        initialPosition,
+        canvasBottomY,
+        dataPoints,
+        dataPoint => getPointPosition(canvas, songLengthSeconds, dataPoint, dataPointToEnergy)
     );
 };

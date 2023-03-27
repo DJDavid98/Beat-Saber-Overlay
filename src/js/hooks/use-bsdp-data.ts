@@ -46,6 +46,7 @@ export const useBsdpData = (enabled: boolean): DataDisplayProps => {
     const liveData = useMemo(() => bsdpLiveData ? {
         accuracy: bsdpLiveData.Accuracy,
         timeElapsed: bsdpLiveData.TimeElapsed,
+        energy: bsdpLiveData.PlayerHealth,
     } : undefined, [bsdpLiveData]);
 
     return { mapData, liveData, readyState };

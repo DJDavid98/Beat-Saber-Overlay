@@ -93,8 +93,35 @@
     }
   }
 
+  // Minimum widths are used to prevent the UI from
+  // jumping around too much as numbers change rapidly
   #accuracy-label {
-    @include dots-between-children;
+    > :not(:last-child) {
+      margin-right: .75rem;
+    }
+
+    .fixed-width {
+      display: inline-block;
+      text-align: center;
+    }
+
+    .accuracy-percent {
+      min-width: 6.5rem;
+    }
+
+    .accuracy-rating {
+      min-width: 4.1rem;
+    }
+
+    .energy-amount {
+      min-width: 2.5rem;
+    }
+
+    .energy svg {
+      margin-left: .5rem;
+      height: .7em;
+      display: inline-block;
+    }
   }
 
   #accuracy-label, #modifiers-label {

@@ -12,7 +12,11 @@ export class GradientStop {
         this.value = typeof hex === 'string' ? parseInt(hex.replace(/[^a-f\d]/g, ''), 16) : hex;
     }
 
-    toString() {
+    toString(alpha?: number) {
+        if (alpha) {
+            return `rgba(${hexToRgb(this.value, alpha).join(',')})`;
+        }
+
         const colorString = '00000' + (this.value.toString(16));
         const start = colorString.length - 6;
         return '#' + (colorString).substring(start, colorString.length);

@@ -1,4 +1,5 @@
 export interface LiveData {
     accuracy: number;
-    timeElapsed: number;
+    seconds: number;
+    energy: number;
 }

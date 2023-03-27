@@ -2,8 +2,8 @@ import { DataDisplayProps } from "../DataDisplay";
 import { useEffect, useRef, useState } from "react";
 import { ReadyState } from "react-use-websocket";
 import { getRandomBool, getRandomInt } from "../utils/random";
-import { SCORE_UPDATE_MAX_GRANULARITY } from "../utils/draw-accuracy-graph";
-import { timeToMockAccuracy } from "../utils/mappers";
+import { defaultDataPoint, SCORE_UPDATE_MAX_GRANULARITY } from "../utils/draw-graphs";
+import { timeToMockCosCycleValue, timeToMockCosRevolvingValue } from "../utils/mappers";
 
 interface MockDataEmitterStep {
     /**
@@ -52,7 +52,7 @@ export const useMockData = (enabled: boolean): DataDisplayProps => {
                 { debug: 'Connecting', timeout: () => [0, () => setReadyState(ReadyState.CONNECTING)] },
                 { debug: 'Connected', timeout: () => [getRandomInt(1e3, 2e3), () => setReadyState(ReadyState.OPEN)] },
                 {
-                    debug: 'Loading level', timeout: () => [getRandomInt(2e3, 3e3), () => {
+                    debug: 'Loading level', timeout: () => [getRandomInt(1e3, 2e3), () => {
                         mockSongDuration = getRandomInt(30, 300);
                         const zenMode = getRandomBool();
                         const lives = zenMode ? Infinity : getRandomInt(0, 2);
@@ -94,7 +94,11 @@ export const useMockData = (enabled: boolean): DataDisplayProps => {
                                 superFastSong,
                             }
                         });
-                        setLiveData({ timeElapsed: 0, accuracy: 100 });
+                        setLiveData({
+                            seconds: 0,
+                            accuracy: defaultDataPoint.accuracy,
+                            energy: defaultDataPoint.energy
+                        });
                         startedPlayingTs = Date.now();
                         console.debug(`Song Speed: ${songSpeedMultiplier}x`);
                         console.debug(`Song Length: ${mockSongDuration}s`);
@@ -106,8 +110,9 @@ export const useMockData = (enabled: boolean): DataDisplayProps => {
                     timeout: () => (mockSongDuration * 1e3) / songSpeedMultiplier,
                     interval: () => [() => {
                         const timeElapsed = (Date.now() - startedPlayingTs) / 1e3;
-                        const accuracy = timeToMockAccuracy(timeElapsed, mockSongDuration / songSpeedMultiplier, 0, 100);
-                        setLiveData({ timeElapsed: timeElapsed * songSpeedMultiplier, accuracy });
+                        const accuracy = timeToMockCosCycleValue(timeElapsed, mockSongDuration / songSpeedMultiplier, 0, 100);
+                        const energy = timeToMockCosRevolvingValue(timeElapsed, mockSongDuration / songSpeedMultiplier, 0, 100);
+                        setLiveData({ seconds: timeElapsed * songSpeedMultiplier, accuracy, energy });
                     }, SCORE_UPDATE_MAX_GRANULARITY]
                 },
                 {
@@ -116,12 +121,12 @@ export const useMockData = (enabled: boolean): DataDisplayProps => {
                 },
                 {
                     debug: 'Random disconnect',
-                    timeout: () => getRandomInt(10e3, 15e3),
+                    timeout: () => getRandomInt(5e3, 15e3),
                     interval: () => [() => setReadyState(Date.now() % 10e3 < 5 ? ReadyState.CONNECTING : ReadyState.CLOSED), 5e3],
                 },
                 {
-                    debug: 'Reconnect',
-                    timeout: () => [getRandomInt(1e3, 2e3), restartMockSteps]
+                    debug: 'Restart simulation',
+                    timeout: () => [0, restartMockSteps]
                 },
             ];
 
