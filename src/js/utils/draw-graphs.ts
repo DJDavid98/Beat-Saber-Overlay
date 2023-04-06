@@ -6,7 +6,7 @@ export type DataPoint = Pick<LiveData, 'seconds' | 'accuracy' | 'energy' | 'miss
 export const defaultDataPoint: DataPoint = {
     seconds: 0,
     accuracy: 100,
-    energy: 100,
+    energy: 50,
     misses: 0,
 };
 

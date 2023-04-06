@@ -32,7 +32,7 @@ const energyGradient: GradientStop[] = [
  * Used to perform super sampling (rendering the canvas at a larger side but displaying it scaled down)
  */
 const graphScale = 2;
-const graphHeight = 50;
+const graphHeight = 80;
 
 export interface AdditionalDataDisplayProps {
     modifiers?: Modifiers;
@@ -132,8 +132,11 @@ export const AdditionalDataDisplay: FC<AdditionalDataDisplayProps> = ({
     }, [reset, resetLocalState]);
 
     // Change graph width based on song length, between a sane minimum and maximum value
-    const graphWidth = useMemo(() => songLength ? Math.max(100, Math.min(400, songLength * 2)) : 0, [songLength]);
-    const graphStyle = useMemo(() => ({ width: `${graphWidth}px`, height: `${graphHeight}px` }), [graphWidth]);
+    const graphWidth = useMemo(() => songLength ? Math.max(200, Math.min(600, songLength * 2)) : 0, [songLength]);
+    const graphStyle = useMemo(() => ({
+        width: `${graphWidth}px`,
+        height: `${graphHeight}px`
+    }), [graphWidth]);
 
     return <>
         {graphWidth > 0 && (
