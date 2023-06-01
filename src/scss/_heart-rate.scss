@@ -23,7 +23,7 @@ $connect-icon-size: 3rem;
 
   &:hover {
     .device-name.connected {
-      opacity: 1;
+      opacity: 1 !important;
     }
   }
 
@@ -76,6 +76,10 @@ $connect-icon-size: 3rem;
 
 .pulsoid-bg {
   background-image: url("./img/pulsoid.svg");
+}
+
+.websocket-bg {
+  background-image: url("./img/websocket.svg");
 }
 
 #heart-rate .connections {
@@ -151,6 +155,10 @@ $connect-icon-size: 3rem;
 
 #pulsoid-loading {
   @include loading-element($connect-icon-size, #10a3b0);
+}
+
+#websocket-loading {
+  @include loading-element($connect-icon-size, #fff);
 }
 
 #bouncy-video, #bouncy-video-blep {

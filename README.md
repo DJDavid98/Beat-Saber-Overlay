@@ -31,10 +31,12 @@ are:
     * The device selection is lost when the page is reloaded, and it must be selected again
 * Pulsoid API using websockets (requires a paid subscription)
     * After the API key is entered in the dialog it will be preserved across page loads until manually cleared
+* Any arbitrary Websocket source
+    * You can provide a host URL and optionally path to the JSON object data
+    * Without a path the socket data is treated as plaintext numbers
 
 ## Future plans
 
-* include an option to read heart rate data from any arbitrary websocket source
 * allow changing the "bouncy" image via URL parameters
 
 ## Attributions

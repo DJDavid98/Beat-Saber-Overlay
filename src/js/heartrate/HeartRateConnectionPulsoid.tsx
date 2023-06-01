@@ -43,7 +43,8 @@ export const HeartRateConnectionPulsoid: FC<{ pulsoidHeartRate: PulsoidHeartRate
 
         <dialog ref={dialogRef}>
             <form onSubmit={updateToken}>
-                <h1>Enter Pulsoid API key</h1>
+                <h1>Pulsoid Heart Rate Connection</h1>
+                <h2>Pulsoid API Key</h2>
                 <p>Generate a token on <a
                     href="https://pulsoid.net/ui/keys"
                     rel="noreferrer noopener"

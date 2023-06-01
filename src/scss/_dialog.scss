@@ -17,7 +17,7 @@ dialog {
   font-size: 2rem;
   cursor: initial;
 
-  h1 {
+  h1, h2 {
     margin: 0 0 1rem;
     font-weight: normal;
     @include special-font;
@@ -44,6 +44,11 @@ dialog {
     &:focus {
       border-bottom-color: $dialog-input-border-focus;
     }
+
+    &.small {
+      font-size: 1rem;
+      padding: .75rem;
+    }
   }
 
   button {
@@ -54,5 +59,16 @@ dialog {
     &:not(:last-child) {
       margin-right: 1rem;
     }
+
+    &.inline {
+      margin: 0 .5em;
+    }
+  }
+
+  code {
+    font-size: .75em;
+    border-radius: .15em;
+    background-color: #313131;
+    padding: .2em;
   }
 }
