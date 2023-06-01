@@ -24,7 +24,7 @@ export const HeartRate: FC = () => {
         (item) => connectingStatesSet.has(item.readyState)
     ) ?? pulsoidHeartRate;
 
-    const isInProgress = bleHeartRate.readyState === ReadyState.CONNECTING || pulsoidHeartRate.readyState === ReadyState.CONNECTING;
+    const isInProgress = [websocketHeartRate, bleHeartRate, pulsoidHeartRate].some(rate => rate.readyState === ReadyState.CONNECTING);
     const showSources = !heartRate;
 
     return <>

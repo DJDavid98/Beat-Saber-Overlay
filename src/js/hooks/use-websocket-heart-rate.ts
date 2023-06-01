@@ -55,7 +55,7 @@ export const useWebsocketHeartRate = (): WebsocketHeartRate => {
     const {
         message: websocketData,
         readyState,
-    } = useFailsafeWebsocket(host, validateWebsocketData, Boolean(host));
+    } = useFailsafeWebsocket(host, validateWebsocketData);
     const saveHost = useCallback((value: string) => {
         setHost(value);
         localStorage.setItem(websocketHostKey, value);

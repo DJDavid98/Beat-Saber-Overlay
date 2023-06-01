@@ -57,7 +57,7 @@ export const HeartRateConnectionWebsocket: FC<{
 
     return <>
         {websocketHeartRate.readyState === ReadyState.CONNECTING
-            ? <Loading id="websocket-loading" />
+            ? <Loading id="websocket-loading" onClick={showDialog} />
             : <button
                 id="websocket-config"
                 className={`connection-button ${websocketHeartRate.deviceClass}`}

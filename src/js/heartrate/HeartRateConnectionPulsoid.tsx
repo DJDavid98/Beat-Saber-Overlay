@@ -33,7 +33,7 @@ export const HeartRateConnectionPulsoid: FC<{ pulsoidHeartRate: PulsoidHeartRate
 
     return <>
         {pulsoidHeartRate.readyState === ReadyState.CONNECTING
-            ? <Loading id="pulsoid-loading" />
+            ? <Loading id="pulsoid-loading" onClick={showDialog} />
             : <button
                 id="pulsoid-token"
                 className={`connection-button ${pulsoidHeartRate.deviceClass}`}
