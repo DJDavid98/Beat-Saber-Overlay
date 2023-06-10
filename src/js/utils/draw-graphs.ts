@@ -1,5 +1,7 @@
 import { dataPointToAccuracy, dataPointToEnergy } from "./mappers";
 import { LiveData } from "../model/live-data";
+import { rescaleCanvasPositionY } from "./graph-styles";
+import { graphGridHorizontalSteps, widerTimestampsSecondsThreshold } from "./constants";
 
 export type DataPoint = Pick<LiveData, 'seconds' | 'accuracy' | 'energy' | 'misses'>;
 
@@ -64,12 +66,48 @@ export const drawCross = (ctx: CanvasRenderingContext2D, positionX: number, posi
     ctx.stroke();
 };
 
+export const drawGrid = (
+    ctx: CanvasRenderingContext2D,
+    graphScale: number,
+    canvasRightX: number,
+    largestY: number,
+    canvasBottomY: number,
+    songLengthSeconds: number
+) => {
+    ctx.lineWidth = graphScale;
+    ctx.strokeStyle = '#ccc';
+
+    // Draw horizontal grid line
+    const horizontalGridIncrement = canvasBottomY / graphGridHorizontalSteps;
+    for (let horizontalGridY = 0; horizontalGridY < canvasBottomY; horizontalGridY += horizontalGridIncrement) {
+        if (horizontalGridY === 0) continue;
+        const scaledY = rescaleCanvasPositionY(horizontalGridY, largestY, canvasBottomY);
+        if (scaledY > canvasBottomY) break;
+        ctx.beginPath();
+        ctx.moveTo(0, scaledY);
+        ctx.lineTo(canvasRightX, scaledY);
+        ctx.stroke();
+    }
+
+    // Draw vertical grid line
+    const step = songLengthSeconds > widerTimestampsSecondsThreshold ? 0.25 : .5;
+    const verticalGridIncrement = canvasRightX * step;
+    for (let verticalGridX = 0; verticalGridX < canvasRightX; verticalGridX += verticalGridIncrement) {
+        if (verticalGridX === 0) continue;
+        ctx.beginPath();
+        ctx.moveTo(verticalGridX, 0);
+        ctx.lineTo(verticalGridX, canvasBottomY);
+        ctx.stroke();
+    }
+};
+
 export type PositionGetter = (dataPoint: DataPoint) => [number, number];
 
 export type GraphStyle = (
     ctx: CanvasRenderingContext2D,
     graphScale: number,
     initialPosition: [number, number],
+    largestY: number,
     canvasBottomY: number,
     dataPoints: DataPoint[],
     getPosition: PositionGetter
@@ -84,6 +122,7 @@ interface DrawGraphsParams {
     accuracyStyle: GraphStyle;
     energyStyle: GraphStyle;
     missStyle: GraphStyle;
+    setGraphRange: (range: number) => void;
 }
 
 export const drawGraphs = ({
@@ -94,7 +133,8 @@ export const drawGraphs = ({
     startFromSeconds,
     accuracyStyle,
     energyStyle,
-    missStyle
+    missStyle,
+    setGraphRange
 }: DrawGraphsParams) => {
     const ctx = canvas.getContext('2d');
     if (!ctx) {
@@ -116,30 +156,56 @@ export const drawGraphs = ({
         ctx.fillRect(0, 0, initialPositionX, canvasBottomY);
     }
 
+    let largestY = 0;
+    const positionCache: Record<'accuracy' | 'energy', WeakMap<DataPoint, [number, number]>> = dataPoints.reduce((map,
+        point) => {
+        const accuracyPointPosition = getPointPosition(canvas, songLengthSeconds, point, dataPointToAccuracy);
+        map.accuracy.set(point, accuracyPointPosition);
+        const energyPointPosition = getPointPosition(canvas, songLengthSeconds, point, dataPointToEnergy);
+        map.energy.set(point, energyPointPosition);
+        const largestPointY = Math.max(accuracyPointPosition[1], energyPointPosition[1]);
+        if (largestPointY > largestY) {
+            largestY = largestPointY;
+        }
+        return map;
+    }, {
+        accuracy: new WeakMap<DataPoint, [number, number]>(),
+        energy: new WeakMap<DataPoint, [number, number]>(),
+    });
+
+    setGraphRange(largestY / canvasBottomY);
+    drawGrid(ctx, graphScale, canvasRightX, largestY, canvasBottomY, songLengthSeconds);
+
     accuracyStyle(
         ctx,
         graphScale,
         initialPosition,
+        largestY,
         canvasBottomY,
         dataPoints,
-        dataPoint => getPointPosition(canvas, songLengthSeconds, dataPoint, dataPointToAccuracy)
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- YOLO
+        dataPoint => positionCache.accuracy.get(dataPoint)!
     );
 
     energyStyle(
         ctx,
         graphScale,
         initialPosition,
+        largestY,
         canvasBottomY,
         dataPoints,
-        dataPoint => getPointPosition(canvas, songLengthSeconds, dataPoint, dataPointToEnergy)
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- YOLO
+        dataPoint => positionCache.energy.get(dataPoint)!
     );
 
     missStyle(
         ctx,
         graphScale,
         initialPosition,
+        largestY,
         canvasBottomY,
         dataPoints,
-        dataPoint => getPointPosition(canvas, songLengthSeconds, dataPoint, dataPointToEnergy)
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- YOLO
+        dataPoint => positionCache.energy.get(dataPoint)!
     );
 };

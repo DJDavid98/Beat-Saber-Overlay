@@ -42,9 +42,10 @@ export const getGradientStopWeights = (
 export const getCanvasLinearGradient = (
     ctx: CanvasRenderingContext2D,
     stops: GradientStop[],
-    alpha?: number
+    alpha?: number,
+    heightMultiplier = 1
 ): CanvasGradient => {
-    const gradient = ctx.createLinearGradient(0, 0, 0, ctx.canvas.height);
+    const gradient = ctx.createLinearGradient(0, 0, 0, ctx.canvas.height * heightMultiplier);
     stops.forEach(stop => {
         gradient.addColorStop(1 - (stop.position / 100), stop.toString(alpha))
     })

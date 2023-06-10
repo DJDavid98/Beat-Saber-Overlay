@@ -17,6 +17,9 @@ type DrawOnCanvasFunction = (
     dataPoint: DataPoint
 ) => void;
 
+export const rescaleCanvasPositionY = (targetY: number, largestY: number, canvasBottomY: number) =>
+    (targetY / largestY) * canvasBottomY;
+
 interface DrawPointsParams {
     initialX: number;
     dataPoints: DataPoint[];
@@ -49,15 +52,15 @@ export const lineGraphStyleFactory = (
     lineWidth: number,
     alpha: number
 ): GraphStyle =>
-    (ctx, scale, initialPosition, canvasBottomY, dataPoints, getPosition) => {
+    (ctx, scale, initialPosition, largestY, canvasBottomY, dataPoints, getPosition) => {
         ctx.lineWidth = lineWidth * scale;
-        ctx.strokeStyle = getCanvasLinearGradient(ctx, strokeGradient, alpha);
-        ctx.beginPath();
+        const gradientCanvasHeightMultiplier = 1 + (1 - (largestY / canvasBottomY));
+        ctx.strokeStyle = getCanvasLinearGradient(ctx, strokeGradient, alpha, gradientCanvasHeightMultiplier);
 
         // Move to initial position
         const [initialPositionX, initialPositionY] = initialPosition;
         ctx.moveTo(initialPositionX, initialPositionY);
-
+        ctx.beginPath();
 
         // Create line to each point in sequence
         drawPoints({
@@ -65,7 +68,8 @@ export const lineGraphStyleFactory = (
             dataPoints,
             getPosition,
             drawOnCanvas: (positionX, positionY) => {
-                ctx.lineTo(positionX, positionY);
+                const scaledY = rescaleCanvasPositionY(positionY, largestY, canvasBottomY);
+                ctx.lineTo(positionX, scaledY);
             }
         });
 
@@ -78,7 +82,7 @@ export const barGraphStyleFactory = (
     getColorValue: ValueGetter,
     alpha: number
 ): GraphStyle =>
-    (ctx, scale, initialPosition, canvasBottomY, dataPoints, getPosition) => {
+    (ctx, scale, initialPosition, largestY, canvasBottomY, dataPoints, getPosition) => {
         // Draw rectangle for each point in sequence
         drawPoints({
             initialX: initialPosition[0],
@@ -86,7 +90,8 @@ export const barGraphStyleFactory = (
             getPosition,
             drawOnCanvas: (positionX, positionY, lastX, dataPoint) => {
                 ctx.fillStyle = mixer(getColorValue(dataPoint)).toString(alpha);
-                drawRect(ctx, lastX, canvasBottomY, positionX, positionY);
+                const scaledY = rescaleCanvasPositionY(positionY, largestY, canvasBottomY);
+                drawRect(ctx, lastX, canvasBottomY, positionX, scaledY);
             }
         });
     };
@@ -111,7 +116,7 @@ export const crossGraphStyleFactory = ({
     lineWidth,
     size
 }: CrossGraphStyleFactoryParams): GraphStyle =>
-    (ctx, scale, initialPosition, canvasBottomY, dataPoints, getPosition) => {
+    (ctx, scale, initialPosition, largestY, canvasBottomY, dataPoints, getPosition) => {
         const scaledSize = size * scale;
         const baseStyle = new GradientStop(color, 0).toString(alpha);
         const borderStyle = border ? new GradientStop(border.color, 0).toString(border.alpha) : null;
@@ -128,16 +133,17 @@ export const crossGraphStyleFactory = ({
                 if (lastValue === value || value === 0) {
                     return;
                 }
+                const scaledY = rescaleCanvasPositionY(positionY, largestY, canvasBottomY);
                 if (borderStyle) {
                     // Draw border
                     ctx.strokeStyle = borderStyle;
                     ctx.lineWidth = baseLineWidth * 3;
-                    drawCross(ctx, positionX, positionY, scaledSize * 1.25);
+                    drawCross(ctx, positionX, scaledY, scaledSize * 1.25);
                 }
                 // Draw base cross
                 ctx.strokeStyle = baseStyle;
                 ctx.lineWidth = baseLineWidth;
-                drawCross(ctx, positionX, positionY, scaledSize);
+                drawCross(ctx, positionX, scaledY, scaledSize);
                 lastValue = value;
             }
         });

@@ -8,6 +8,7 @@ import { weightedColorMixerFactory } from "./utils/weighted-color-mix";
 import { GradientStop } from "./class/gradient-stop.class";
 import { dataPointToAccuracy, dataPointToMisses, mapAccuracyRating } from "./utils/mappers";
 import { EnergyIcon } from "./EnergyIcon";
+import { AccuracyGraphDurationLegend } from "./AccuracyGraphDurationLegend";
 
 const accuracyGradient: GradientStop[] = [
     new GradientStop('#ff0000', 0),
@@ -29,7 +30,7 @@ const energyGradient: GradientStop[] = [
 ];
 
 /**
- * Used to perform super sampling (rendering the canvas at a larger side but displaying it scaled down)
+ * Used to perform super sampling (rendering the canvas at a larger size but displaying it scaled down)
  */
 const graphScale = 2;
 const graphHeight = 80;
@@ -54,6 +55,7 @@ export const AdditionalDataDisplay: FC<AdditionalDataDisplayProps> = ({
     const startFromSeconds = useRef<number | null>(null);
     const [accuracy, setAccuracy] = useState<string | undefined>();
     const [energy, setEnergy] = useState<number | undefined>();
+    const [graphRange, setGraphRange] = useState<number>(100);
     const graphCanvas = useRef<HTMLCanvasElement | null>(null);
     const nf = useMemo(() => new Intl.NumberFormat('en-US', {
         style: 'percent',
@@ -86,6 +88,7 @@ export const AdditionalDataDisplay: FC<AdditionalDataDisplayProps> = ({
         }
         setAccuracy(nf.format(liveData.accuracy / 100));
         setEnergy(liveData.energy);
+        setGraphRange(100);
 
         if (!dataPoints.current) {
             return;
@@ -118,7 +121,8 @@ export const AdditionalDataDisplay: FC<AdditionalDataDisplayProps> = ({
                         },
                         lineWidth: 1,
                         size: 5
-                    })
+                    }),
+                    setGraphRange
                 },
             );
         }
@@ -153,6 +157,11 @@ export const AdditionalDataDisplay: FC<AdditionalDataDisplayProps> = ({
                     )}
                 </div>
                 <div id="accuracy-graph-wrapper">
+                    <span id="accuracy-graph-range" className="graph-legend-wrapper">
+                        <span className="graph-legend top">100</span>
+                        <span className="graph-legend bottom">{((1 - graphRange) * 100).toFixed(0)}</span>
+                    </span>
+                    <AccuracyGraphDurationLegend songLength={songLength} />
                     <canvas
                         style={graphStyle}
                         width={graphWidth * graphScale}
