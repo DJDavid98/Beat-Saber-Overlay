@@ -3,4 +3,4 @@ export const bsdpDataSource = 'ws://127.0.0.1:2946/BSDataPuller';
 export const bsPlusDataSource = 'ws://127.0.0.1:2947/socket';
 
 export const widerTimestampsSecondsThreshold = 180;
-export const graphGridHorizontalSteps = 5;
+export const graphGridHorizontalStepsBase = 5;

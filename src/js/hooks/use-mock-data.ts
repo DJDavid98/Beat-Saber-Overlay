@@ -47,27 +47,36 @@ export const useMockData = (enabled: boolean): DataDisplayProps => {
             let mockSongDuration: number;
             let startedPlayingTs: number;
             let songSpeedMultiplier: number;
+            let totalNotes: number;
             let missCount: number;
             let accuracyValue: number;
             let energyValue: number;
             let missNextNotes: number;
+            let zenMode: boolean;
+            let noFail: boolean;
+            let lifeCount: number;
             const steps: MockDataEmitterStep[] = [
                 { debug: 'Connecting', timeout: () => [0, () => setReadyState(ReadyState.CONNECTING)] },
                 { debug: 'Connected', timeout: () => [getRandomInt(1e3, 2e3), () => setReadyState(ReadyState.OPEN)] },
                 {
                     debug: 'Loading level', timeout: () => [getRandomInt(1e3, 2e3), () => {
                         mockSongDuration = getRandomInt(60, 300);
-                        const zenMode = getRandomBool();
-                        const lives = zenMode ? Infinity : getRandomInt(0, 2);
-                        const noFail = lives === 0;
-                        const oneLife = lives === 1;
-                        const fourLives = lives === 2;
+                        zenMode = getRandomBool(.90);
+                        const lifeCountModifier = zenMode ? 1 : getRandomInt(0, 3);
+                        noFail = lifeCountModifier === 0;
+                        const oneLife = lifeCountModifier === 2;
+                        const fourLives = lifeCountModifier === 3;
                         const noArrows = !zenMode && getRandomBool();
                         const speed = getRandomInt(0, 3);
                         const slowerSong = speed === 0;
                         const fasterSong = speed === 2;
                         const superFastSong = speed === 3;
                         songSpeedMultiplier = [0.85, 1, 1.2, 1.5][speed];
+                        if (oneLife || fourLives) {
+                            lifeCount = oneLife ? 1 : 4;
+                        } else {
+                            lifeCount = Infinity;
+                        }
                         setMapData({
                             name: 'Mock Song',
                             author: 'Mock Author',
@@ -100,9 +109,10 @@ export const useMockData = (enabled: boolean): DataDisplayProps => {
                         setLiveData(defaultDataPoint);
                         startedPlayingTs = Date.now();
                         missNextNotes = 0;
+                        totalNotes = 0;
                         missCount = defaultDataPoint.misses;
                         accuracyValue = defaultDataPoint.accuracy;
-                        energyValue = defaultDataPoint.energy;
+                        energyValue = lifeCount !== Infinity ? 100 : defaultDataPoint.energy;
                         console.debug(`Song Speed: ${songSpeedMultiplier}x`);
                         console.debug(`Song Length: ${mockSongDuration}s`);
                         console.debug(`Realtime Length: ${mockSongDuration / songSpeedMultiplier}s`);
@@ -113,16 +123,25 @@ export const useMockData = (enabled: boolean): DataDisplayProps => {
                     timeout: () => (mockSongDuration * 1e3) / songSpeedMultiplier,
                     interval: () => [() => {
                         const timeElapsed = (Date.now() - startedPlayingTs) / 1e3;
-                        const noteEncounter = getRandomBool(.66);
+                        const noteEncounter = !zenMode && getRandomBool(.66);
                         const skillIssue = missNextNotes > 0;
                         if (noteEncounter) {
+                            totalNotes++;
                             // Simulated 85% accuracy
-                            const isMiss = skillIssue || (accuracyValue > 85 && energyValue > 20 && getRandomBool(.85));
+                            const isMiss = skillIssue || (energyValue === 0 ? getRandomBool(.75) : accuracyValue > 85 && energyValue > 20 && getRandomBool(.95));
                             if (skillIssue) missNextNotes--;
                             if (isMiss) missCount++;
                             console.info(isMiss ? 'Note missed' : 'Note hit');
-                            accuracyValue = Math.max(0, Math.min(100, isMiss ? accuracyValue * .9 : accuracyValue + ((Math.random() - 0.33)) * 5));
-                            energyValue = Math.max(0, Math.min(100, isMiss ? energyValue - 10 : energyValue + 1));
+                            accuracyValue = ((totalNotes - missCount) / totalNotes) * (96 + 2 * Math.sin(timeElapsed));
+                            if (energyValue !== 0) {
+                                let energyChange: number;
+                                if (lifeCount !== Infinity) {
+                                    energyChange = isMiss ? -(100 / lifeCount) : 0;
+                                } else {
+                                    energyChange = isMiss ? -(accuracyValue / 10) : 1;
+                                }
+                                energyValue = Math.max(0, Math.min(100, energyValue + energyChange));
+                            }
                         }
                         if (!skillIssue && energyValue > 50 && getRandomBool(.99)) {
                             missNextNotes = getRandomInt(1, 5);

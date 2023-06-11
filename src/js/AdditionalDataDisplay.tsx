@@ -149,7 +149,7 @@ export const AdditionalDataDisplay: FC<AdditionalDataDisplayProps> = ({
                     {!!liveData?.misses && <span>{liveData.misses} Miss{liveData.misses !== 1 && 'es'}</span>}
                     <span><span className="fixed-width accuracy-percent">{accuracy}</span> Accuracy</span>
                     <span style={accuracyStyle} className="fixed-width accuracy-rating">{accuracyRating}</span>
-                    {energy && (
+                    {typeof energy === "number" && (
                         <span className="energy" style={energyStyle}>
                             <span className="fixed-width energy-amount">{energy.toFixed(0)}</span>
                             <EnergyIcon />

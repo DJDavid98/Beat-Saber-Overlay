@@ -1,7 +1,7 @@
 import { dataPointToAccuracy, dataPointToEnergy } from "./mappers";
 import { LiveData } from "../model/live-data";
 import { rescaleCanvasPositionY } from "./graph-styles";
-import { graphGridHorizontalSteps, widerTimestampsSecondsThreshold } from "./constants";
+import { graphGridHorizontalStepsBase, widerTimestampsSecondsThreshold } from "./constants";
 
 export type DataPoint = Pick<LiveData, 'seconds' | 'accuracy' | 'energy' | 'misses'>;
 
@@ -74,11 +74,12 @@ export const drawGrid = (
     canvasBottomY: number,
     songLengthSeconds: number
 ) => {
-    ctx.lineWidth = graphScale;
+    ctx.lineWidth = graphScale / 2;
     ctx.strokeStyle = '#ccc';
 
-    // Draw horizontal grid line
-    const horizontalGridIncrement = canvasBottomY / graphGridHorizontalSteps;
+    // Draw horizontal grid lines
+    const ratioY = largestY / canvasBottomY;
+    const horizontalGridIncrement = canvasBottomY / (ratioY > .75 ? graphGridHorizontalStepsBase : graphGridHorizontalStepsBase * 2);
     for (let horizontalGridY = 0; horizontalGridY < canvasBottomY; horizontalGridY += horizontalGridIncrement) {
         if (horizontalGridY === 0) continue;
         const scaledY = rescaleCanvasPositionY(horizontalGridY, largestY, canvasBottomY);
@@ -89,7 +90,7 @@ export const drawGrid = (
         ctx.stroke();
     }
 
-    // Draw vertical grid line
+    // Draw vertical grid lines
     const step = songLengthSeconds > widerTimestampsSecondsThreshold ? 0.25 : .5;
     const verticalGridIncrement = canvasRightX * step;
     for (let verticalGridX = 0; verticalGridX < canvasRightX; verticalGridX += verticalGridIncrement) {
@@ -157,15 +158,20 @@ export const drawGraphs = ({
     }
 
     let largestY = 0;
+    let energyZeroX: number | null = null;
     const positionCache: Record<'accuracy' | 'energy', WeakMap<DataPoint, [number, number]>> = dataPoints.reduce((map,
         point) => {
         const accuracyPointPosition = getPointPosition(canvas, songLengthSeconds, point, dataPointToAccuracy);
         map.accuracy.set(point, accuracyPointPosition);
         const energyPointPosition = getPointPosition(canvas, songLengthSeconds, point, dataPointToEnergy);
         map.energy.set(point, energyPointPosition);
-        const largestPointY = Math.max(accuracyPointPosition[1], energyPointPosition[1]);
+        const energyPositionY = energyPointPosition[1];
+        const largestPointY = Math.max(accuracyPointPosition[1], energyPositionY);
         if (largestPointY > largestY) {
             largestY = largestPointY;
+        }
+        if (energyZeroX === null && energyPositionY === canvasBottomY) {
+            energyZeroX = energyPointPosition[0];
         }
         return map;
     }, {
@@ -208,4 +214,10 @@ export const drawGraphs = ({
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- YOLO
         dataPoint => positionCache.energy.get(dataPoint)!
     );
+
+    // Player died, color end of the graph as red
+    if (energyZeroX !== null) {
+        ctx.fillStyle = 'rgba(128,0,0,.25)';
+        ctx.fillRect(energyZeroX, 0, canvasRightX, canvasBottomY);
+    }
 };
