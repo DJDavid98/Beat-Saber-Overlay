@@ -4,8 +4,8 @@ $text-color: #fff;
 $mapper-text-color: #67C271;
 $font-size: 3.5rem;
 $edge-spacing: 1rem;
-$outline-size: .25rem;
-$outline-color: #30466E;
+$outline-size: .75px;
+$outline-color: darken(#30466E, 10%);
 $cover-size: 10rem;
 $image-spacing: $cover-size * 0.2;
 $transition-delay: .05s;
@@ -37,6 +37,7 @@ body {
   @include special-font;
   background-color: #000;
   user-select: none;
+  @include outline;
 }
 
 #song-name, #song-author, #song-details, #connection {
@@ -87,7 +88,6 @@ body {
   top: $edge-spacing;
   right: $edge-spacing * 1.5;
   z-index: map-get($z-index-map, 'app');
-  @include outline;
 }
 
 @import "scss/data-layout";

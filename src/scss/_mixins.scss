@@ -1,5 +1,15 @@
 @mixin outline {
-  filter: drop-shadow(0 0 $outline-size $outline-color);
+  $shadow: '';
+  @for $i from -1 through 1 {
+    @if $i != 0 {
+      @for $j from -1 through 1 {
+        @if $j != 0 {
+          $shadow: $shadow + ' ' + drop-shadow(#{$i}px #{$j}px $outline-size $outline-color);
+        }
+      }
+    }
+  }
+  filter: #{$shadow};
 }
 
 @mixin loading-element($loader-size, $color: $text-color, $frozen: false) {
