@@ -1,6 +1,7 @@
-import { FunctionComponent } from "react";
+import { FunctionComponent, useEffect, useState } from "react";
 import { Loading } from "./Loading";
 import { ReadyState } from "react-use-websocket";
+import { TimeElapsed } from "./TimeElapsed";
 
 const mapConnectionState = (state: ReadyState): string => {
     switch (state) {
@@ -13,11 +14,23 @@ const mapConnectionState = (state: ReadyState): string => {
     }
 }
 
-export const Connection: FunctionComponent<{ readyState: ReadyState }> = ({ readyState }) =>
-    <>
-        <div id="connection">
-            <span className="status">Overlay status</span>
-            <span className="status-value">{mapConnectionState(readyState)}</span>
+export const Connection: FunctionComponent<{ readyState: ReadyState }> = ({ readyState }) => {
+    const [displayTime, setDisplayTime] = useState<Date | null>(null);
+
+    useEffect(() => {
+        setDisplayTime(new Date());
+
+        return () => setDisplayTime(null);
+    }, []);
+
+    return <div id="connection-component">
+        <div id="connection-wrap">
+            <div id="connection">
+                <span className="status">Overlay status</span>
+                <span className="status-value">{mapConnectionState(readyState)}</span>
+            </div>
+            <Loading id="connection-loading" />
         </div>
-        <Loading id="connection-loading" />
-    </>
+        {displayTime !== null && <TimeElapsed since={displayTime} />}
+    </div>;
+}
