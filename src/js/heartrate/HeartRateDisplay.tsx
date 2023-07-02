@@ -1,6 +1,6 @@
 import classNames from 'classnames';
-import { CSSProperties, FC, useMemo } from "react";
-import { Loading } from "../Loading";
+import { CSSProperties, FC, useMemo } from 'react';
+import { Loading } from '../Loading';
 
 const backgroundPosition = (value: number) => value === 0 ? 0 : `-${value}em`;
 
@@ -36,7 +36,7 @@ export const HeartRateDisplay: FC<HeartRateDisplayProps> = ({
     return <>
         {deviceName && (
             <button
-                className={classNames("label device-name", { connected: !isLoading })}
+                className={classNames('label device-name', { connected: !isLoading })}
                 onClick={disconnect}
                 title="Change source"
             >
@@ -58,5 +58,5 @@ export const HeartRateDisplay: FC<HeartRateDisplayProps> = ({
                     <span className="rate-number units" style={styles.units} data-value={numbers.units} />
                 </>}
         </div>
-    </>
-}
+    </>;
+};

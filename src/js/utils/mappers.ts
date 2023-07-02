@@ -1,6 +1,6 @@
-import { GradientStop } from "../class/gradient-stop.class";
-import { findClosestValues } from "./find-closest-values";
-import { DataPoint } from "./draw-graphs";
+import { GradientStop } from '../class/gradient-stop.class';
+import { findClosestValues } from './find-closest-values';
+import { DataPoint } from './draw-graphs';
 
 export const identityMapper = <T>(value: T): T => value;
 

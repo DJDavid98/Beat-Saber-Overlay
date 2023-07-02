@@ -1,5 +1,5 @@
-import Joi from "joi";
-import { dataValidatorFactory } from "../utils/data-validator-factory";
+import Joi from 'joi';
+import { dataValidatorFactory } from '../utils/data-validator-factory';
 
 export interface PulsoidHeartRate {
     measured_at: number;

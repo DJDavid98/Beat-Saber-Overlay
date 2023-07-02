@@ -1,9 +1,9 @@
-import { DataDisplayProps } from "../DataDisplay";
-import { useReconnectingWebsocket } from "./use-reconnecting-websocket";
-import { bsPlusDataSource } from "../utils/constants";
-import { Reducer, useCallback, useMemo, useReducer, useRef } from "react";
-import { validateBsPlusHandshake } from "../validators/validate-bs-plus-handshake";
-import { validateBsPlusGameStateEvent } from "../validators/validate-bs-plus-game-state-event";
+import { DataDisplayProps } from '../DataDisplay';
+import { useReconnectingWebsocket } from './use-reconnecting-websocket';
+import { bsPlusDataSource } from '../utils/constants';
+import { Reducer, useCallback, useMemo, useReducer, useRef } from 'react';
+import { validateBsPlusHandshake } from '../validators/validate-bs-plus-handshake';
+import { validateBsPlusGameStateEvent } from '../validators/validate-bs-plus-game-state-event';
 import {
     BsPlusAction,
     BsPlusDataState,
@@ -15,12 +15,12 @@ import {
     BsPlusResumeEventName,
     BsPlusScoreEventName,
     BsPlusTickEventName
-} from "../model/bs-plus";
-import { validateBsPlusMapInfoEvent } from "../validators/validate-bs-plus-map-info-event";
-import { validateBsPlusScoreEvent } from "../validators/validate-bs-plus-score-event";
-import { validateBsPlusPauseEvent } from "../validators/validate-bs-plus-pause-event";
-import { validateBsPlusResumeEvent } from "../validators/validate-bs-plus-resume-event";
-import { SCORE_UPDATE_MAX_GRANULARITY } from "../utils/draw-graphs";
+} from '../model/bs-plus';
+import { validateBsPlusMapInfoEvent } from '../validators/validate-bs-plus-map-info-event';
+import { validateBsPlusScoreEvent } from '../validators/validate-bs-plus-score-event';
+import { validateBsPlusPauseEvent } from '../validators/validate-bs-plus-pause-event';
+import { validateBsPlusResumeEvent } from '../validators/validate-bs-plus-resume-event';
+import { SCORE_UPDATE_MAX_GRANULARITY } from '../utils/draw-graphs';
 
 const tickUpdateFrequency = 1e3 * SCORE_UPDATE_MAX_GRANULARITY;
 

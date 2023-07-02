@@ -1,5 +1,5 @@
-import { FC, useMemo } from "react";
-import { Modifiers } from "./model/modifiers";
+import { FC, useMemo } from 'react';
+import { Modifiers } from './model/modifiers';
 
 const modifierNames: Record<keyof Modifiers, string> = {
     disappearingArrows: 'Disappearing Arrows',
@@ -46,4 +46,4 @@ export const AdditionalDataModifiers: FC<AdditionalDataModifiersProps> = ({ modi
             </ul>
         </div>
     );
-}
+};

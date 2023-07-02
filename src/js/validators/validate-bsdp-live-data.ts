@@ -1,6 +1,6 @@
-import Joi from "joi";
-import { dataValidatorFactory } from "../utils/data-validator-factory";
-import { BsdpLiveData } from "../model/bsdp";
+import Joi from 'joi';
+import { dataValidatorFactory } from '../utils/data-validator-factory';
+import { BsdpLiveData } from '../model/bsdp';
 
 const schema = Joi.object<BsdpLiveData>({
     Score: Joi.number(),

@@ -1,8 +1,8 @@
-import useWebSocket, { ReadyState } from "react-use-websocket";
-import { useCallback, useEffect, useMemo, useRef } from "react";
-import type { Options as WebsocketOptions } from "react-use-websocket/src/lib/types";
-import { useRemountContext } from "../utils/remount-context";
-import { JsonValue, WebSocketHook } from "react-use-websocket/src/lib/types";
+import useWebSocket, { ReadyState } from 'react-use-websocket';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
+import type { Options as WebsocketOptions } from 'react-use-websocket/src/lib/types';
+import { useRemountContext } from '../utils/remount-context';
+import { JsonValue, WebSocketHook } from 'react-use-websocket/src/lib/types';
 
 const reconnectInterval = 1e3;
 

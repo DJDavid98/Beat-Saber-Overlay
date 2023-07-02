@@ -1,13 +1,13 @@
-import { FC } from "react";
-import { usePulsoidHeartRate } from "../hooks/use-pulsoid-heart-rate";
-import { useBleHeartRate } from "../hooks/use-ble-heart-rate";
-import { HeartRateDisplay } from "./HeartRateDisplay";
-import { HeartRateSources } from "./HeartRateSources";
-import { ReadyState } from "react-use-websocket";
-import { Bouncy } from "../Bouncy";
-import { useWebsocketHeartRate } from "../hooks/use-websocket-heart-rate";
+import { FC } from 'react';
+import { usePulsoidHeartRate } from '../hooks/use-pulsoid-heart-rate';
+import { useBleHeartRate } from '../hooks/use-ble-heart-rate';
+import { HeartRateDisplay } from './HeartRateDisplay';
+import { HeartRateSources } from './HeartRateSources';
+import { ReadyState } from 'react-use-websocket';
+import { Bouncy } from '../Bouncy';
+import { useWebsocketHeartRate } from '../hooks/use-websocket-heart-rate';
 
-const connectingStatesSet = new Set([ReadyState.OPEN, ReadyState.CONNECTING])
+const connectingStatesSet = new Set([ReadyState.OPEN, ReadyState.CONNECTING]);
 
 export const HeartRate: FC = () => {
     const pulsoidHeartRate = usePulsoidHeartRate();
@@ -42,5 +42,5 @@ export const HeartRate: FC = () => {
             />}
         </div>
         <Bouncy heartRate={heartRate} />
-    </>
+    </>;
 };

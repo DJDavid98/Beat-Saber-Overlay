@@ -1,6 +1,6 @@
-import { createRoot, Root } from "react-dom/client";
-import { RemountContextProvider } from "./remount-context";
-import { FunctionComponent } from "react";
+import { createRoot, Root } from 'react-dom/client';
+import { RemountContextProvider } from './remount-context';
+import { FunctionComponent } from 'react';
 
 // eslint-disable-next-line @typescript-eslint/ban-types
 export const mountAppComponent = <P extends {}>(
@@ -28,9 +28,9 @@ export const mountAppComponent = <P extends {}>(
                     <Component {...props} />
                 </RemountContextProvider>
             );
-        }
+        };
         void remountApp();
     } else {
         throw new Error(`#${rootId} element is missing`);
     }
-}
+};

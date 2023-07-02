@@ -1,4 +1,4 @@
-import { ReadyState } from "react-use-websocket";
+import { ReadyState } from 'react-use-websocket';
 
 export interface HeartRateHookCommonFields {
     readyState: ReadyState;

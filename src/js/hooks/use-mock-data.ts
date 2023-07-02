@@ -1,8 +1,8 @@
-import { DataDisplayProps } from "../DataDisplay";
-import { useEffect, useRef, useState } from "react";
-import { ReadyState } from "react-use-websocket";
-import { getRandomBool, getRandomInt } from "../utils/random";
-import { defaultDataPoint, SCORE_UPDATE_MAX_GRANULARITY } from "../utils/draw-graphs";
+import { DataDisplayProps } from '../DataDisplay';
+import { useEffect, useRef, useState } from 'react';
+import { ReadyState } from 'react-use-websocket';
+import { getRandomBool, getRandomInt } from '../utils/random';
+import { defaultDataPoint, SCORE_UPDATE_MAX_GRANULARITY } from '../utils/draw-graphs';
 
 interface MockDataEmitterStep {
     /**
@@ -174,7 +174,7 @@ export const useMockData = (enabled: boolean): DataDisplayProps => {
                 rej) => {
                 console.group(`[Mock Data] Step #${stepIndex}: ${step.debug}`);
                 const timeoutValue = step.timeout();
-                const [timeoutMs, timeoutFn] = typeof timeoutValue === "number" ? [timeoutValue] : timeoutValue;
+                const [timeoutMs, timeoutFn] = typeof timeoutValue === 'number' ? [timeoutValue] : timeoutValue;
                 timeoutRef.current = setTimeout(() => {
                     if (abortController.signal.aborted) {
                         rej();

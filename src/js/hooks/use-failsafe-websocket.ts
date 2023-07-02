@@ -1,6 +1,6 @@
-import { ReadyState } from "react-use-websocket";
-import { useMemo } from "react";
-import { useReconnectingWebsocket } from "./use-reconnecting-websocket";
+import { ReadyState } from 'react-use-websocket';
+import { useMemo } from 'react';
+import { useReconnectingWebsocket } from './use-reconnecting-websocket';
 
 /**
  * Creates a failsafe websocket hook with an optional message handler, which, when defined, is used

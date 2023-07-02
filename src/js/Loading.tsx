@@ -1,4 +1,4 @@
-import { FC, memo, MouseEventHandler } from "react";
+import { FC, memo, MouseEventHandler } from 'react';
 
 type LoaderIds = 'websocket-loading' | 'heart-rate-loading' | 'ble-loading' | 'pulsoid-loading' | 'connection-loading'
 

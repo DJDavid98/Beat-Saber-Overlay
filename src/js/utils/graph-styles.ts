@@ -5,10 +5,10 @@ import {
     PositionGetter,
     SCORE_UPDATE_MAX_GRANULARITY,
     ValueGetter
-} from "./draw-graphs";
-import { WeightedColorMixer } from "./weighted-color-mix";
-import { GradientStop, HexColorString } from "../class/gradient-stop.class";
-import { getCanvasLinearGradient } from "./colors";
+} from './draw-graphs';
+import { WeightedColorMixer } from './weighted-color-mix';
+import { GradientStop, HexColorString } from '../class/gradient-stop.class';
+import { getCanvasLinearGradient } from './colors';
 
 type DrawOnCanvasFunction = (
     positionX: number,

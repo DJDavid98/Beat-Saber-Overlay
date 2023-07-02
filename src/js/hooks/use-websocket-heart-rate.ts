@@ -1,7 +1,7 @@
-import { useCallback, useEffect, useState } from "react";
-import { useFailsafeWebsocket } from "./use-failsafe-websocket";
-import { HeartRateHookCommonFields } from "../utils/heart-rate-hook-common-fields";
-import Joi from "joi";
+import { useCallback, useEffect, useState } from 'react';
+import { useFailsafeWebsocket } from './use-failsafe-websocket';
+import { HeartRateHookCommonFields } from '../utils/heart-rate-hook-common-fields';
+import Joi from 'joi';
 
 export interface WebsocketHeartRate extends HeartRateHookCommonFields {
     changeHost: (newHost: string) => void;
@@ -25,9 +25,9 @@ export const useWebsocketHeartRate = (): WebsocketHeartRate => {
 
         if (!path) {
             switch (typeof data) {
-                case "string":
+                case 'string':
                     return /^\d+$/.test(data) ? parseInt(data, 10) : undefined;
-                case "number":
+                case 'number':
                     return data;
                 default:
                     console.warn(`Cannot process data of type ${typeof data}`);
@@ -110,4 +110,4 @@ export const useWebsocketHeartRate = (): WebsocketHeartRate => {
         changePath,
         getPath,
     };
-}
+};

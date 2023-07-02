@@ -1,8 +1,8 @@
-import { FunctionComponent, useMemo } from "react";
-import { DataDisplay, DataDisplayProps } from "./DataDisplay";
-import { useBsdpData } from "./hooks/use-bsdp-data";
-import { useBsPlusData } from "./hooks/use-bs-plus-data";
-import { useMockData } from "./hooks/use-mock-data";
+import { FunctionComponent, useMemo } from 'react';
+import { DataDisplay, DataDisplayProps } from './DataDisplay';
+import { useBsdpData } from './hooks/use-bsdp-data';
+import { useBsPlusData } from './hooks/use-bs-plus-data';
+import { useMockData } from './hooks/use-mock-data';
 
 export const enum DataSource {
     BSDP = 'BSDP',
@@ -55,6 +55,6 @@ export const App: FunctionComponent<AppProps> = ({ dataSourceName }) => {
             <DataDisplay {...dataSource} />
         </div>
     );
-}
+};
 
 

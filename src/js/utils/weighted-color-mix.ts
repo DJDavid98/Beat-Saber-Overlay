@@ -1,7 +1,7 @@
-import { GradientStop } from "../class/gradient-stop.class";
-import { findClosestValues } from "./find-closest-values";
-import { sortAscending } from "./sort-ascending";
-import { gradientStopPositionMapper } from "./mappers";
+import { GradientStop } from '../class/gradient-stop.class';
+import { findClosestValues } from './find-closest-values';
+import { sortAscending } from './sort-ascending';
+import { gradientStopPositionMapper } from './mappers';
 
 /**
  * Function which can be used to calculate the CSS color in the gradient at the given position value.

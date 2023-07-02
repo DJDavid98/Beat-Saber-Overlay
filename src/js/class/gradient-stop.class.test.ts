@@ -1,9 +1,9 @@
-import { GradientStop, HexColorString } from "./gradient-stop.class";
+import { GradientStop, HexColorString } from './gradient-stop.class';
 
 describe('GradientStop', () => {
     describe('toString', () => {
         it('should stringify regular color values correctly', () => {
-            const inputs: HexColorString[] = ['#000000', '#abcdef', '#6181b8', '#ffffff']
+            const inputs: HexColorString[] = ['#000000', '#abcdef', '#6181b8', '#ffffff'];
             inputs.forEach(input => {
                 expect(new GradientStop(input, 0).toString()).toEqual(input);
             });

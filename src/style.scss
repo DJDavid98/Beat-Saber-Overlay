@@ -44,41 +44,6 @@ body {
   line-height: 1em;
 }
 
-#credits {
-  position: absolute;
-  top: 0;
-  left: 0;
-  z-index: map-get($z-index-map, 'credits');
-  margin: $edge-spacing;
-
-  a {
-    display: block;
-    opacity: 0.2;
-    will-change: opacity;
-    transition: .1s opacity;
-    font-size: 2rem;
-    color: #fff;
-    text-decoration: none;
-    line-height: 1.3rem;
-
-    &:hover {
-      opacity: 1;
-    }
-
-    &:not(:last-child) {
-      margin-bottom: .5rem;
-    }
-  }
-
-  span {
-    display: block;
-  }
-
-  img {
-    width: 13rem;
-  }
-}
-
 #app {
   color: $text-color;
   font-size: $font-size;
@@ -89,6 +54,8 @@ body {
   z-index: map-get($z-index-map, 'app');
 }
 
+@import "scss/analog-clock";
+@import "scss/credits";
 @import "scss/data-layout";
 @import "scss/dialog";
 @import "scss/connection";

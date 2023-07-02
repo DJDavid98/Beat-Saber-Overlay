@@ -9,6 +9,8 @@ module.exports = {
         },
     },
     rules: {
+        "semi": ["error", "always"],
+        "quotes": ["error", "single", {"avoidEscape": true, "allowTemplateLiterals": true}],
         'react/react-in-jsx-scope': 'off',
         "no-restricted-imports": "off",
         "@typescript-eslint/no-restricted-imports": ["error", {

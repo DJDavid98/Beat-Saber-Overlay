@@ -1,6 +1,6 @@
-import { dataValidatorFactory } from "../utils/data-validator-factory";
-import Joi from "joi";
-import { BsPlusEventMessageType, BsPlusPauseEventName } from "../model/bs-plus";
+import { dataValidatorFactory } from '../utils/data-validator-factory';
+import Joi from 'joi';
+import { BsPlusEventMessageType, BsPlusPauseEventName } from '../model/bs-plus';
 
 export interface BsPlusPauseEvent {
     _type: typeof BsPlusEventMessageType;

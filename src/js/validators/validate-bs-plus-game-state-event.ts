@@ -1,6 +1,6 @@
-import { dataValidatorFactory } from "../utils/data-validator-factory";
-import Joi from "joi";
-import { BsPlusGameStateEventName, BsPlusGameState, BsPlusGameStates, BsPlusEventMessageType } from "../model/bs-plus";
+import { dataValidatorFactory } from '../utils/data-validator-factory';
+import Joi from 'joi';
+import { BsPlusGameStateEventName, BsPlusGameState, BsPlusGameStates, BsPlusEventMessageType } from '../model/bs-plus';
 
 export interface BsPlusGameStateEvent {
     _type: typeof BsPlusEventMessageType;

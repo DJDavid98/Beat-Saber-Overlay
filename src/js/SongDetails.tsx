@@ -1,6 +1,6 @@
-import { FunctionComponent, useMemo } from "react";
-import DurationUnitFormat from "intl-unofficial-duration-unit-format";
-import { mapDifficulty } from "./utils/mappers";
+import { FunctionComponent, useMemo } from 'react';
+import { mapDifficulty } from './utils/mappers';
+import { useDurationFormatTimer } from './hooks/use-duration-format-timer';
 
 export interface SongDetails {
     difficulty?: string;
@@ -18,7 +18,7 @@ export const SongDetails: FunctionComponent<SongDetails> = ({
     duration
 }) => {
     const nf = useMemo(() => new Intl.NumberFormat('en-US', { maximumFractionDigits: 2 }), []);
-    const df = useMemo(() => new DurationUnitFormat('en-US', { style: "timer" }), []);
+    const df = useDurationFormatTimer();
 
     return <div id="song-details">
         {difficulty && <span className="difficulty">{mapDifficulty(difficulty)}</span>}
@@ -27,4 +27,4 @@ export const SongDetails: FunctionComponent<SongDetails> = ({
         {!!pp && <span className="pp">{nf.format(pp)}pp</span>}
         {bsr && <span className="bsr">!bsr {mapDifficulty(bsr)}</span>}
     </div>;
-}
+};

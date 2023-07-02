@@ -1,7 +1,7 @@
-import { ChangeEventHandler, FC, FormEventHandler, MouseEvent, useCallback, useRef, useState } from "react";
-import { PulsoidHeartRate } from "../hooks/use-pulsoid-heart-rate";
-import { ReadyState } from "react-use-websocket";
-import { Loading } from "../Loading";
+import { ChangeEventHandler, FC, FormEventHandler, MouseEvent, useCallback, useRef, useState } from 'react';
+import { PulsoidHeartRate } from '../hooks/use-pulsoid-heart-rate';
+import { ReadyState } from 'react-use-websocket';
+import { Loading } from '../Loading';
 
 export const HeartRateConnectionPulsoid: FC<{ pulsoidHeartRate: PulsoidHeartRate }> = ({ pulsoidHeartRate }) => {
     const [tokenInputValue, setTokenInputValue] = useState<string>('');
@@ -64,5 +64,5 @@ export const HeartRateConnectionPulsoid: FC<{ pulsoidHeartRate: PulsoidHeartRate
                 <button type="button" onClick={closeDialog}>Cancel</button>
             </form>
         </dialog>
-    </>
-}
+    </>;
+};

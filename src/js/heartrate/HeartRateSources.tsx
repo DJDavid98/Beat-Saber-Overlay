@@ -1,11 +1,11 @@
-import { FC } from "react";
-import { BleHeartRate } from "../hooks/use-ble-heart-rate";
-import { PulsoidHeartRate } from "../hooks/use-pulsoid-heart-rate";
-import { HeartRateConnectionPulsoid } from "./HeartRateConnectionPulsoid";
-import { ReadyState } from "react-use-websocket";
-import { Loading } from "../Loading";
-import { HeartRateConnectionWebsocket } from "./HeartRateConnectionWebsocket";
-import { WebsocketHeartRate } from "../hooks/use-websocket-heart-rate";
+import { FC } from 'react';
+import { BleHeartRate } from '../hooks/use-ble-heart-rate';
+import { PulsoidHeartRate } from '../hooks/use-pulsoid-heart-rate';
+import { HeartRateConnectionPulsoid } from './HeartRateConnectionPulsoid';
+import { ReadyState } from 'react-use-websocket';
+import { Loading } from '../Loading';
+import { HeartRateConnectionWebsocket } from './HeartRateConnectionWebsocket';
+import { WebsocketHeartRate } from '../hooks/use-websocket-heart-rate';
 
 export interface HeartRateSourcesProps {
     bleHeartRate: BleHeartRate;
@@ -32,5 +32,5 @@ export const HeartRateSources: FC<HeartRateSourcesProps> = ({ bleHeartRate, puls
 
             <HeartRateConnectionWebsocket websocketHeartRate={websocketHeartRate} />
         </div>
-    </>
+    </>;
 };

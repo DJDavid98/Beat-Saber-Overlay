@@ -1,0 +1,144 @@
+#credits {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: map-get($z-index-map, 'credits');
+  margin: $edge-spacing;
+  transform: scale(0);
+  text-align: left;
+  opacity: 0.85;
+
+  a {
+    display: block;
+    opacity: 0.25;
+    will-change: opacity;
+    transition: .1s opacity;
+    font-size: 2rem;
+    color: #fff;
+    text-decoration: none;
+    line-height: 1.3rem;
+
+    &:hover {
+      opacity: 1;
+    }
+
+    &:not(:last-child) {
+      margin-bottom: .5rem;
+    }
+  }
+
+  img {
+    width: 13rem;
+  }
+}
+
+#credits-clock {
+  color: #fff;
+  display: flex;
+  flex-flow: column nowrap;
+  align-items: flex-start;
+  justify-content: flex-start;
+
+  > * {
+    line-height: .75em;
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
+  }
+
+  .fix-alignment {
+    position: relative;
+    bottom: -0.1em;
+  }
+
+  .time {
+    font-size: 5rem;
+    margin: .15em 0;
+    transform: translateX(0.15em);
+
+    svg {
+      transform: skew(-12deg);
+    }
+  }
+
+  .time-meta {
+    font-size: 1.5rem;
+
+    @include dots-between-children;
+  }
+
+  .time-formats {
+    $height: .8em;
+    display: block;
+    height: $height;
+    overflow: hidden;
+    margin-left: .4rem;
+    width: 3.5em;
+    position: relative;
+
+    .time-value {
+      position: absolute;
+      top: 0;
+      left: 0;
+      display: block;
+      height: $height;
+      line-height: $height * 1.2;
+      will-change: transform, opacity;
+    }
+
+    &:not(.skip-animation) {
+      .time-value {
+        animation-duration: .6s;
+        animation-timing-function: cubic-bezier(0.68, -0.6, 0.32, 1.6);
+        animation-fill-mode: forwards;
+      }
+
+      &[data-format="12"] {
+        .time-12 {
+          animation-name: rotate-in;
+        }
+
+        .time-24 {
+          animation-name: rotate-out;
+        }
+      }
+
+      &[data-format="24"] {
+        .time-12 {
+          animation-name: rotate-out;
+        }
+
+        .time-24 {
+          animation-name: rotate-in;
+        }
+      }
+    }
+
+    &.skip-animation {
+      &[data-format="12"] .time-24,
+      &[data-format="24"] .time-12 {
+        transform: translateY(-$height);
+      }
+    }
+
+    @keyframes rotate-in {
+      from {
+        transform: translateY(-$height);
+      }
+
+      to {
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes rotate-out {
+      from {
+        transform: translateY(0);
+      }
+
+      to {
+        transform: translateY($height);
+      }
+    }
+  }
+}

@@ -1,9 +1,9 @@
-import { BsPlusHandshake } from "../validators/validate-bs-plus-handshake";
-import { BsPlusGameStateEvent } from "../validators/validate-bs-plus-game-state-event";
-import { BsPlusMapInfoEvent } from "../validators/validate-bs-plus-map-info-event";
-import { BsPlusScoreEvent } from "../validators/validate-bs-plus-score-event";
-import { BsPlusPauseEvent } from "../validators/validate-bs-plus-pause-event";
-import { BsPlusResumeEvent } from "../validators/validate-bs-plus-resume-event";
+import { BsPlusHandshake } from '../validators/validate-bs-plus-handshake';
+import { BsPlusGameStateEvent } from '../validators/validate-bs-plus-game-state-event';
+import { BsPlusMapInfoEvent } from '../validators/validate-bs-plus-map-info-event';
+import { BsPlusScoreEvent } from '../validators/validate-bs-plus-score-event';
+import { BsPlusPauseEvent } from '../validators/validate-bs-plus-pause-event';
+import { BsPlusResumeEvent } from '../validators/validate-bs-plus-resume-event';
 
 /**
  * @fileOverview

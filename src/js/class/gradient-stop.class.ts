@@ -1,5 +1,5 @@
-import { sortAscending } from "../utils/sort-ascending";
-import { getGradientStopWeights, hexToRgb, RGBArray, rgbToHex } from "../utils/colors";
+import { sortAscending } from '../utils/sort-ascending';
+import { getGradientStopWeights, hexToRgb, RGBArray, rgbToHex } from '../utils/colors';
 
 export type HexColorString = `#${string}`;
 

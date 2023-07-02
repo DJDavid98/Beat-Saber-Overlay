@@ -1,0 +1,39 @@
+.analog-clock {
+  fill-rule: evenodd;
+  clip-rule: evenodd;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-miterlimit: 1.5;
+
+  .second-hand,
+  .minute-hand,
+  .hour-hand {
+    fill: currentColor;
+    transform-origin: 32px 32px;
+    transition: transform 1s linear;
+  }
+
+  .clock-base {
+    opacity: 0.8;
+  }
+
+  .clock-face,
+  .clock-ticking {
+    fill: none;
+    stroke: currentColor;
+  }
+
+  .clock-face {
+    stroke-width: 6px;
+  }
+
+  .clock-ticking {
+    stroke-width: 5px;
+  }
+
+  .second-hand {
+    fill: none;
+    stroke: red;
+    stroke-width: 2px;
+  }
+}

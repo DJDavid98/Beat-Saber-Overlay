@@ -1,7 +1,7 @@
-import { dataPointToAccuracy, dataPointToEnergy } from "./mappers";
-import { LiveData } from "../model/live-data";
-import { rescaleCanvasPositionY } from "./graph-styles";
-import { graphGridHorizontalStepsBase, widerTimestampsSecondsThreshold } from "./constants";
+import { dataPointToAccuracy, dataPointToEnergy } from './mappers';
+import { LiveData } from '../model/live-data';
+import { rescaleCanvasPositionY } from './graph-styles';
+import { graphGridHorizontalStepsBase, widerTimestampsSecondsThreshold } from './constants';
 
 export type DataPoint = Pick<LiveData, 'seconds' | 'accuracy' | 'energy' | 'misses'>;
 
@@ -38,7 +38,7 @@ const getPointPosition = (
     const valueFloat = getValue ? getValue(dataPoint) / 100 : 100;
     const y: number = canvas.height * (1 - valueFloat);
     return [x, y];
-}
+};
 
 export const drawRect = (
     ctx: CanvasRenderingContext2D,
@@ -62,7 +62,7 @@ export const drawCross = (ctx: CanvasRenderingContext2D, positionX: number, posi
     // Move to bottom left line start
     ctx.moveTo(positionX - halfSize, positionY + halfSize);
     // Line to top right
-    ctx.lineTo(positionX + halfSize, positionY - halfSize)
+    ctx.lineTo(positionX + halfSize, positionY - halfSize);
     ctx.stroke();
 };
 

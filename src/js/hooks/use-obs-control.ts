@@ -1,6 +1,6 @@
-import { useCallback, useEffect, useState } from "react";
-import { isInBrowserSource } from "../utils/is-in-browser-source";
-import { ReadyState } from "react-use-websocket";
+import { useCallback, useEffect, useState } from 'react';
+import { isInBrowserSource } from '../utils/is-in-browser-source';
+import { ReadyState } from 'react-use-websocket';
 
 const brbSceneName = 'BRB';
 const mainSceneName = 'Main';
@@ -29,9 +29,9 @@ export const useObsControl = (mapDataReadyState: ReadyState, bsrKey: unknown) =>
                 setStreaming(true);
             },
             obsStreamingStopping() {
-                setStreaming(false)
+                setStreaming(false);
             },
-        } satisfies Partial<{ [k in keyof OBSStudioEventMap]: (event: OBSStudioEventMap[k]) => void }>
+        } satisfies Partial<{ [k in keyof OBSStudioEventMap]: (event: OBSStudioEventMap[k]) => void }>;
 
         Object.entries(listeners).forEach(([event, handler]) => {
             window.addEventListener(event as never, handler as never);
@@ -62,4 +62,4 @@ export const useObsControl = (mapDataReadyState: ReadyState, bsrKey: unknown) =>
             window.obsstudio.setCurrentScene(targetSceneName);
         }
     }, [controlLevel, currentSceneName, getTargetSceneName, streaming]);
-}
+};

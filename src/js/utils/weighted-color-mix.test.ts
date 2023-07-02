@@ -1,5 +1,5 @@
-import { weightedColorMixerFactory } from "./weighted-color-mix";
-import { GradientStop } from "../class/gradient-stop.class";
+import { weightedColorMixerFactory } from './weighted-color-mix';
+import { GradientStop } from '../class/gradient-stop.class';
 
 describe('weightedColorMix', () => {
     it('should return exact stop correctly', () => {

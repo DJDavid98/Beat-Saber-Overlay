@@ -1,5 +1,5 @@
-import { findClosestValues } from "./find-closest-values";
-import { identityMapper } from "./mappers";
+import { findClosestValues } from './find-closest-values';
+import { identityMapper } from './mappers';
 
 describe('findClosestValues', () => {
     const mockValues = [1, 2, 3, 4, 5];

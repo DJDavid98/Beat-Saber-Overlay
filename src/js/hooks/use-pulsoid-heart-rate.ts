@@ -1,7 +1,7 @@
-import { useCallback, useEffect, useState } from "react";
-import { useFailsafeWebsocket } from "./use-failsafe-websocket";
-import { validatePulsoidHeartRate } from "../validators/validate-pulsoid-heart-rate";
-import { HeartRateHookCommonFields } from "../utils/heart-rate-hook-common-fields";
+import { useCallback, useEffect, useState } from 'react';
+import { useFailsafeWebsocket } from './use-failsafe-websocket';
+import { validatePulsoidHeartRate } from '../validators/validate-pulsoid-heart-rate';
+import { HeartRateHookCommonFields } from '../utils/heart-rate-hook-common-fields';
 
 export interface PulsoidHeartRate extends HeartRateHookCommonFields {
     changeToken: (newToken: string) => void;
@@ -51,4 +51,4 @@ export const usePulsoidHeartRate = (): PulsoidHeartRate => {
         changeToken,
         getToken,
     };
-}
+};

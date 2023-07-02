@@ -1,6 +1,6 @@
-import Joi from "joi";
-import { dataValidatorFactory } from "../utils/data-validator-factory";
-import { BsdpMapData } from "../model/bsdp";
+import Joi from 'joi';
+import { dataValidatorFactory } from '../utils/data-validator-factory';
+import { BsdpMapData } from '../model/bsdp';
 
 const mapDataSchema = Joi.object<BsdpMapData>({
     InLevel: Joi.boolean(),

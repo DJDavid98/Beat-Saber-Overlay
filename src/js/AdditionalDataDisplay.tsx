@@ -1,14 +1,14 @@
-import { FC, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { DataPoint, drawGraphs } from "./utils/draw-graphs";
-import { AdditionalDataModifiers } from "./AdditionalDataModifiers";
-import { Modifiers } from "./model/modifiers";
-import { LiveData } from "./model/live-data";
-import { barGraphStyleFactory, crossGraphStyleFactory, lineGraphStyleFactory } from "./utils/graph-styles";
-import { weightedColorMixerFactory } from "./utils/weighted-color-mix";
-import { GradientStop } from "./class/gradient-stop.class";
-import { dataPointToAccuracy, dataPointToMisses, mapAccuracyRating } from "./utils/mappers";
-import { EnergyIcon } from "./EnergyIcon";
-import { AccuracyGraphDurationLegend } from "./AccuracyGraphDurationLegend";
+import { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { DataPoint, drawGraphs } from './utils/draw-graphs';
+import { AdditionalDataModifiers } from './AdditionalDataModifiers';
+import { Modifiers } from './model/modifiers';
+import { LiveData } from './model/live-data';
+import { barGraphStyleFactory, crossGraphStyleFactory, lineGraphStyleFactory } from './utils/graph-styles';
+import { weightedColorMixerFactory } from './utils/weighted-color-mix';
+import { GradientStop } from './class/gradient-stop.class';
+import { dataPointToAccuracy, dataPointToMisses, mapAccuracyRating } from './utils/mappers';
+import { EnergyIcon } from './EnergyIcon';
+import { AccuracyGraphDurationLegend } from './AccuracyGraphDurationLegend';
 
 const accuracyGradient: GradientStop[] = [
     new GradientStop('#ff0000', 0),
@@ -149,7 +149,7 @@ export const AdditionalDataDisplay: FC<AdditionalDataDisplayProps> = ({
                     {!!liveData?.misses && <span>{liveData.misses} Miss{liveData.misses !== 1 && 'es'}</span>}
                     <span><span className="fixed-width accuracy-percent">{accuracy}</span> Accuracy</span>
                     <span style={accuracyStyle} className="fixed-width accuracy-rating">{accuracyRating}</span>
-                    {typeof energy === "number" && (
+                    {typeof energy === 'number' && (
                         <span className="energy" style={energyStyle}>
                             <span className="fixed-width energy-amount">{energy.toFixed(0)}</span>
                             <EnergyIcon />
@@ -172,5 +172,5 @@ export const AdditionalDataDisplay: FC<AdditionalDataDisplayProps> = ({
             </div>
         )}
         <AdditionalDataModifiers modifiers={modifiers} />
-    </>
-}
+    </>;
+};

@@ -1,9 +1,9 @@
-import { useFailsafeWebsocket } from "./use-failsafe-websocket";
-import { bsdpDataSource } from "../utils/constants";
-import { validateBsdpMapData } from "../validators/validate-bsdp-map-data";
-import { DataDisplayProps } from "../DataDisplay";
-import { useMemo } from "react";
-import { validateBsdpLiveData } from "../validators/validate-bsdp-live-data";
+import { useFailsafeWebsocket } from './use-failsafe-websocket';
+import { bsdpDataSource } from '../utils/constants';
+import { validateBsdpMapData } from '../validators/validate-bsdp-map-data';
+import { DataDisplayProps } from '../DataDisplay';
+import { useMemo } from 'react';
+import { validateBsdpLiveData } from '../validators/validate-bsdp-live-data';
 
 export const useBsdpData = (enabled: boolean): DataDisplayProps => {
     const {

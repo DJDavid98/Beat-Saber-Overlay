@@ -1,6 +1,7 @@
-import { mountAppComponent } from "./js/utils/mount-app-component";
-import { App } from "./js/App";
-import { HeartRate } from "./js/heartrate/HeartRate";
+import { mountAppComponent } from './js/utils/mount-app-component';
+import { App } from './js/App';
+import { HeartRate } from './js/heartrate/HeartRate';
+import { Credits } from './js/credits/Credits';
 
 /**
  * Get the query parameters
@@ -10,3 +11,4 @@ const params = new URLSearchParams(window.location.search);
 
 mountAppComponent('app-root', App, { dataSourceName: params.get('source') }, 500);
 mountAppComponent('heart-rate-root', HeartRate, {});
+mountAppComponent('credits-root', Credits, {});

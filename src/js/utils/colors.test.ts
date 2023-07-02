@@ -1,18 +1,18 @@
-import { getGradientStopWeights, hexToRgb, rgbToHex } from "./colors";
+import { getGradientStopWeights, hexToRgb, rgbToHex } from './colors';
 
 describe('hexToRgb', () => {
     it('should convert hex number to rgb components correctly', () => {
         expect(hexToRgb(0)).toEqual([0, 0, 0]);
         expect(hexToRgb(0x808080)).toEqual([128, 128, 128]);
         expect(hexToRgb(0xffffff)).toEqual([255, 255, 255]);
-    })
+    });
 
     it('should add alpha value t output if provided', () => {
         const alpha = Math.random();
         expect(hexToRgb(0, alpha)).toEqual([0, 0, 0, alpha]);
         expect(hexToRgb(0x808080, alpha)).toEqual([128, 128, 128, alpha]);
         expect(hexToRgb(0xffffff, alpha)).toEqual([255, 255, 255, alpha]);
-    })
+    });
 });
 
 describe('rgbToHex', () => {

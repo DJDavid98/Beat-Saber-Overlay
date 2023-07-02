@@ -1,7 +1,7 @@
-import { MutableRefObject, useCallback, useEffect, useRef, useState } from "react";
-import { HeartRateHookCommonFields } from "../utils/heart-rate-hook-common-fields";
-import { ReadyState } from "react-use-websocket";
-import { isInBrowserSource } from "../utils/is-in-browser-source";
+import { MutableRefObject, useCallback, useEffect, useRef, useState } from 'react';
+import { HeartRateHookCommonFields } from '../utils/heart-rate-hook-common-fields';
+import { ReadyState } from 'react-use-websocket';
+import { isInBrowserSource } from '../utils/is-in-browser-source';
 
 interface CharacteristicEvent extends Event {
     target: Event['target'] & {
@@ -142,4 +142,4 @@ export const useBleHeartRate = (): BleHeartRate => {
         disconnect,
         supported,
     };
-}
+};

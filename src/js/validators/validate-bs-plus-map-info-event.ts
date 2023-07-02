@@ -1,6 +1,6 @@
-import { dataValidatorFactory } from "../utils/data-validator-factory";
-import Joi from "joi";
-import { BsPlusMapInfo, BsPlusMapInfoEventName, BsPlusEventMessageType } from "../model/bs-plus";
+import { dataValidatorFactory } from '../utils/data-validator-factory';
+import Joi from 'joi';
+import { BsPlusMapInfo, BsPlusMapInfoEventName, BsPlusEventMessageType } from '../model/bs-plus';
 
 export interface BsPlusMapInfoEvent {
     _type: typeof BsPlusEventMessageType;

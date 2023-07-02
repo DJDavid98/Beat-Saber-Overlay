@@ -7,10 +7,10 @@ import {
     useCallback,
     useRef,
     useState
-} from "react";
-import { WebsocketHeartRate } from "../hooks/use-websocket-heart-rate";
-import { ReadyState } from "react-use-websocket";
-import { Loading } from "../Loading";
+} from 'react';
+import { WebsocketHeartRate } from '../hooks/use-websocket-heart-rate';
+import { ReadyState } from 'react-use-websocket';
+import { Loading } from '../Loading';
 
 export const HeartRateConnectionWebsocket: FC<{
     websocketHeartRate: WebsocketHeartRate
@@ -72,7 +72,7 @@ export const HeartRateConnectionWebsocket: FC<{
                 <p>Enter the full URL of the WebSocket server, including port number and any query parameters.</p>
                 <p>This typically starts with <code>ws://</code> or <code>wss://</code> and may contain secret keys.</p>
                 <input
-                    type={hostInputHidden ? "password" : "url"}
+                    type={hostInputHidden ? 'password' : 'url'}
                     name="websocket-host"
                     autoComplete="off"
                     value={hostInputValue}
@@ -106,5 +106,5 @@ export const HeartRateConnectionWebsocket: FC<{
                 <button type="button" onClick={closeDialog}>Cancel</button>
             </form>
         </dialog>
-    </>
-}
+    </>;
+};
