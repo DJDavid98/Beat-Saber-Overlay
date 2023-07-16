@@ -48,7 +48,7 @@ export const CreditsClock: FC<{ visibleTime: number }> = ({ visibleTime }) => {
         const seconds = now.getSeconds();
         const secondsSinceMidnight = getSecondsSinceMidnight(hours, minutes, seconds);
         return {
-            time: timeFormatter24.format(now).replace(/^0/, ''),
+            time: timeFormatter24.format(now).replace(/^0/, '').replace(/^24(:\d{2}:\d{2})$/, '0$1'),
             time12: timeFormatter12.format(now),
             secondsSinceMidnight
         };
