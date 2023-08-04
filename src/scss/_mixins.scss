@@ -1,3 +1,10 @@
+$special-font: 'Teko', sans-serif;
+
+@mixin special-font {
+  font-family: $special-font;
+  font-style: italic;
+}
+
 @mixin outline {
   $shadow: '';
   @for $i from -1 through 1 {
@@ -14,7 +21,7 @@
 
 @mixin loading-element($loader-size, $color: $text-color, $frozen: false) {
   $loader-spacing: .2;
-  $loader-thickness-multiplier: .12;
+  $loader-thickness-multiplier: .08;
   $loader-rotations-per-cycle: 3;
   $loader-border-opacity: .35;
   $loader-thickness: $loader-size * $loader-thickness-multiplier;

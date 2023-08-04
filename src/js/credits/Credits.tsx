@@ -1,28 +1,47 @@
-import { FC, useEffect, useMemo, useRef, useState } from 'react';
+import { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { CreditsClock } from './CreditsClock';
+import { CreditsFollow } from './CreditsFollow';
+import { useSocket } from '../utils/socket-context';
 
 enum CreditsScene {
     LINKS = 'credits-links',
     TIME = 'credits-time',
+    FOLLOW = 'credits-follow',
 }
 
 const sceneOrder = [CreditsScene.LINKS, CreditsScene.TIME];
+const [initialScene, ...initialSceneQueue] = sceneOrder;
 
-const getNextScene = (currentScene: CreditsScene) => {
-    const nextSceneIndex = sceneOrder.indexOf(currentScene) + 1;
-    return sceneOrder[nextSceneIndex === sceneOrder.length ? 0 : nextSceneIndex];
-};
+const FORCE_NEXT_SCENE = 'next';
 
 const sceneTransitionDurationMs = 500;
-const sceneDisplayTimeMs = 20e3;
-const sceneVisibleTimeMs = sceneDisplayTimeMs + sceneTransitionDurationMs;
+const sceneDisplayTimeMap: Record<CreditsScene, number> = {
+    [CreditsScene.LINKS]: 45e3,
+    [CreditsScene.TIME]: 15e3,
+    [CreditsScene.FOLLOW]: 8e3,
+};
+const clockSceneVisibleTimeMs = sceneDisplayTimeMap[CreditsScene.TIME] + sceneTransitionDurationMs;
 
 export const Credits: FC = () => {
     const creditsRef = useRef<HTMLDivElement>(null);
-    const [scene, setScene] = useState(sceneOrder[0]);
+    const sceneQueue = useRef<Array<CreditsScene>>(initialSceneQueue);
+    const forceSceneSwitch = useRef<(to: CreditsScene | typeof FORCE_NEXT_SCENE) => void>(() => undefined);
+    const [scene, setScene] = useState(initialScene);
+    const socket = useSocket();
+
+    const getNextScene = useCallback(() => {
+        const nextScene = sceneQueue.current[0];
+        if (sceneQueue.current.length === 1) {
+            sceneQueue.current = sceneOrder;
+        } else {
+            sceneQueue.current = sceneQueue.current.slice(1);
+        }
+        return nextScene;
+    }, []);
 
     useEffect(() => {
         if (!creditsRef.current) return;
+        const creditsEl = creditsRef.current;
 
         const transitionEffectFrames = [
             { transform: `scale(0,0)` },
@@ -34,17 +53,24 @@ export const Credits: FC = () => {
             fill: 'forwards',
             easing: 'cubic-bezier(0.25, 1, 0.5, 1)'
         };
-        const appearAnimation = creditsRef.current.animate(transitionEffectFrames, transitionEffectOptions);
+        const appearAnimation = creditsEl.animate(transitionEffectFrames, transitionEffectOptions);
         let disappearAnimation: Animation | undefined;
         let sceneSwitchTimeout: ReturnType<typeof setTimeout> | undefined;
+        const sceneDisplayTimeMs = sceneDisplayTimeMap[scene];
+        forceSceneSwitch.current = (to) => {
+            if (to === scene) return;
+            setScene(to === FORCE_NEXT_SCENE ? getNextScene() : to);
+        };
         appearAnimation.addEventListener('finish', () => {
-            sceneSwitchTimeout = setTimeout(() => {
-                if (!creditsRef.current) return;
-
-                disappearAnimation = creditsRef.current.animate(transitionEffectFrames.reverse(), transitionEffectOptions);
+            forceSceneSwitch.current = (to) => {
+                if (to === scene) return;
+                disappearAnimation = creditsEl.animate(transitionEffectFrames.reverse(), transitionEffectOptions);
                 disappearAnimation.addEventListener('finish', () => {
-                    setScene(getNextScene(scene));
+                    setScene(to === FORCE_NEXT_SCENE ? getNextScene() : to);
                 });
+            };
+            sceneSwitchTimeout = setTimeout(() => {
+                forceSceneSwitch.current(getNextScene());
             }, sceneDisplayTimeMs);
         });
 
@@ -53,7 +79,21 @@ export const Credits: FC = () => {
             disappearAnimation?.cancel();
             clearTimeout(sceneSwitchTimeout);
         };
-    }, [scene]);
+    }, [getNextScene, scene]);
+
+    useEffect(() => {
+        if (!socket) return;
+
+        const followEventListener = () => {
+            sceneQueue.current.unshift(scene);
+            forceSceneSwitch.current?.(CreditsScene.FOLLOW);
+        };
+        socket.on('follow', followEventListener);
+
+        return () => {
+            socket.off('follow', followEventListener);
+        };
+    }, [scene, socket]);
 
     const sceneJsx = useMemo(() => {
         switch (scene) {
@@ -63,13 +103,18 @@ export const Credits: FC = () => {
                         <a href="https://djdavid98.art" target="_blank" rel="noopener noreferrer">
                             <img src="https://djdavid98.art/logos/djdavid98.svg" alt="DJDavid98" />
                         </a>
-                        <a href="https://overlay.djdavid98.art">overlay.djdavid98.art</a>
                     </div>
                 );
             case CreditsScene.TIME:
                 return (
                     <div id={CreditsScene.TIME} hidden={scene !== CreditsScene.TIME}>
-                        <CreditsClock visibleTime={sceneVisibleTimeMs} />
+                        <CreditsClock visibleTime={clockSceneVisibleTimeMs} />
+                    </div>
+                );
+            case CreditsScene.FOLLOW:
+                return (
+                    <div id={CreditsScene.FOLLOW} hidden={scene !== CreditsScene.FOLLOW}>
+                        <CreditsFollow />
                     </div>
                 );
         }

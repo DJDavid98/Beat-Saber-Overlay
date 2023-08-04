@@ -10,6 +10,7 @@ export interface ClientToServerEvents {
 export interface ServerToClientEvents {
     chat: (message: ChatWebsocketMessage) => void;
     clearChat: () => void;
+    follow: () => void;
 }
 
 export interface ChatWebsocketMessage {

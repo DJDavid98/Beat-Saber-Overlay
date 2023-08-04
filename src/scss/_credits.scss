@@ -4,9 +4,9 @@
   left: 0;
   z-index: map-get($z-index-map, 'credits');
   margin: $edge-spacing;
-  transform: scale(0);
+  transform: scale(1, 1);
   text-align: left;
-  opacity: 0.85;
+  opacity: 1;
 
   a {
     display: block;
@@ -21,14 +21,10 @@
     &:hover {
       opacity: 1;
     }
-
-    &:not(:last-child) {
-      margin-bottom: .5rem;
-    }
   }
 
   img {
-    width: 13rem;
+    width: 14rem;
   }
 }
 
@@ -46,34 +42,24 @@
     align-items: center;
   }
 
-  .fix-alignment {
-    position: relative;
-    bottom: -0.1em;
-  }
-
   .time {
-    font-size: 5rem;
-    margin: .15em 0;
-    transform: translateX(0.15em);
-
-    svg {
-      transform: skew(-12deg);
-    }
+    font-size: 4rem;
+    margin-bottom: .15em;
   }
 
   .time-meta {
-    font-size: 1.5rem;
+    font-size: 1.25rem;
 
     @include dots-between-children;
   }
 
   .time-formats {
-    $height: .8em;
+    $height: 1em;
     display: block;
     height: $height;
     overflow: hidden;
-    margin-left: .4rem;
-    width: 3.5em;
+    margin-left: .25em;
+    width: 5em;
     position: relative;
 
     .time-value {
@@ -82,7 +68,7 @@
       left: 0;
       display: block;
       height: $height;
-      line-height: $height * 1.2;
+      line-height: $height;
       will-change: transform, opacity;
     }
 

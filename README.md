@@ -5,42 +5,43 @@ and [BeatSaberPlus](https://github.com/hardcpp/BeatSaberPlus) mods for my person
 
 ## Features
 
-The overlay works with either of the two mods. In order to use a specific one as the data source, add `?source=`
-followed by a data source's code to the URL. Available codes:
+The overlay works with either of the two mods. In order to use a specific one as the data source,
+add `?source=` followed by a data source's code to the URL. Available codes:
 
 * `BSDP` - BSDataPuller (default, supports all features)
 * `BSPlus` - BeatSaberPlus (unreliable BSR IDs, no ranked stars)
-* `MOCK` - Virtual source which uses pre-defined events (for testing).
+* `MOCK` - Virtual source which uses pre-defined events (for testing)
+* `OFF` - Disables the top right area of the overlay completely
 
-While playing, the current song will appear in the top-right corner along with some supplemental information like
-difficulty, length, ranked stars and PP. Additionally, an accuracy graph and the currently selected modifiers are
-displayed.
+While playing, the current song will appear in the top-right corner along with some supplemental
+information like difficulty, length, ranked stars and PP. Additionally, an accuracy graph and the
+currently selected modifiers are displayed.
 
-If given advanced access to OBS through the browser source settings, the overlay will automatically switch between two
-scenes called `Main` and `BRB`, the first is used while the overlay connection is open, and the second in any other
-case. If you don't want this behavior, do not grant advanced access to the browser source.
+If given advanced access to OBS through the browser source settings, the overlay will automatically
+switch between two scenes called `Main` and `BRB`, the first is used while the overlay connection is
+open, and the second in any other case. If you don't want this behavior, do not grant advanced
+access to the browser source.
 
-Heart rate tracking can be configured by hovering over the bottom left corner of the page. Currently supported options
+Heart rate tracking can be configured by hovering over the bottom left corner of the page. Currently
+supported options
 are:
 
 * Bluetooth Low Energy heart rate monitors via the Web Bluetooth API
     * The button is only shown if the current browser supports it
     * Tested with Polar H10 in Chrome v110 on Windows 11 22H2
-    * Requires using the browser UI to select the desired device, so you will need to use Window Capture and color
-      filter, this does not work when used as an OBS Browser Source
+    * Requires using the browser UI to select the desired device, so you will need to use Window
+      Capture and color filter, this does not work when used as an OBS Browser Source
     * The device selection is lost when the page is reloaded, and it must be selected again
 * Pulsoid API using websockets (requires a paid subscription)
-    * After the API key is entered in the dialog it will be preserved across page loads until manually cleared
+    * After the API key is entered in the dialog it will be preserved across page loads until
+      manually cleared
 * Any arbitrary Websocket source
     * You can provide a host URL and optionally path to the JSON object data
     * Without a path the socket data is treated as plaintext numbers
 
-## Future plans
-
-* allow changing the "bouncy" image via URL parameters
-
 ## Attributions
 
 * Bluetooth logo: https://commons.wikimedia.org/wiki/File:Bluetooth.svg
-* Pulsoid logo is based on the Pulsoid App icon. This project is not affiliated with Pulsoid in any way, shape, or form.
+* Pulsoid logo is based on the Pulsoid App icon. This project is not affiliated with Pulsoid in any
+  way, shape, or form.
 * Bouncy icon made by [KisuPantteri](https://www.twitch.tv/KisuPantteri)

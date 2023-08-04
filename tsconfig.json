@@ -5,6 +5,7 @@
     "jsx": "react-jsx",
     "module": "NodeNext",
     "strict": true,
-    "target": "ES2022"
+    "target": "ES2022",
+    "resolveJsonModule": true
   }
 }

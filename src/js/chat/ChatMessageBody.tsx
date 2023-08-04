@@ -52,11 +52,11 @@ const ChatMessageBodyComponent: FC<Pick<ChatWebsocketMessage, 'message' | 'tags'
         tokenizedMessage.push(message);
     }
 
-    return <div className="chat-message-body">{tokenizedMessage.map(token => {
+    return <div className="chat-message-body">{tokenizedMessage.map((token, index) => {
         if (typeof token !== 'string')
-            return <ChatEmote {...token} large={emoteOnly} />;
+            return <ChatEmote key={index} {...token} large={emoteOnly} />;
 
-        return <>{token}</>;
+        return <span key={index}>{token}</span>;
     })}</div>;
 };
 

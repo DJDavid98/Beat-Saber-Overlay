@@ -12,6 +12,10 @@
   opacity: 1;
 }
 
+#beat-saber {
+  @include special-font;
+}
+
 #data-layout {
   display: flex;
   justify-content: flex-end;

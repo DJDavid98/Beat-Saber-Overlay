@@ -1,5 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Teko:wght@400;600&display=swap');
-
 $text-color: #fff;
 $mapper-text-color: #67C271;
 $font-size: 3.5rem;
@@ -9,12 +7,7 @@ $outline-color: darken(#30466E, 10%);
 $cover-size: 10rem;
 $image-spacing: $cover-size * 0.2;
 $transition-delay: .05s;
-$special-font: 'Teko', sans-serif;
-
-@mixin special-font {
-  font-family: $special-font;
-  font-style: italic;
-}
+$base-font: 'Catamaran', sans-serif;
 
 $z-index-map: (
         "bouncy": 1,
@@ -34,7 +27,8 @@ html, body {
 }
 
 body {
-  @include special-font;
+  font-family: $base-font;
+  font-weight: 400;
   background-color: #000;
   user-select: none;
   @include outline;
@@ -55,9 +49,10 @@ body {
 }
 
 @import "scss/analog-clock";
+@import "scss/beat-saber";
 @import "scss/chat";
-@import "scss/credits";
-@import "scss/data-layout";
-@import "scss/dialog";
 @import "scss/connection";
+@import "scss/credits";
+@import "scss/dialog";
+@import "scss/event-alert";
 @import "scss/heart-rate";

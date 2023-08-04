@@ -1,0 +1,39 @@
+#event-alert {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  font-size: 6rem;
+  line-height: 1.2em;
+
+  #event-alert-icon {
+    width: .9em;
+    height: .9em;
+  }
+
+  #event-alert-message {
+    margin: 0 0 0 .25em;
+    padding: 0;
+    animation: alert-appear ease-out 1s forwards, alert-color-shift 3s linear infinite;
+    transform-origin: 0 50%;
+  }
+}
+
+@keyframes alert-appear {
+  from {
+    transform: rotateY(-90deg) translateY(0.05em);
+    opacity: 0;
+  }
+  to {
+    transform: rotateY(0deg) translateY(0.05em);
+    opacity: 1;
+  }
+}
+
+@keyframes alert-color-shift {
+  0%, 100% {
+    color: #bdd3f8;
+  }
+  50% {
+    color: #7ba6f2;
+  }
+}

@@ -56,13 +56,13 @@ export const CreditsClock: FC<{ visibleTime: number }> = ({ visibleTime }) => {
 
     return <div id="credits-clock">
         <span className="time">
-            <AnalogClock secondsSinceMidnight={secondsSinceMidnight} square />
+            <AnalogClock secondsSinceMidnight={secondsSinceMidnight} />
             <div
                 className={classNames('time-formats', { ['skip-animation']: skipAnimation })}
                 data-format={twelveHour ? '12' : '24'}
             >
-                <span className="time-value time-12 fix-alignment">{time12}</span>
-                <span className="time-value time-24 fix-alignment">{time}</span>
+                <span className="time-value time-12">{time12}</span>
+                <span className="time-value time-24">{time}</span>
             </div>
         </span>
         <span className="time-meta">
