@@ -1,12 +1,13 @@
 import { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { CreditsClock } from './CreditsClock';
-import { CreditsFollow } from './CreditsFollow';
 import { useSocket } from '../utils/socket-context';
+import { EventAlert } from '../EventAlert';
 
 enum CreditsScene {
     LINKS = 'credits-links',
     TIME = 'credits-time',
     FOLLOW = 'credits-follow',
+    DONATION = 'credits-donation',
 }
 
 const sceneOrder = [CreditsScene.LINKS, CreditsScene.TIME];
@@ -16,9 +17,10 @@ const FORCE_NEXT_SCENE = 'next';
 
 const sceneTransitionDurationMs = 500;
 const sceneDisplayTimeMap: Record<CreditsScene, number> = {
-    [CreditsScene.LINKS]: 45e3,
-    [CreditsScene.TIME]: 15e3,
+    [CreditsScene.LINKS]: 40e3,
+    [CreditsScene.TIME]: 20e3,
     [CreditsScene.FOLLOW]: 8e3,
+    [CreditsScene.DONATION]: 8e3,
 };
 const clockSceneVisibleTimeMs = sceneDisplayTimeMap[CreditsScene.TIME] + sceneTransitionDurationMs;
 
@@ -88,10 +90,18 @@ export const Credits: FC = () => {
             sceneQueue.current.unshift(scene);
             forceSceneSwitch.current?.(CreditsScene.FOLLOW);
         };
+        const donationEventListener = () => {
+            // TODO Find a way to display name
+            sceneQueue.current.unshift(scene);
+            forceSceneSwitch.current?.(CreditsScene.DONATION);
+        };
         socket.on('follow', followEventListener);
+        socket.on('donation', donationEventListener);
+        Object.assign(window, { followEventListener, donationEventListener });
 
         return () => {
             socket.off('follow', followEventListener);
+            socket.off('donation', donationEventListener);
         };
     }, [scene, socket]);
 
@@ -114,7 +124,17 @@ export const Credits: FC = () => {
             case CreditsScene.FOLLOW:
                 return (
                     <div id={CreditsScene.FOLLOW} hidden={scene !== CreditsScene.FOLLOW}>
-                        <CreditsFollow />
+                        <EventAlert>
+                            Thank you for the follow!
+                        </EventAlert>;
+                    </div>
+                );
+            case CreditsScene.DONATION:
+                return (
+                    <div id={CreditsScene.DONATION} hidden={scene !== CreditsScene.DONATION}>
+                        <EventAlert>
+                            Thank you for your support!
+                        </EventAlert>;
                     </div>
                 );
         }

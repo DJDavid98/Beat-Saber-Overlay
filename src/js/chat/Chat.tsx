@@ -2,10 +2,12 @@ import { FC, useEffect, useState } from 'react';
 import { useSocket } from '../utils/socket-context';
 import { ChatWebsocketMessage } from '../model/app-scoket';
 import { ChatMessage } from './ChatMessage';
+import { useAutoScrollToBottom } from '../hooks/use-auto-scroll-to-bottom';
 
-const MAX_MESSAGE_COUNT = 5;
+const MAX_MESSAGE_COUNT = 12;
 
 export const Chat: FC = () => {
+    const chatRef = useAutoScrollToBottom<HTMLDivElement>();
     const [messages, setMessages] = useState<Array<ChatWebsocketMessage>>(() => []);
     const socket = useSocket();
 
@@ -25,7 +27,7 @@ export const Chat: FC = () => {
         };
     }, [socket]);
 
-    return <div id="chat">
+    return <div id="chat" ref={chatRef}>
         {messages.map(message => <ChatMessage key={message.tags.id} {...message} />)}
     </div>;
 };

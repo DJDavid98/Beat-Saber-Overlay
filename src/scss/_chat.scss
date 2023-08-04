@@ -14,8 +14,10 @@
   padding: 0 1rem;
   font-style: normal;
   line-height: 1.2;
+  overflow: hidden;
 
   .chat-message {
+    flex: 0 0 auto;
     display: block;
     width: 100%;
     overflow: hidden;
@@ -49,6 +51,7 @@
   .chat-message-body {
     overflow-wrap: break-word;
     hyphens: auto;
+    font-size: .9em;
   }
 
   .chat-message-emote {
