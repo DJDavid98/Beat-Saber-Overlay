@@ -20,7 +20,7 @@ $z-index-map: (
         "bouncy": 1,
         "credits": 1,
         "heart-rate": 2,
-        "app": 3,
+        "beat-saber": 3,
 );
 
 @import "scss/mixins";
@@ -44,17 +44,18 @@ body {
   line-height: 1em;
 }
 
-#app {
+#beat-saber {
   color: $text-color;
   font-size: $font-size;
   text-align: right;
   position: absolute;
   top: $edge-spacing;
   right: $edge-spacing * 1.5;
-  z-index: map-get($z-index-map, 'app');
+  z-index: map-get($z-index-map, 'beat-saber');
 }
 
 @import "scss/analog-clock";
+@import "scss/chat";
 @import "scss/credits";
 @import "scss/data-layout";
 @import "scss/dialog";

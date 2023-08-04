@@ -22,9 +22,11 @@
     "@types/obs-studio": "^2.17.0",
     "@types/react": "^18",
     "@types/react-dom": "^18",
+    "@types/tmi.js": "^1.8.3",
     "@types/web-bluetooth": "^0.0.16",
     "@typescript-eslint/eslint-plugin": "^5.53.0",
     "@typescript-eslint/parser": "^5.53.0",
+    "buffer": "^5.7.1",
     "classnames": "^2.3.2",
     "concurrently": "^7.6.0",
     "eslint": "^8.34.0",
@@ -44,8 +46,12 @@
     "react-use-websocket": "^4.3.1",
     "sass": "^1.57.1",
     "timers-browserify": "^2.0.12",
+    "tmi.js": "^1.8.5",
     "ts-jest": "^29.0.5",
     "typescript": "^4.9"
   },
-  "private": true
+  "private": true,
+  "dependencies": {
+    "socket.io-client": "^4.7.2"
+  }
 }

@@ -30,7 +30,7 @@ export const useReconnectingWebsocket = <T extends JsonValue | null = JsonValue 
         }
     }, []);
     const startRemountTimeout = useCallback(() => {
-        // Remount the app in case the connection stops for much longer than the reconnect interval
+        // Remount the component in case the connection stops for much longer than the reconnect interval
         clearRemountTimeout();
         if (remountOnFail && !remountingRef.current) {
             remountTimeout.current = setTimeout(beginRemount, reconnectInterval * 5);

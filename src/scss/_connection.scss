@@ -5,8 +5,8 @@ $connection-loading-size: $cover-size * .65;
   margin-left: $image-spacing;
 }
 
-// Placeholder loading indicator ring displayed while the app re-mounts
-#app-root:empty {
+// Placeholder loading indicator ring displayed while the beat-saber re-mounts
+#beat-saber-root:empty {
   position: absolute;
   top: $edge-spacing;
   right: $edge-spacing;
