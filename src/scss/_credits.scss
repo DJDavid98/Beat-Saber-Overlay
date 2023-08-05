@@ -75,7 +75,7 @@
     &:not(.skip-animation) {
       .time-value {
         animation-duration: .6s;
-        animation-timing-function: cubic-bezier(0.68, -0.6, 0.32, 1.6);
+        animation-timing-function: $ease-in-out-back;
         animation-fill-mode: forwards;
       }
 

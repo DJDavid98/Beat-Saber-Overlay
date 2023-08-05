@@ -1,4 +1,4 @@
-import { CSSProperties, FC, useMemo } from 'react';
+import { CSSProperties, FC, Fragment, useMemo } from 'react';
 import { ChatMessageBody } from './ChatMessageBody';
 import { ChatUserMessage } from '../utils/chat-messages';
 import { ChatPronouns } from './ChatPronouns';
@@ -9,14 +9,20 @@ export const UserMessage: FC<ChatUserMessage> = ({
     nameColor,
     name,
     pronouns,
-    emotes
+    emotes,
+    messageColor,
 }) => {
     const nameStyle: CSSProperties = useMemo(() => ({ color: nameColor }), [nameColor]);
-    return <div className="chat-message">
+    return <Fragment>
         <div className="chat-message-author">
             <ChatPronouns pronouns={pronouns} />
             <span className="chat-message-author-name" style={nameStyle}>{name}</span>
         </div>
-        <ChatMessageBody timestamp={timestamp} message={message} emotes={emotes} />
-    </div>;
+        <ChatMessageBody
+            timestamp={timestamp}
+            message={message}
+            emotes={emotes}
+            messageColor={messageColor}
+        />
+    </Fragment>;
 };

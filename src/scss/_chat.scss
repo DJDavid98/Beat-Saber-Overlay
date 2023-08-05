@@ -1,5 +1,9 @@
 #chat {
   $font-size: 2rem;
+  $show-message-delay: 0s;
+  $show-message-duration: .4s;
+  $hide-message-delay: 30s;
+  $hide-message-duration: 1s;
   position: absolute;
   left: 0;
   top: 20vh;
@@ -22,6 +26,33 @@
     width: 100%;
     overflow: hidden;
     position: relative;
+    animation-name: show-chat-message, hide-chat-message;
+    animation-delay: $show-message-delay, $hide-message-delay;
+    animation-timing-function: $ease-out-back, ease-in;
+    animation-fill-mode: forwards;
+    animation-duration: $show-message-duration, $hide-message-duration;
+    transform-origin: 0 50%;
+    will-change: transform;
+
+    @keyframes show-chat-message {
+      from {
+        opacity: 0;
+        transform: translateX(-50%);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    @keyframes hide-chat-message {
+      from {
+        opacity: 1;
+      }
+      to {
+        opacity: 0;
+      }
+    }
 
     &:not(:last-child) {
       margin-bottom: .25em;
@@ -57,15 +88,44 @@
     overflow-wrap: break-word;
     hyphens: auto;
     font-size: .9em;
+    position: relative;
+    display: block;
+    width: 100%;
+    padding: .15em .25em;
+
+    &::after {
+      content: '';
+      display: block;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      pointer-events: none;
+      background-color: currentColor;
+      border-radius: .2em;
+      opacity: .03;
+      transform: scaleY(1);
+      will-change: transform;
+      animation-name: shrink-message-background;
+      animation-duration: $hide-message-delay;
+      animation-delay: $show-message-duration + $show-message-delay;
+      animation-timing-function: linear;
+      animation-fill-mode: forwards;
+    }
+
+    @keyframes shrink-message-background {
+      to {
+        width: 0;
+      }
+    }
 
     .chat-message-send-timestamp {
       opacity: .5;
       font-size: .75em;
       margin-right: .5em;
       font-weight: bold;
-      width: 5rem;
-      display: inline-block;
-      text-align: right;
     }
 
     .chat-message-emote {
@@ -77,6 +137,7 @@
 
       &.large {
         --size: 1.5em;
+        vertical-align: bottom;
       }
     }
   }

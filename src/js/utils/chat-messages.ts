@@ -4,11 +4,14 @@ import { ChatEmoteProps } from '../chat/ChatEmote';
 
 export enum SystemMessageType {
     INFO,
+    SUCCESS,
+    ERROR,
     FOLLOW,
     DONATION,
 }
 
 interface BaseChatMessage {
+    id: string;
     timestamp: Date;
     message: string;
 }
@@ -18,13 +21,11 @@ export interface ChatSystemMessage extends BaseChatMessage {
 }
 
 export interface ChatUserMessage extends BaseChatMessage {
-    id: string | undefined;
     name: string;
-    // TODO string[]
-    pronouns: string | null;
-    nameColor?: string;
-    messageColor?: string;
-    emotes?: Record<string, string[]>;
+    pronouns: string[];
+    nameColor: string | undefined;
+    messageColor: string | undefined;
+    emotes: Record<string, string[]> | undefined;
 }
 
 export type DisplayableMessage = ChatUserMessage | ChatSystemMessage;
@@ -53,8 +54,10 @@ export interface TokenizeMessage {
     emoteOnly: boolean;
 }
 
-export const tokenizeMessage = (message: string,
-    emotes: ChatUserMessage['emotes']): TokenizeMessage => {
+export const tokenizeMessage = (
+    message: string,
+    emotes: ChatUserMessage['emotes']
+): TokenizeMessage => {
     const tokens: Array<MessageToken> = [];
     const emoteKeys = typeof emotes === 'object' && emotes !== null ? Object.keys(emotes) : [];
     let emoteOnly = false;

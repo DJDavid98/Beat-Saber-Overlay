@@ -63,13 +63,11 @@ export const Credits: FC = () => {
         let sceneSwitchTimeout: ReturnType<typeof setTimeout> | undefined;
         const sceneDisplayTimeMs = sceneDisplayTimeMap[scene];
         forceSceneSwitch.current = (to) => {
-            console.debug('forceSceneSwitch.current #1', to);
             if (to === scene) return;
             setScene(to === FORCE_NEXT_SCENE ? getNextScene() : to);
         };
         appearAnimation.addEventListener('finish', () => {
             forceSceneSwitch.current = (to) => {
-                console.debug('forceSceneSwitch.current #2', to);
                 if (to === scene) return;
                 disappearAnimation = creditsEl.animate(transitionEffectFrames.reverse(), transitionEffectOptions);
                 disappearAnimation.addEventListener('finish', () => {
