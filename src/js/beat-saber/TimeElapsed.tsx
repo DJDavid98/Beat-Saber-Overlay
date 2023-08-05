@@ -1,5 +1,5 @@
 import { FC, useEffect, useRef, useState } from 'react';
-import { useDurationFormatTimer } from './hooks/use-duration-format-timer';
+import { useDurationFormatTimer } from '../hooks/use-duration-format-timer';
 
 export const TimeElapsed: FC<{ since: Date }> = ({ since }) => {
     const timerRef = useRef<null | ReturnType<typeof setInterval>>(null);

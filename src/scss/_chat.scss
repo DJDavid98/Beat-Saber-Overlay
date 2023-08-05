@@ -10,8 +10,8 @@
   justify-content: flex-end;
   align-items: stretch;
   color: #fff;
-  font-size: $font-size;
   padding: 0 1rem;
+  font-size: $font-size;
   font-style: normal;
   line-height: 1.2;
   overflow: hidden;
@@ -23,23 +23,28 @@
     overflow: hidden;
     position: relative;
 
+    &:not(:last-child) {
+      margin-bottom: .25em;
+    }
+
+    &.chat-message-system {
+      font-size: .85em;
+    }
+
     .chat-message-author {
       display: flex;
       flex-flow: row nowrap;
       justify-content: flex-start;
       align-items: center;
-      margin-bottom: .15em;
+      margin-bottom: .1em;
 
       > *:not(:last-child) {
         margin-right: .5em;
       }
 
       .chat-message-author-pronouns {
-        font-size: .5em;
-        line-height: .9em;
-        padding: 0.3em;
-        border-radius: .2em;
-        border: .05em solid;
+        font-size: .6em;
+        padding: 0 0.3em;
       }
 
       .chat-message-author-name {
@@ -52,17 +57,27 @@
     overflow-wrap: break-word;
     hyphens: auto;
     font-size: .9em;
-  }
 
-  .chat-message-emote {
-    --size: 1em;
-    width: var(--size);
-    height: var(--size);
-    display: inline-block;
-    object-fit: contain;
+    .chat-message-send-timestamp {
+      opacity: .5;
+      font-size: .75em;
+      margin-right: .5em;
+      font-weight: bold;
+      width: 5rem;
+      display: inline-block;
+      text-align: right;
+    }
 
-    &.large {
-      --size: 1.5em;
+    .chat-message-emote {
+      --size: 1em;
+      width: var(--size);
+      height: var(--size);
+      display: inline-block;
+      object-fit: contain;
+
+      &.large {
+        --size: 1.5em;
+      }
     }
   }
 }

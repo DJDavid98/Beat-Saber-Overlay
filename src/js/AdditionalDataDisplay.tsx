@@ -3,11 +3,15 @@ import { DataPoint, drawGraphs } from './utils/draw-graphs';
 import { AdditionalDataModifiers } from './AdditionalDataModifiers';
 import { Modifiers } from './model/modifiers';
 import { LiveData } from './model/live-data';
-import { barGraphStyleFactory, crossGraphStyleFactory, lineGraphStyleFactory } from './utils/graph-styles';
+import {
+    barGraphStyleFactory,
+    crossGraphStyleFactory,
+    lineGraphStyleFactory
+} from './utils/graph-styles';
 import { weightedColorMixerFactory } from './utils/weighted-color-mix';
 import { GradientStop } from './class/gradient-stop.class';
 import { dataPointToAccuracy, dataPointToMisses, mapAccuracyRating } from './utils/mappers';
-import { EnergyIcon } from './EnergyIcon';
+import { EnergyIcon } from './beat-saber/EnergyIcon';
 import { AccuracyGraphDurationLegend } from './AccuracyGraphDurationLegend';
 
 const accuracyGradient: GradientStop[] = [
@@ -146,9 +150,13 @@ export const AdditionalDataDisplay: FC<AdditionalDataDisplayProps> = ({
         {graphWidth > 0 && (
             <div>
                 <div id="accuracy-label">
-                    {!!liveData?.misses && <span>{liveData.misses} Miss{liveData.misses !== 1 && 'es'}</span>}
+                    {!!liveData?.misses &&
+                        <span>{liveData.misses} Miss{liveData.misses !== 1 && 'es'}</span>}
                     <span><span className="fixed-width accuracy-percent">{accuracy}</span> Accuracy</span>
-                    <span style={accuracyStyle} className="fixed-width accuracy-rating">{accuracyRating}</span>
+                    <span
+                        style={accuracyStyle}
+                        className="fixed-width accuracy-rating"
+                    >{accuracyRating}</span>
                     {typeof energy === 'number' && (
                         <span className="energy" style={energyStyle}>
                             <span className="fixed-width energy-amount">{energy.toFixed(0)}</span>

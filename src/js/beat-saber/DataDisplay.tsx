@@ -1,11 +1,11 @@
 import { FC, useEffect, useRef, useState } from 'react';
 import { ReadyState } from 'react-use-websocket';
-import { useObsControl } from './hooks/use-obs-control';
+import { useObsControl } from '../hooks/use-obs-control';
 import { SongInfoDisplay, SongInfoDisplayProps } from './SongInfoDisplay';
 import { Connection } from './Connection';
-import { AdditionalDataDisplay } from './AdditionalDataDisplay';
-import { Modifiers } from './model/modifiers';
-import { LiveData } from './model/live-data';
+import { AdditionalDataDisplay } from '../AdditionalDataDisplay';
+import { Modifiers } from '../model/modifiers';
+import { LiveData } from '../model/live-data';
 
 export interface DataDisplayProps {
     mapData?: {

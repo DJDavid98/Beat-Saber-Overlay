@@ -60,7 +60,6 @@ export const SocketProvider: FC<SocketProviderProps> = ({ serverUrl, room, child
 
     useEffect(() => {
         if (socket && room) {
-            console.log('emit', 'joinRoom', room);
             socket.emit('joinRoom', room);
         }
     }, [room, socket]);

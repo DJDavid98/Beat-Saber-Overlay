@@ -12,6 +12,7 @@ export interface ServerToClientEvents {
     clearChat: () => void;
     follow: () => void;
     donation: (message: DonationWebsocketMessage) => void;
+    joinedRoom: (room: string) => void;
 }
 
 export interface DonationWebsocketMessage {

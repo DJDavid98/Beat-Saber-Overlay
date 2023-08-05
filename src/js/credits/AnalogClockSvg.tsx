@@ -7,7 +7,7 @@ interface LoadingIndicatorProps {
     secondsSinceMidnight: number;
 }
 
-export const AnalogClock: FC<LoadingIndicatorProps> = ({
+export const AnalogClockSvg: FC<LoadingIndicatorProps> = ({
     size = 58,
     color,
     square = false,
@@ -26,10 +26,12 @@ export const AnalogClock: FC<LoadingIndicatorProps> = ({
         const secondsRatio = secondsSinceMidnight / 60;
         const minutesRatio = secondsRatio / 60;
         const hoursRatio = secondsSinceMidnight / 12 / 60 / 60;
+        // Disable transitions at exactly midnight to avoid "rewinding" effect
+        const transition = secondsSinceMidnight === 0 ? 'none !important' : undefined;
         return {
-            secondHandStyle: { transform: `rotate(${360 * secondsRatio}deg)` },
-            minuteHandStyle: { transform: `rotate(${360 * minutesRatio}deg)` },
-            hourHandStyle: { transform: `rotate(${360 * hoursRatio}deg)` }
+            secondHandStyle: { transform: `rotate(${360 * secondsRatio}deg)`, transition },
+            minuteHandStyle: { transform: `rotate(${360 * minutesRatio}deg)`, transition },
+            hourHandStyle: { transform: `rotate(${360 * hoursRatio}deg)`, transition }
         };
     }, [secondsSinceMidnight]);
 

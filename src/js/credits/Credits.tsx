@@ -17,17 +17,20 @@ const FORCE_NEXT_SCENE = 'next';
 
 const sceneTransitionDurationMs = 500;
 const sceneDisplayTimeMap: Record<CreditsScene, number> = {
-    [CreditsScene.LINKS]: 40e3,
+    [CreditsScene.LINKS]: 20e3,
     [CreditsScene.TIME]: 20e3,
     [CreditsScene.FOLLOW]: 8e3,
     [CreditsScene.DONATION]: 8e3,
 };
 const clockSceneVisibleTimeMs = sceneDisplayTimeMap[CreditsScene.TIME] + sceneTransitionDurationMs;
+const forceSceneSwitchDefault = (): void => {
+    throw new Error('forceSceneSwitch is not set');
+};
 
 export const Credits: FC = () => {
     const creditsRef = useRef<HTMLDivElement>(null);
     const sceneQueue = useRef<Array<CreditsScene>>(initialSceneQueue);
-    const forceSceneSwitch = useRef<(to: CreditsScene | typeof FORCE_NEXT_SCENE) => void>(() => undefined);
+    const forceSceneSwitch = useRef<(to: CreditsScene | typeof FORCE_NEXT_SCENE) => void>(forceSceneSwitchDefault);
     const [scene, setScene] = useState(initialScene);
     const socket = useSocket();
 
@@ -60,11 +63,13 @@ export const Credits: FC = () => {
         let sceneSwitchTimeout: ReturnType<typeof setTimeout> | undefined;
         const sceneDisplayTimeMs = sceneDisplayTimeMap[scene];
         forceSceneSwitch.current = (to) => {
+            console.debug('forceSceneSwitch.current #1', to);
             if (to === scene) return;
             setScene(to === FORCE_NEXT_SCENE ? getNextScene() : to);
         };
         appearAnimation.addEventListener('finish', () => {
             forceSceneSwitch.current = (to) => {
+                console.debug('forceSceneSwitch.current #2', to);
                 if (to === scene) return;
                 disappearAnimation = creditsEl.animate(transitionEffectFrames.reverse(), transitionEffectOptions);
                 disappearAnimation.addEventListener('finish', () => {
@@ -91,13 +96,11 @@ export const Credits: FC = () => {
             forceSceneSwitch.current?.(CreditsScene.FOLLOW);
         };
         const donationEventListener = () => {
-            // TODO Find a way to display name
             sceneQueue.current.unshift(scene);
             forceSceneSwitch.current?.(CreditsScene.DONATION);
         };
         socket.on('follow', followEventListener);
         socket.on('donation', donationEventListener);
-        Object.assign(window, { followEventListener, donationEventListener });
 
         return () => {
             socket.off('follow', followEventListener);
@@ -106,6 +109,7 @@ export const Credits: FC = () => {
     }, [scene, socket]);
 
     const sceneJsx = useMemo(() => {
+        // noinspection JSUnreachableSwitchBranches
         switch (scene) {
             case CreditsScene.LINKS:
                 return (

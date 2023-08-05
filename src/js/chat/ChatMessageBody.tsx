@@ -1,63 +1,26 @@
 import { FC, memo } from 'react';
-import { ChatWebsocketMessage } from '../model/app-scoket';
-import { ChatEmote, ChatEmoteProps } from './ChatEmote';
+import { ChatEmote } from './ChatEmote';
+import { ChatUserMessage, tokenizeMessage } from '../utils/chat-messages';
+import { format } from 'date-fns';
 
-type MessageToken = string | ChatEmoteProps;
-type EmoteRange = { start: number, finish: number, id: string, text: string }
-
-const ChatMessageBodyComponent: FC<Pick<ChatWebsocketMessage, 'message' | 'tags'>> = ({
+const ChatMessageBodyComponent: FC<Pick<ChatUserMessage, 'timestamp' | 'message' | 'emotes' | 'messageColor'>> = ({
+    timestamp,
     message,
-    tags
+    emotes,
+    messageColor
 }) => {
-    const tokenizedMessage: Array<MessageToken> = [];
-    const emoteKeys = typeof tags.emotes === 'object' && tags.emotes !== null ? Object.keys(tags.emotes) : [];
-    let emoteOnly = false;
-    if (emoteKeys.length > 0) {
-        // We have emotes, let's process them
-        const normalizedEmoteRanges = emoteKeys.reduce((finalRanges, id) => {
-            const emoteRanges = tags.emotes?.[id];
-            if (emoteRanges) {
-                emoteRanges.forEach(rangeSpecifier => {
-                    const range = rangeSpecifier.split('-').map(Number);
-                    const start = range[0];
-                    const finish = range[1] + 1;
-                    const text = message.substring(start, finish);
-                    finalRanges.push({ start, finish, id, text });
-                });
-            }
-            return finalRanges;
-        }, [] as EmoteRange[]).sort(({ start: startA }, { start: startB }) => startA - startB);
+    const { tokens, emoteOnly } = tokenizeMessage(message, emotes);
+    const formattedTs = format(timestamp, 'HH:mm:ss');
+    return <div className="chat-message-body" style={{ color: messageColor }}>
+        <span className="chat-message-send-timestamp">{formattedTs}</span>
+        {
+            tokens.map((token, index) => {
+                if (typeof token !== 'string')
+                    return <ChatEmote key={index} {...token} large={emoteOnly} />;
 
-        let lastRangeFinish = 0;
-        // For every range
-        normalizedEmoteRanges.forEach(emoteRange => {
-            if (emoteRange.start > lastRangeFinish) {
-                const textBeforeEmote = message.substring(lastRangeFinish, emoteRange.start);
-                if (textBeforeEmote.length > 0) {
-                    tokenizedMessage.push(textBeforeEmote);
-                }
-            }
-            // Push an emote token
-            tokenizedMessage.push(emoteRange);
-            lastRangeFinish = emoteRange.finish;
-        });
-        if (lastRangeFinish < message.length) {
-            const finalSubstring = message.substring(lastRangeFinish, message.length);
-            if (finalSubstring.length > 0) tokenizedMessage.push(finalSubstring);
-        }
-
-        emoteOnly = tokenizedMessage.every(token => typeof token !== 'string');
-    } else {
-        // We don't have emotes, take the full text as-is
-        tokenizedMessage.push(message);
-    }
-
-    return <div className="chat-message-body">{tokenizedMessage.map((token, index) => {
-        if (typeof token !== 'string')
-            return <ChatEmote key={index} {...token} large={emoteOnly} />;
-
-        return <span key={index}>{token}</span>;
-    })}</div>;
+                return <span key={index}>{token}</span>;
+            })
+        }</div>;
 };
 
 export const ChatMessageBody = memo(ChatMessageBodyComponent);

@@ -1,4 +1,4 @@
-import { DataDisplayProps } from '../DataDisplay';
+import { DataDisplayProps } from '../beat-saber/DataDisplay';
 import { useReconnectingWebsocket } from './use-reconnecting-websocket';
 import { bsPlusDataSource } from '../utils/constants';
 import { Reducer, useCallback, useMemo, useReducer, useRef } from 'react';
@@ -47,13 +47,22 @@ const bsPlusDataReducer: Reducer<BsPlusDataState, BsPlusAction> = (state, action
             case BsPlusScoreEventName:
                 return {
                     ...state,
-                    score: { ...action.scoreEvent, ts: new Date(), visualTime: action.scoreEvent.time }
+                    score: {
+                        ...action.scoreEvent,
+                        ts: new Date(),
+                        visualTime: action.scoreEvent.time
+                    }
                 };
             case BsPlusPauseEventName:
                 if (state.score) {
                     return {
                         ...state,
-                        score: { ...state.score, time: action.pauseTime, visualTime: action.pauseTime, ts: new Date() }
+                        score: {
+                            ...state.score,
+                            time: action.pauseTime,
+                            visualTime: action.pauseTime,
+                            ts: new Date()
+                        }
                     };
                 }
                 break;
@@ -79,7 +88,11 @@ const bsPlusDataDefaultState: BsPlusDataState = {};
 
 export const useBsPlusData = (enabled: boolean): DataDisplayProps => {
     const updateInterval = useRef<ReturnType<typeof setInterval> | null>(null);
-    const [{ mapInfo, gameState, score }, dispatch] = useReducer(bsPlusDataReducer, bsPlusDataDefaultState);
+    const [{
+        mapInfo,
+        gameState,
+        score
+    }, dispatch] = useReducer(bsPlusDataReducer, bsPlusDataDefaultState);
     const updateTick = useCallback(() => {
         // Send "fake" score updates with existing data based on the time elapsed
         dispatch(BsPlusTickEventName);

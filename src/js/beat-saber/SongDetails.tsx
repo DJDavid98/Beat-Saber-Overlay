@@ -1,6 +1,6 @@
 import { FunctionComponent, useMemo } from 'react';
-import { mapDifficulty } from './utils/mappers';
-import { useDurationFormatTimer } from './hooks/use-duration-format-timer';
+import { mapDifficulty } from '../utils/mappers';
+import { useDurationFormatTimer } from '../hooks/use-duration-format-timer';
 
 export interface SongDetails {
     difficulty?: string;

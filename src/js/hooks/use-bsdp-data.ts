@@ -1,7 +1,7 @@
 import { useFailsafeWebsocket } from './use-failsafe-websocket';
 import { bsdpDataSource } from '../utils/constants';
 import { validateBsdpMapData } from '../validators/validate-bsdp-map-data';
-import { DataDisplayProps } from '../DataDisplay';
+import { DataDisplayProps } from '../beat-saber/DataDisplay';
 import { useMemo } from 'react';
 import { validateBsdpLiveData } from '../validators/validate-bsdp-live-data';
 

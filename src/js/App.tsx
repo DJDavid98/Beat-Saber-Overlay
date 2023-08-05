@@ -1,5 +1,5 @@
 import { FunctionComponent } from 'react';
-import { BeatSaber } from './BeatSaber';
+import { BeatSaber } from './beat-saber/BeatSaber';
 import { SmartRemountWrapper } from './SmartRemountWrapper';
 import { HeartRate } from './heartrate/HeartRate';
 import { Credits } from './credits/Credits';

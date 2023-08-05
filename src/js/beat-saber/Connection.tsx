@@ -1,5 +1,5 @@
 import { FunctionComponent, useEffect, useState } from 'react';
-import { Loading } from './Loading';
+import { Loading } from '../Loading';
 import { ReadyState } from 'react-use-websocket';
 import { TimeElapsed } from './TimeElapsed';
 

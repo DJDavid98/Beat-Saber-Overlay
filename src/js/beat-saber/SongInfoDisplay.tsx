@@ -3,7 +3,7 @@ import { SongName, SongNameProps } from './SongName';
 import { SongAuthor, SongAuthorProps } from './SongAuthor';
 import { SongDetails } from './SongDetails';
 import { CoverImage, CoverImageProps } from './CoverImage';
-import { defaultCoverImage } from './utils/constants';
+import { defaultCoverImage } from '../utils/constants';
 
 export type SongInfoDisplayProps = SongNameProps & SongAuthorProps & SongDetails & CoverImageProps;
 

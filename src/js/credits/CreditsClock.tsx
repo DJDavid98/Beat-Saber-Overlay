@@ -1,5 +1,5 @@
 import { FC, useEffect, useMemo, useState } from 'react';
-import { AnalogClock } from '../AnalogClock';
+import { AnalogClockSvg } from './AnalogClockSvg';
 import classNames from 'classnames';
 
 const getSecondsSinceMidnight = (hours: number, minutes: number, seconds: number) => {
@@ -56,7 +56,7 @@ export const CreditsClock: FC<{ visibleTime: number }> = ({ visibleTime }) => {
 
     return <div id="credits-clock">
         <span className="time">
-            <AnalogClock secondsSinceMidnight={secondsSinceMidnight} />
+            <AnalogClockSvg secondsSinceMidnight={secondsSinceMidnight} />
             <div
                 className={classNames('time-formats', { ['skip-animation']: skipAnimation })}
                 data-format={twelveHour ? '12' : '24'}

@@ -3,7 +3,7 @@
   justify-content: flex-start;
   align-items: center;
   font-size: 5.25rem;
-  line-height: 1.2em;
+  line-height: 1em;
 
   #event-alert-icon {
     width: .9em;
@@ -20,11 +20,11 @@
 
 @keyframes alert-appear {
   from {
-    transform: rotateY(-90deg) translateY(0.05em);
+    transform: rotateY(-90deg) translateY(0.12em);
     opacity: 0;
   }
   to {
-    transform: rotateY(0deg) translateY(0.05em);
+    transform: rotateY(0deg) translateY(0.12em);
     opacity: 1;
   }
 }

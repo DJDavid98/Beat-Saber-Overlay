@@ -59,7 +59,7 @@
     height: $height;
     overflow: hidden;
     margin-left: .25em;
-    width: 5em;
+    width: 6em;
     position: relative;
 
     .time-value {
@@ -68,7 +68,7 @@
       left: 0;
       display: block;
       height: $height;
-      line-height: $height;
+      line-height: $height * 1.2;
       will-change: transform, opacity;
     }
 

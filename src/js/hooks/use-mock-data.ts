@@ -1,4 +1,4 @@
-import { DataDisplayProps } from '../DataDisplay';
+import { DataDisplayProps } from '../beat-saber/DataDisplay';
 import { useEffect, useRef, useState } from 'react';
 import { ReadyState } from 'react-use-websocket';
 import { getRandomBool, getRandomInt } from '../utils/random';
@@ -56,8 +56,14 @@ export const useMockData = (enabled: boolean): DataDisplayProps => {
             let noFail: boolean;
             let lifeCount: number;
             const steps: MockDataEmitterStep[] = [
-                { debug: 'Connecting', timeout: () => [0, () => setReadyState(ReadyState.CONNECTING)] },
-                { debug: 'Connected', timeout: () => [getRandomInt(1e3, 2e3), () => setReadyState(ReadyState.OPEN)] },
+                {
+                    debug: 'Connecting',
+                    timeout: () => [0, () => setReadyState(ReadyState.CONNECTING)]
+                },
+                {
+                    debug: 'Connected',
+                    timeout: () => [getRandomInt(1e3, 2e3), () => setReadyState(ReadyState.OPEN)]
+                },
                 {
                     debug: 'Loading level', timeout: () => [getRandomInt(1e3, 2e3), () => {
                         mockSongDuration = getRandomInt(60, 300);
@@ -157,7 +163,10 @@ export const useMockData = (enabled: boolean): DataDisplayProps => {
                 },
                 {
                     debug: 'Level finished',
-                    timeout: () => [getRandomInt(2e3, 3e3), () => setMapData(state => ({ ...state, inLevel: false }))]
+                    timeout: () => [getRandomInt(2e3, 3e3), () => setMapData(state => ({
+                        ...state,
+                        inLevel: false
+                    }))]
                 },
                 {
                     debug: 'Random disconnect',
@@ -170,7 +179,8 @@ export const useMockData = (enabled: boolean): DataDisplayProps => {
                 },
             ];
 
-            void steps.reduce((finalPromise, step, stepIndex) => finalPromise.then(() => new Promise<void>((res,
+            void steps.reduce((finalPromise, step,
+                stepIndex) => finalPromise.then(() => new Promise<void>((res,
                 rej) => {
                 console.group(`[Mock Data] Step #${stepIndex}: ${step.debug}`);
                 const timeoutValue = step.timeout();
