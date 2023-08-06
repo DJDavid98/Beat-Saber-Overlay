@@ -1,11 +1,12 @@
 import { ChatWebsocketMessage } from '../model/app-scoket';
-import { parseISO, isValid } from 'date-fns';
+import { isValid, parseISO } from 'date-fns';
 import { ChatEmoteProps } from '../chat/ChatEmote';
 
 export enum SystemMessageType {
     INFO,
     SUCCESS,
     ERROR,
+    WARN,
     FOLLOW,
     DONATION,
 }
@@ -22,6 +23,7 @@ export interface ChatSystemMessage extends BaseChatMessage {
 
 export interface ChatUserMessage extends BaseChatMessage {
     name: string;
+    username: string;
     pronouns: string[];
     nameColor: string | undefined;
     messageColor: string | undefined;

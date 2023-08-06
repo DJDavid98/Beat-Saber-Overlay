@@ -6,6 +6,7 @@ const messageTypeColorMap: Record<SystemMessageType, string> = {
     [SystemMessageType.INFO]: '#aaa',
     [SystemMessageType.SUCCESS]: '#afa',
     [SystemMessageType.ERROR]: '#faa',
+    [SystemMessageType.WARN]: '#fd0',
     [SystemMessageType.FOLLOW]: '#7ba6f2',
     [SystemMessageType.DONATION]: '#ca0',
 };

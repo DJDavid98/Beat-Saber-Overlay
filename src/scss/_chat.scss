@@ -92,6 +92,7 @@
     display: block;
     width: 100%;
     padding: .15em .25em;
+    box-sizing: border-box;
 
     &::after {
       content: '';

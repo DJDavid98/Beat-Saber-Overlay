@@ -1,6 +1,6 @@
-import { FC, useCallback, useEffect, useState } from 'react';
+import { FC, useCallback, useEffect, useMemo, useState } from 'react';
 import { useSocket } from '../utils/socket-context';
-import { ChatWebsocketMessage, DonationWebsocketMessage, } from '../model/app-scoket';
+import { ServerToClientEvents, } from '../model/app-scoket';
 import { useAutoScrollToBottom } from '../hooks/use-auto-scroll-to-bottom';
 import {
     ChatSystemMessage,
@@ -10,6 +10,7 @@ import {
     SystemMessageType
 } from '../utils/chat-messages';
 import { ChatMessage } from './ChatMessage';
+import DurationUnitFormat from 'intl-unofficial-duration-unit-format';
 
 const MAX_MESSAGE_COUNT = 12;
 
@@ -17,94 +18,138 @@ export const Chat: FC = () => {
     const chatRef = useAutoScrollToBottom<HTMLDivElement>();
     const [messages, setMessages] = useState<Array<DisplayableMessage>>(() => []);
     const socket = useSocket();
+    const df = useMemo(() => new DurationUnitFormat('en-US', {
+        style: DurationUnitFormat.styles.LONG,
+        format: '{days} {hour} {minutes} {seconds}'
+    }), []);
 
-    const addMessage = useCallback((data: DisplayableMessage) => {
-        setMessages((oldState) =>
-            [...oldState, data]
+    const addMessage = useCallback((
+        data: DisplayableMessage,
+        transformOldState?: (oldState: Array<DisplayableMessage>) => Array<DisplayableMessage>
+    ) => {
+        setMessages((oldState) => {
+            const transformedOldState = transformOldState ? transformOldState(oldState) : oldState;
+            return [...transformedOldState, data]
                 .sort((a, b) => a.timestamp.valueOf() - b.timestamp.valueOf())
-                .slice(-MAX_MESSAGE_COUNT));
+                .slice(-MAX_MESSAGE_COUNT);
+        });
     }, []);
 
     useEffect(() => {
         if (!socket) return;
 
-        const joinedRoomEventListener = (room: string) => {
-            const data: ChatSystemMessage = {
-                id: window.crypto.randomUUID(),
-                timestamp: new Date(),
-                type: SystemMessageType.INFO,
-                message: `Joined room #${room}`,
-            };
-            addMessage(data);
+        const listeners: ServerToClientEvents = {
+            joinedRoom(room: string) {
+                const data: ChatSystemMessage = {
+                    id: window.crypto.randomUUID(),
+                    timestamp: new Date(),
+                    type: SystemMessageType.INFO,
+                    message: `Joined room #${room}`,
+                };
+                addMessage(data);
+            },
+            follow(message) {
+                const data: ChatSystemMessage = {
+                    id: window.crypto.randomUUID(),
+                    timestamp: new Date(),
+                    type: SystemMessageType.FOLLOW,
+                    message: `We have a new follower!`,
+                };
+                if (typeof message.total === 'number') {
+                    data.message = data.message.replace('!', `, that's ${message.total} in total!`);
+                }
+                addMessage(data);
+            },
+            donation(message) {
+                const data: ChatSystemMessage = {
+                    id: window.crypto.randomUUID(),
+                    timestamp: new Date(),
+                    type: SystemMessageType.DONATION,
+                    message: `${message.from} just donated!`,
+                };
+                addMessage(data);
+            },
+            chat(message) {
+                const data: ChatUserMessage = {
+                    id: message.tags.id || window.crypto.randomUUID(),
+                    name: message.name,
+                    username: message.username,
+                    message: message.message,
+                    nameColor: message.tags.color,
+                    messageColor: undefined,
+                    pronouns: message.pronouns,
+                    emotes: message.tags.emotes,
+                    timestamp: getChatWebsocketMessageTimestamp(message),
+                };
+                addMessage(data);
+            },
+            clearChat() {
+                const data: ChatSystemMessage = {
+                    id: window.crypto.randomUUID(),
+                    timestamp: new Date(),
+                    type: SystemMessageType.INFO,
+                    message: `Chat has been cleared`,
+                };
+                setMessages([data]);
+            },
+            connect() {
+                const data: ChatSystemMessage = {
+                    id: window.crypto.randomUUID(),
+                    timestamp: new Date(),
+                    type: SystemMessageType.SUCCESS,
+                    message: `Chat connected`,
+                };
+                addMessage(data);
+            },
+            disconnect() {
+                const data: ChatSystemMessage = {
+                    id: window.crypto.randomUUID(),
+                    timestamp: new Date(),
+                    type: SystemMessageType.ERROR,
+                    message: `Chat disconnected`,
+                };
+                addMessage(data);
+            },
+            ban(message) {
+                let data: ChatSystemMessage | undefined;
+                if (message.detail) {
+                    const action = typeof message.detail.timeout === 'number'
+                        ? `timed out for ${df.format(message.detail.timeout)}`
+                        : 'permanently banned';
+                    const reason = message.detail.reason ? ` (${message.detail.reason})` : '';
+                    const bannedBy = message.detail.bannedBy ? ` by ${message.detail.bannedBy}` : '';
+                    data = {
+                        id: window.crypto.randomUUID(),
+                        timestamp: new Date(),
+                        type: SystemMessageType.WARN,
+                        message: `${message.username} has been ${action}${bannedBy}${reason}`,
+                    };
+                }
+                const filterMessagesFromUser = (oldState: Array<DisplayableMessage>) => (
+                    oldState.filter(m => 'username' in m ? m.username !== message.username : true)
+                );
+                if (data) {
+                    addMessage(data, filterMessagesFromUser);
+                } else {
+                    setMessages((oldState) => filterMessagesFromUser(oldState));
+                }
+            },
+            messageDeleted(data) {
+                setMessages((oldState) => oldState.filter(message => message.id !== data.id));
+            }
         };
-        const followEventListener = () => {
-            const data: ChatSystemMessage = {
-                id: window.crypto.randomUUID(),
-                timestamp: new Date(),
-                type: SystemMessageType.FOLLOW,
-                message: `We have a new follower!`,
-            };
-            addMessage(data);
-        };
-        const donationEventListener = (message: DonationWebsocketMessage) => {
-            const data: ChatSystemMessage = {
-                id: window.crypto.randomUUID(),
-                timestamp: new Date(),
-                type: SystemMessageType.DONATION,
-                message: `${message.from} just donated!`,
-            };
-            addMessage(data);
-        };
-        const chatEventListener = (message: ChatWebsocketMessage) => {
-            const data: ChatUserMessage = {
-                id: message.tags.id || window.crypto.randomUUID(),
-                name: message.name,
-                message: message.message,
-                nameColor: message.tags.color,
-                messageColor: undefined,
-                pronouns: message.pronouns,
-                emotes: message.tags.emotes,
-                timestamp: getChatWebsocketMessageTimestamp(message),
-            };
-            addMessage(data);
-        };
-        const clearChatEventListener = () => setMessages([]);
-        const connectEventListener = () => {
-            const data: ChatSystemMessage = {
-                id: window.crypto.randomUUID(),
-                timestamp: new Date(),
-                type: SystemMessageType.SUCCESS,
-                message: `Chat connected`,
-            };
-            addMessage(data);
-        };
-        const disconnectEventListener = () => {
-            const data: ChatSystemMessage = {
-                id: window.crypto.randomUUID(),
-                timestamp: new Date(),
-                type: SystemMessageType.ERROR,
-                message: `Chat disconnected`,
-            };
-            addMessage(data);
-        };
-        socket.on('joinedRoom', joinedRoomEventListener);
-        socket.on('follow', followEventListener);
-        socket.on('donation', donationEventListener);
-        socket.on('chat', chatEventListener);
-        socket.on('clearChat', clearChatEventListener);
-        socket.on('connect', connectEventListener);
-        socket.on('disconnect', disconnectEventListener);
+        for (const eventKey in listeners) {
+            const kex = eventKey as keyof ServerToClientEvents;
+            socket.on(kex, listeners[kex]);
+        }
 
         return () => {
-            socket.off('joinedRoom', joinedRoomEventListener);
-            socket.off('follow', followEventListener);
-            socket.off('donation', donationEventListener);
-            socket.off('chat', chatEventListener);
-            socket.off('clearChat', clearChatEventListener);
-            socket.off('connect', connectEventListener);
-            socket.off('disconnect', disconnectEventListener);
+            for (const eventKey in listeners) {
+                const kex = eventKey as keyof ServerToClientEvents;
+                socket.off(kex, listeners[kex]);
+            }
         };
-    }, [addMessage, socket]);
+    }, [addMessage, df, socket]);
 
     return <div id="chat" ref={chatRef}>
         {messages.map(message => <ChatMessage key={message.id} message={message} />)}
