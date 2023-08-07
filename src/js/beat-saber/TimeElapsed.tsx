@@ -21,5 +21,5 @@ export const TimeElapsed: FC<{ since: Date }> = ({ since }) => {
 
     const millisecondsElapsed = now.getTime() - since.getTime();
 
-    return <span id="time-elapsed">{df.format(millisecondsElapsed / 1e3)} elapsed</span>;
+    return <span className="time-elapsed">{df.format(millisecondsElapsed / 1e3)} elapsed</span>;
 };

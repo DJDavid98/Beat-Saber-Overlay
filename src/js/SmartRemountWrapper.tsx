@@ -1,8 +1,10 @@
 import { FunctionComponent, PropsWithChildren, useEffect, useMemo, useState } from 'react';
 import { RemountContextProvider } from './utils/remount-context';
+import { RemovableElementId } from './model/removable-element-id';
+import { RemovableElement } from './RemovableElement';
 
 interface Props extends PropsWithChildren {
-    rootId: string,
+    rootId: RemovableElementId,
     delayRemount?: number
 }
 
@@ -27,10 +29,9 @@ export const SmartRemountWrapper: FunctionComponent<Props> = ({
         return () => clearTimeout(timeout);
     }, [delayRemount, rootMounted]);
 
-    // keep
-    return <div id={rootId}>{rootMounted && (
+    return <RemovableElement id={rootId}>{rootMounted && (
         <RemountContextProvider value={remount}>
             {children}
         </RemountContextProvider>
-    )}</div>;
+    )}</RemovableElement>;
 };

@@ -11,6 +11,7 @@ import {
 } from '../utils/chat-messages';
 import { ChatMessage } from './ChatMessage';
 import DurationUnitFormat from 'intl-unofficial-duration-unit-format';
+import { RemovableElementId } from '../model/removable-element-id';
 
 const MAX_MESSAGE_COUNT = 12;
 
@@ -151,7 +152,7 @@ export const Chat: FC = () => {
         };
     }, [addMessage, df, socket]);
 
-    return <div id="chat" ref={chatRef}>
+    return <div id={RemovableElementId.CHAT} ref={chatRef}>
         {messages.map(message => <ChatMessage key={message.id} message={message} />)}
     </div>;
 };

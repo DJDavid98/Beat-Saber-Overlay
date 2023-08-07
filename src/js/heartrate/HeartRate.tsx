@@ -6,6 +6,8 @@ import { HeartRateSources } from './HeartRateSources';
 import { ReadyState } from 'react-use-websocket';
 import { Bouncy } from '../Bouncy';
 import { useWebsocketHeartRate } from '../hooks/use-websocket-heart-rate';
+import { RemovableElement } from '../RemovableElement';
+import { RemovableElementId } from '../model/removable-element-id';
 
 const connectingStatesSet = new Set([ReadyState.OPEN, ReadyState.CONNECTING]);
 
@@ -41,6 +43,8 @@ export const HeartRate: FC = () => {
                 disconnect={disconnect}
             />}
         </div>
-        <Bouncy heartRate={heartRate} />
+        <RemovableElement id={RemovableElementId.BOUNCY}>
+            <Bouncy heartRate={heartRate} />
+        </RemovableElement>
     </>;
 };

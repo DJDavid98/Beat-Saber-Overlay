@@ -82,86 +82,90 @@ $connect-icon-size: 3rem;
   background-image: url("./img/websocket.svg");
 }
 
-#heart-rate .connections {
-  display: flex;
-  flex-flow: row nowrap;
+#heart-rate {
+  .connections {
+    display: flex;
+    flex-flow: row nowrap;
 
-  .connection-button {
-    appearance: none;
-    color: transparent;
-    font-size: 0;
-    overflow: hidden;
-    width: $connect-icon-size;
+    .connection-button {
+      appearance: none;
+      color: transparent;
+      font-size: 0;
+      overflow: hidden;
+      width: $connect-icon-size;
+      height: $connect-icon-size;
+      border-width: 0;
+      cursor: pointer;
+      background-color: transparent;
+      background-repeat: no-repeat;
+      background-position: center;
+      background-size: contain;
+      transition: opacity .2s linear;
+      opacity: .5;
+      margin-right: 1rem;
+
+      &:hover {
+        opacity: 1;
+      }
+    }
+  }
+
+  .display {
+    display: flex;
+    flex-flow: row nowrap;
     height: $connect-icon-size;
-    border-width: 0;
-    cursor: pointer;
-    background-color: transparent;
-    background-repeat: no-repeat;
-    background-position: center;
-    background-size: contain;
-    transition: opacity .2s linear;
-    opacity: .5;
-    margin-right: 1rem;
 
-    &:hover {
-      opacity: 1;
+    .heart, .rate-number {
+      display: block;
+      font-size: 0;
+    }
+
+    .heart {
+      height: $connect-icon-size;
+      width: $connect-icon-size;
+      transform: scale(1.15);
+      background: url(img/heart.svg) no-repeat center;
+      background-size: contain;
+      margin-right: 0.5em;
+    }
+
+    .rate-number {
+      $spacing: -0.25em;
+      font-size: $connect-icon-size;
+      height: 1em;
+      width: 1em;
+      background-image: url(img/humbers.svg);
+      background-repeat: no-repeat;
+      background-size: 10em 1em;
+      background-position: 0 0;
+      margin-right: $spacing;
+
+      &[data-value="1"] {
+        margin-right: $spacing * 2;
+      }
     }
   }
 }
 
-#heart-rate .display {
-  display: flex;
-  flex-flow: row nowrap;
-  height: $connect-icon-size;
-
-  .heart, .rate-number {
-    display: block;
-    font-size: 0;
+.loading-indicator {
+  &.heart-rate-loading {
+    @include loading-element($connect-icon-size, #bb98d2);
   }
 
-  .heart {
-    height: $connect-icon-size;
-    width: $connect-icon-size;
-    transform: scale(1.15);
-    background: url(img/heart.svg) no-repeat center;
-    background-size: contain;
-    margin-right: 0.5em;
+  &.ble-loading {
+    @include loading-element($connect-icon-size, lighten(#0a3d91, 20%));
   }
 
-  .rate-number {
-    $spacing: -0.25em;
-    font-size: $connect-icon-size;
-    height: 1em;
-    width: 1em;
-    background-image: url(img/humbers.svg);
-    background-repeat: no-repeat;
-    background-size: 10em 1em;
-    background-position: 0 0;
-    margin-right: $spacing;
+  &.pulsoid-loading {
+    @include loading-element($connect-icon-size, #10a3b0);
+  }
 
-    &[data-value="1"] {
-      margin-right: $spacing * 2;
-    }
+  &.websocket-loading {
+    @include loading-element($connect-icon-size, #fff);
   }
 }
 
-#heart-rate-loading {
-  @include loading-element($connect-icon-size, #bb98d2);
-}
-
-#ble-loading {
-  @include loading-element($connect-icon-size, lighten(#0a3d91, 20%));
-}
-
-#pulsoid-loading {
-  @include loading-element($connect-icon-size, #10a3b0);
-}
-
-#websocket-loading {
-  @include loading-element($connect-icon-size, #fff);
-}
-
-#bouncy-video, #bouncy-video-blep {
+#bouncy-root video {
   $bouncy-image-size: 112px;
   display: block;
   position: absolute;

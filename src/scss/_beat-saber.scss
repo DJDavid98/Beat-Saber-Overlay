@@ -12,29 +12,43 @@
   opacity: 1;
 }
 
+$additional-data-label-font-size: 2.5rem;
+
+
+.song-name, .song-author, .song-details, #connection {
+  line-height: 1em;
+}
+
 #beat-saber {
+  color: $text-color;
+  font-size: $font-size;
+  text-align: right;
+  position: absolute;
+  top: $edge-spacing;
+  right: $edge-spacing * 1.5;
+  z-index: map-get($z-index-map, 'beat-saber');
   @include special-font;
 }
 
-#data-layout {
+.data-layout {
   display: flex;
   justify-content: flex-end;
   align-items: center;
   flex-flow: row nowrap;
   margin-bottom: 1rem;
 
-  &, #song-name, #song-author, #song-details, #connection {
+  &, .song-name, .song-author, .song-details, #connection {
     @include float-in-idle;
   }
 
   &.show {
-    &, #song-name, #song-author, #song-details, #connection {
+    &, .song-name, .song-author, .song-details, #connection {
       @include float-in-shown;
     }
   }
 }
 
-#cover-image {
+.song-cover-image {
   display: block;
   width: $cover-size;
   height: $cover-size;
@@ -44,7 +58,7 @@
   margin-left: $image-spacing;
 }
 
-#song-name {
+.song-name {
   transition-delay: $transition-delay * 1;
   margin-right: -($image-spacing * .5);
 
@@ -53,7 +67,7 @@
   }
 }
 
-#song-author {
+.song-author {
   transition-delay: $transition-delay * 2;
   color: rgba($text-color, .75);
   font-size: $font-size * .7;
@@ -64,7 +78,7 @@
   }
 }
 
-#song-details {
+.song-details {
   transition-delay: $transition-delay * 3;
   font-size: $font-size * .5;
 
@@ -75,7 +89,7 @@
   @include dots-between-children;
 }
 
-#additional-data {
+#beat-saber-additional-data-root {
   transition-delay: $transition-delay * 4;
   display: flex;
   flex-flow: row nowrap;
@@ -99,7 +113,7 @@
 
   // Minimum widths are used to prevent the UI from
   // jumping around too much as numbers change rapidly
-  #accuracy-label {
+  .accuracy-graph-label {
     > :not(:last-child) {
       margin-right: .75rem;
     }
@@ -128,12 +142,12 @@
     }
   }
 
-  #accuracy-label, #modifiers-label {
-    font-size: 2.5rem;
+  .accuracy-graph-label {
+    font-size: $additional-data-label-font-size;
   }
 }
 
-#accuracy-graph-wrapper {
+.accuracy-graph-wrapper {
   display: block;
   transform: skew(-8deg);
   border-radius: .25rem;
@@ -150,7 +164,7 @@
     }
   }
 
-  #accuracy-graph-range {
+  .accuracy-graph-range {
     top: 0;
     left: -6rem;
     bottom: 0;
@@ -176,7 +190,7 @@
     }
   }
 
-  #accuracy-graph-duration {
+  .accuracy-graph-duration {
     top: 100%;
     left: 0;
     bottom: -2rem;
@@ -205,10 +219,16 @@
   }
 }
 
-#modifier-list {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  font-size: 2rem;
-  line-height: 1em;
+#beat-saber-modifiers-root {
+  .modifiers-label {
+    font-size: $additional-data-label-font-size;
+  }
+
+  .modifiers-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-size: 2rem;
+    line-height: 1em;
+  }
 }

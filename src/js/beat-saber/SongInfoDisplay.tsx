@@ -2,7 +2,7 @@ import { FC } from 'react';
 import { SongName, SongNameProps } from './SongName';
 import { SongAuthor, SongAuthorProps } from './SongAuthor';
 import { SongDetails } from './SongDetails';
-import { CoverImage, CoverImageProps } from './CoverImage';
+import { SongCoverImage, CoverImageProps } from './SongCoverImage';
 import { defaultCoverImage } from '../utils/constants';
 
 export type SongInfoDisplayProps = SongNameProps & SongAuthorProps & SongDetails & CoverImageProps;
@@ -20,7 +20,7 @@ export const SongInfoDisplay: FC<SongInfoDisplayProps> = ({
     url,
 }) => {
     return <>
-        <div>
+        <div className="song-info-block">
             <SongName name={name} subName={subName} />
             <SongAuthor author={author} mapper={mapper} />
             <SongDetails
@@ -31,6 +31,6 @@ export const SongInfoDisplay: FC<SongInfoDisplayProps> = ({
                 pp={pp}
             />
         </div>
-        <CoverImage url={url || defaultCoverImage} />
+        <SongCoverImage url={url || defaultCoverImage} />
     </>;
 };

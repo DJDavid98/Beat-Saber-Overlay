@@ -11,7 +11,7 @@ export const AccuracyGraphDurationLegend: FC<{
 
     const isWider = songLength > widerTimestampsSecondsThreshold;
     return (
-        <span id="accuracy-graph-duration" className="graph-legend-wrapper">
+        <span className="accuracy-graph-duration graph-legend-wrapper">
             <span className="graph-legend"><span>{df.format(0)}</span></span>
             {isWider &&
                 <span className="graph-legend"><span>{df.format(songLength * 0.25)}</span></span>}

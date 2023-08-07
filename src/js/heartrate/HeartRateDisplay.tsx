@@ -47,15 +47,27 @@ export const HeartRateDisplay: FC<HeartRateDisplayProps> = ({
         <div className="display">
             <span className="heart" />
             {isLoading
-                ? <Loading id="heart-rate-loading" />
+                ? <Loading name="heart-rate" />
                 : <>
                     {heartRate >= 100 && (
-                        <span className="rate-number hundreds" style={styles.hundreds} data-value={numbers.hundreds} />
+                        <span
+                            className="rate-number hundreds"
+                            style={styles.hundreds}
+                            data-value={numbers.hundreds}
+                        />
                     )}
                     {heartRate >= 10 && (
-                        <span className="rate-number tens" style={styles.tens} data-value={numbers.tens} />
+                        <span
+                            className="rate-number tens"
+                            style={styles.tens}
+                            data-value={numbers.tens}
+                        />
                     )}
-                    <span className="rate-number units" style={styles.units} data-value={numbers.units} />
+                    <span
+                        className="rate-number units"
+                        style={styles.units}
+                        data-value={numbers.units}
+                    />
                 </>}
         </div>
     </>;

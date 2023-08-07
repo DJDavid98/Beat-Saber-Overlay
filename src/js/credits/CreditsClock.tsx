@@ -54,7 +54,7 @@ export const CreditsClock: FC<{ visibleTime: number }> = ({ visibleTime }) => {
         };
     }, [now, timeFormatter12, timeFormatter24]);
 
-    return <div id="credits-clock">
+    return <div className="credits-clock">
         <span className="time">
             <AnalogClockSvg secondsSinceMidnight={secondsSinceMidnight} />
             <div

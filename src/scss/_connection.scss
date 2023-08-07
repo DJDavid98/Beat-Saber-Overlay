@@ -1,6 +1,6 @@
 $connection-loading-size: $cover-size * .65;
 
-#connection-loading {
+.loading-indicator.connection-loading {
   @include loading-element($connection-loading-size);
   margin-left: $image-spacing;
 }
@@ -13,38 +13,38 @@ $connection-loading-size: $cover-size * .65;
   @include loading-element($connection-loading-size, darken($text-color, 50%), true);
 }
 
-#connection-component {
+#connection-root {
   display: flex;
   flex-flow: column nowrap;
   align-items: flex-end;
   justify-content: flex-start;
-}
 
-#connection-wrap {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  flex-flow: row nowrap;
-  margin-bottom: 1rem;
-}
-
-#connection {
-  transition-delay: $transition-delay * 1;
-  flex-flow: column nowrap;
-  justify-content: center;
-  align-items: flex-end;
-  font-size: $font-size;
-
-  > * {
-    display: block;
+  .connection-wrap {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    flex-flow: row nowrap;
+    margin-bottom: 1rem;
   }
 
-  .status {
-    font-size: $font-size * .5;
-  }
-}
+  .connection-status {
+    transition-delay: $transition-delay * 1;
+    flex-flow: column nowrap;
+    justify-content: center;
+    align-items: flex-end;
+    font-size: $font-size;
 
-#time-elapsed {
-  font-size: 2rem;
-  line-height: 1em;
+    > * {
+      display: block;
+    }
+
+    .status {
+      font-size: $font-size * .5;
+    }
+  }
+
+  .time-elapsed {
+    font-size: 2rem;
+    line-height: 1em;
+  }
 }

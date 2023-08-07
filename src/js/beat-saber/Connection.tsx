@@ -23,14 +23,14 @@ export const Connection: FunctionComponent<{ readyState: ReadyState }> = ({ read
         return () => setDisplayTime(null);
     }, []);
 
-    return <div id="connection-component">
-        <div id="connection-wrap">
-            <div id="connection">
+    return <>
+        <div className="connection-wrap">
+            <div className="connection-status">
                 <span className="status">Overlay status</span>
                 <span className="status-value">{mapConnectionState(readyState)}</span>
             </div>
-            <Loading id="connection-loading" />
+            <Loading name="connection" />
         </div>
         {displayTime !== null && <TimeElapsed since={displayTime} />}
-    </div>;
+    </>;
 };

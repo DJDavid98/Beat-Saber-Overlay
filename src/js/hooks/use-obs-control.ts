@@ -19,7 +19,7 @@ export const useObsControl = (mapDataReadyState: ReadyState, bsrKey: unknown) =>
             setControlLevel(level);
         });
         window.obsstudio.getStatus((status) => {
-            setStreaming(status.streaming);
+            setStreaming(status !== null && status.streaming);
         });
         const listeners = {
             obsSceneChanged(event: CustomEvent<OBSSceneInfo>) {

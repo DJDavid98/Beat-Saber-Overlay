@@ -1,18 +1,16 @@
 import { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { DataPoint, drawGraphs } from './utils/draw-graphs';
-import { AdditionalDataModifiers } from './AdditionalDataModifiers';
-import { Modifiers } from './model/modifiers';
-import { LiveData } from './model/live-data';
+import { DataPoint, drawGraphs } from '../utils/draw-graphs';
+import { LiveData } from '../model/live-data';
 import {
     barGraphStyleFactory,
     crossGraphStyleFactory,
     lineGraphStyleFactory
-} from './utils/graph-styles';
-import { weightedColorMixerFactory } from './utils/weighted-color-mix';
-import { GradientStop } from './class/gradient-stop.class';
-import { dataPointToAccuracy, dataPointToMisses, mapAccuracyRating } from './utils/mappers';
-import { EnergyIcon } from './beat-saber/EnergyIcon';
-import { AccuracyGraphDurationLegend } from './AccuracyGraphDurationLegend';
+} from '../utils/graph-styles';
+import { weightedColorMixerFactory } from '../utils/weighted-color-mix';
+import { GradientStop } from '../class/gradient-stop.class';
+import { dataPointToAccuracy, dataPointToMisses, mapAccuracyRating } from '../utils/mappers';
+import { EnergyIcon } from './EnergyIcon';
+import { AccuracyGraphDurationLegend } from '../AccuracyGraphDurationLegend';
 
 const accuracyGradient: GradientStop[] = [
     new GradientStop('#ff0000', 0),
@@ -40,7 +38,6 @@ const graphScale = 2;
 const graphHeight = 80;
 
 export interface AdditionalDataDisplayProps {
-    modifiers?: Modifiers;
     songLength?: number;
     liveData?: LiveData;
     /**
@@ -49,8 +46,7 @@ export interface AdditionalDataDisplayProps {
     reset?: boolean;
 }
 
-export const AdditionalDataDisplay: FC<AdditionalDataDisplayProps> = ({
-    modifiers,
+export const AdditionalDataAccuracyGraph: FC<AdditionalDataDisplayProps> = ({
     songLength,
     liveData,
     reset
@@ -146,39 +142,36 @@ export const AdditionalDataDisplay: FC<AdditionalDataDisplayProps> = ({
         height: `${graphHeight}px`
     }), [graphWidth]);
 
+    if (graphWidth === 0) return null;
+
     return <>
-        {graphWidth > 0 && (
-            <div>
-                <div id="accuracy-label">
-                    {!!liveData?.misses &&
-                        <span>{liveData.misses} Miss{liveData.misses !== 1 && 'es'}</span>}
-                    <span><span className="fixed-width accuracy-percent">{accuracy}</span> Accuracy</span>
-                    <span
-                        style={accuracyStyle}
-                        className="fixed-width accuracy-rating"
-                    >{accuracyRating}</span>
-                    {typeof energy === 'number' && (
-                        <span className="energy" style={energyStyle}>
-                            <span className="fixed-width energy-amount">{energy.toFixed(0)}</span>
-                            <EnergyIcon />
-                        </span>
-                    )}
-                </div>
-                <div id="accuracy-graph-wrapper">
-                    <span id="accuracy-graph-range" className="graph-legend-wrapper">
+        <div className="accuracy-graph-label">
+            {!!liveData?.misses &&
+                <span>{liveData.misses} Miss{liveData.misses !== 1 && 'es'}</span>}
+            <span><span className="fixed-width accuracy-percent">{accuracy}</span> Accuracy</span>
+            <span
+                style={accuracyStyle}
+                className="fixed-width accuracy-rating"
+            >{accuracyRating}</span>
+            {typeof energy === 'number' && (
+                <span className="energy" style={energyStyle}>
+                    <span className="fixed-width energy-amount">{energy.toFixed(0)}</span>
+                    <EnergyIcon />
+                </span>
+            )}
+        </div>
+        <div className="accuracy-graph-wrapper">
+                    <span className="accuracy-graph-range graph-legend-wrapper">
                         <span className="graph-legend top">100</span>
                         <span className="graph-legend bottom">{((1 - graphRange) * 100).toFixed(0)}</span>
                     </span>
-                    <AccuracyGraphDurationLegend songLength={songLength} />
-                    <canvas
-                        style={graphStyle}
-                        width={graphWidth * graphScale}
-                        height={graphHeight * graphScale}
-                        ref={graphCanvas}
-                    />
-                </div>
-            </div>
-        )}
-        <AdditionalDataModifiers modifiers={modifiers} />
+            <AccuracyGraphDurationLegend songLength={songLength} />
+            <canvas
+                style={graphStyle}
+                width={graphWidth * graphScale}
+                height={graphHeight * graphScale}
+                ref={graphCanvas}
+            />
+        </div>
     </>;
 };

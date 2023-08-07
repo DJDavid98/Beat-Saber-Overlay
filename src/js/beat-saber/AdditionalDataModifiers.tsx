@@ -1,5 +1,5 @@
 import { FC, useMemo } from 'react';
-import { Modifiers } from './model/modifiers';
+import { Modifiers } from '../model/modifiers';
 
 const modifierNames: Record<keyof Modifiers, string> = {
     disappearingArrows: 'Disappearing Arrows',
@@ -39,11 +39,11 @@ export const AdditionalDataModifiers: FC<AdditionalDataModifiersProps> = ({ modi
     }
 
     return (
-        <div>
-            <span id="modifiers-label">Modifiers</span>
-            <ul id="modifier-list">
+        <>
+            <span className="modifiers-label">Modifiers</span>
+            <ul className="modifiers-list">
                 {modifierLabels.map(label => <li key={label}>{label}</li>)}
             </ul>
-        </div>
+        </>
     );
 };

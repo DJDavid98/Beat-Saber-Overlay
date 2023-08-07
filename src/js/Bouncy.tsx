@@ -1,4 +1,4 @@
-import { FC, useCallback, useEffect, useRef } from 'react';
+import { FC, useEffect, useRef } from 'react';
 import bouncy from '../img/bouncy.webm';
 import bouncyBlep from '../img/bouncy-blep.webm';
 
@@ -23,10 +23,6 @@ export const Bouncy: FC<{ heartRate: number | null }> = ({ heartRate }) => {
     const videoRef = useRef<HTMLVideoElement>(null);
     const blepVideoRef = useRef<HTMLVideoElement>(null);
 
-    const logPlaybackRate = useCallback(() => {
-        console.info('Playback rates: ', [videoRef.current?.playbackRate, blepVideoRef.current?.playbackRate]);
-    }, []);
-
     const showBlep = heartRate !== null && heartRate > HEART_RATE_BLEP_THRESHOLD;
 
     useEffect(() => {
@@ -42,26 +38,22 @@ export const Bouncy: FC<{ heartRate: number | null }> = ({ heartRate }) => {
     return (
         <>
             <video
-                id="bouncy-video"
                 loop
                 autoPlay
                 preload="auto"
                 muted
                 ref={videoRef}
                 className={showBlep ? undefined : 'show'}
-                onClick={logPlaybackRate}
             >
                 <source type="video/webm" src={bouncy} />
             </video>
             <video
-                id="bouncy-video-blep"
                 loop
                 autoPlay
                 preload="auto"
                 muted
                 ref={blepVideoRef}
                 className={showBlep ? 'show' : undefined}
-                onClick={logPlaybackRate}
             >
                 <source type="video/webm" src={bouncyBlep} />
             </video>

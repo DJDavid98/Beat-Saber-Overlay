@@ -3,9 +3,12 @@ import { ReadyState } from 'react-use-websocket';
 import { useObsControl } from '../hooks/use-obs-control';
 import { SongInfoDisplay, SongInfoDisplayProps } from './SongInfoDisplay';
 import { Connection } from './Connection';
-import { AdditionalDataDisplay } from '../AdditionalDataDisplay';
+import { AdditionalDataDisplay } from './AdditionalDataDisplay';
 import { Modifiers } from '../model/modifiers';
 import { LiveData } from '../model/live-data';
+import { RemovableElement } from '../RemovableElement';
+import { RemovableElementId } from '../model/removable-element-id';
+import classNames from 'classnames';
 
 export interface DataDisplayProps {
     mapData?: {
@@ -21,9 +24,8 @@ export const DataDisplay: FC<DataDisplayProps> = ({ mapData, liveData, readyStat
     const lastInLevel = useRef<boolean | null>(null);
     const inLevel = mapData ? mapData.inLevel : false;
     const wsConnected = readyState === ReadyState.OPEN;
-    const showApp = mapData?.inLevel || !wsConnected;
-    const showClass = showApp ? 'show' : undefined;
-    const showAdditionalDataClass = showApp && wsConnected ? 'show' : undefined;
+    const show = mapData?.inLevel || !wsConnected;
+    const showAdditionalDataClass = show && wsConnected ? 'show' : undefined;
 
     useObsControl(readyState, mapData?.bsr);
 
@@ -35,19 +37,24 @@ export const DataDisplay: FC<DataDisplayProps> = ({ mapData, liveData, readyStat
     }, [inLevel]);
 
     return <>
-        <div id="data-layout" className={showClass}>
+        <div className={classNames('data-layout', { show })}>
             {wsConnected && mapData
                 ? <SongInfoDisplay {...mapData} />
-                : <Connection readyState={readyState} />
+                : <RemovableElement id={RemovableElementId.CONNECTION}>
+                    <Connection readyState={readyState} />
+                </RemovableElement>
             }
         </div>
-        <div id="additional-data" className={showAdditionalDataClass}>
+        <RemovableElement
+            id={RemovableElementId.BEAT_SABER_ADDITIONAL_DATA}
+            className={showAdditionalDataClass}
+        >
             <AdditionalDataDisplay
                 modifiers={mapData?.modifiers}
                 songLength={mapData?.duration}
                 liveData={liveData}
                 reset={reset}
             />
-        </div>
+        </RemovableElement>
     </>;
 };

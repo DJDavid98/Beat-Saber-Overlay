@@ -31,24 +31,20 @@ html, body {
 body {
   font-family: $base-font;
   font-weight: 400;
-  background: #000 url('img/transparency.svg') repeat;
-  background-size: 32px;
   user-select: none;
   @include outline;
 }
 
-#song-name, #song-author, #song-details, #connection {
-  line-height: 1em;
-}
-
-#beat-saber {
-  color: $text-color;
-  font-size: $font-size;
-  text-align: right;
-  position: absolute;
-  top: $edge-spacing;
-  right: $edge-spacing * 1.5;
-  z-index: map-get($z-index-map, 'beat-saber');
+#background-root {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: #000 url('img/transparency.svg') repeat;
+  background-size: 32px;
 }
 
 @import "scss/analog-clock";

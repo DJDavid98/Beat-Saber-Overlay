@@ -13,15 +13,18 @@ export interface HeartRateSourcesProps {
     websocketHeartRate: WebsocketHeartRate;
 }
 
-export const HeartRateSources: FC<HeartRateSourcesProps> = ({ bleHeartRate, pulsoidHeartRate, websocketHeartRate }) => {
+export const HeartRateSources: FC<HeartRateSourcesProps> = ({
+    bleHeartRate,
+    pulsoidHeartRate,
+    websocketHeartRate
+}) => {
     return <>
         <span className="label">Available Heart Rate Sources</span>
         <div className="connections">
             {bleHeartRate.supported && (
                 bleHeartRate.readyState === ReadyState.CONNECTING
-                    ? <Loading id="ble-loading" />
+                    ? <Loading name="ble" />
                     : <button
-                        id="ble-connect"
                         className={`connection-button ${bleHeartRate.deviceClass}`}
                         onClick={bleHeartRate.connect}
                         title="Connect BLE Heart Rate Sensor"

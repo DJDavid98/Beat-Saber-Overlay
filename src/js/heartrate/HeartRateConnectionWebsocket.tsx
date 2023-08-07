@@ -57,9 +57,8 @@ export const HeartRateConnectionWebsocket: FC<{
 
     return <>
         {websocketHeartRate.readyState === ReadyState.CONNECTING
-            ? <Loading id="websocket-loading" onClick={showDialog} />
+            ? <Loading name="websocket" onClick={showDialog} />
             : <button
-                id="websocket-config"
                 className={`connection-button ${websocketHeartRate.deviceClass}`}
                 onClick={showDialog}
                 title="Websocket Options"
@@ -69,8 +68,10 @@ export const HeartRateConnectionWebsocket: FC<{
             <form onSubmit={saveSettings}>
                 <h1>Websocket Heart Rate Connection</h1>
                 <h2>Server Host</h2>
-                <p>Enter the full URL of the WebSocket server, including port number and any query parameters.</p>
-                <p>This typically starts with <code>ws://</code> or <code>wss://</code> and may contain secret keys.</p>
+                <p>Enter the full URL of the WebSocket server, including port number and any query
+                    parameters.</p>
+                <p>This typically starts with <code>ws://</code> or <code>wss://</code> and may
+                    contain secret keys.</p>
                 <input
                     type={hostInputHidden ? 'password' : 'url'}
                     name="websocket-host"
@@ -90,9 +91,11 @@ export const HeartRateConnectionWebsocket: FC<{
                     </button>
                 </p>
                 <h2>Data Location</h2>
-                <p>Enter the path to the heart rate data within the JSON response, separating nested keys
+                <p>Enter the path to the heart rate data within the JSON response, separating nested
+                    keys
                     with <code>.</code></p>
-                <p>If left blank, the socket data is assumed to be plain text containing the numbers only.</p>
+                <p>If left blank, the socket data is assumed to be plain text containing the numbers
+                    only.</p>
                 <input
                     type="test"
                     name="websocket-host"

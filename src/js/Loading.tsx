@@ -1,9 +1,25 @@
 import { FC, memo, MouseEventHandler } from 'react';
+import classNames from 'classnames';
 
-type LoaderIds = 'websocket-loading' | 'heart-rate-loading' | 'ble-loading' | 'pulsoid-loading' | 'connection-loading'
+type LoaderName =
+    'websocket'
+    | 'heart-rate'
+    | 'ble'
+    | 'pulsoid'
+    | 'connection'
 
-const LoadingComponent: FC<{ id?: LoaderIds, onClick?: MouseEventHandler<HTMLDivElement> }> = ({ id, onClick }) => <div
-    id={id}
+type LoaderClass = `${LoaderName}-loading`;
+
+const getLoaderClass = (name?: LoaderName): LoaderClass | undefined => name ? `${name}-loading` : undefined;
+
+const LoadingComponent: FC<{
+    name?: LoaderName,
+    onClick?: MouseEventHandler<HTMLDivElement>
+}> = ({
+    name,
+    onClick
+}) => <div
+    className={classNames(`loading-indicator`, getLoaderClass(name))}
     onClick={onClick}
 />;
 

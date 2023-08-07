@@ -1,9 +1,19 @@
-import { ChangeEventHandler, FC, FormEventHandler, MouseEvent, useCallback, useRef, useState } from 'react';
+import {
+    ChangeEventHandler,
+    FC,
+    FormEventHandler,
+    MouseEvent,
+    useCallback,
+    useRef,
+    useState
+} from 'react';
 import { PulsoidHeartRate } from '../hooks/use-pulsoid-heart-rate';
 import { ReadyState } from 'react-use-websocket';
 import { Loading } from '../Loading';
 
-export const HeartRateConnectionPulsoid: FC<{ pulsoidHeartRate: PulsoidHeartRate }> = ({ pulsoidHeartRate }) => {
+export const HeartRateConnectionPulsoid: FC<{
+    pulsoidHeartRate: PulsoidHeartRate
+}> = ({ pulsoidHeartRate }) => {
     const [tokenInputValue, setTokenInputValue] = useState<string>('');
     const dialogRef = useRef<HTMLDialogElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
@@ -33,9 +43,8 @@ export const HeartRateConnectionPulsoid: FC<{ pulsoidHeartRate: PulsoidHeartRate
 
     return <>
         {pulsoidHeartRate.readyState === ReadyState.CONNECTING
-            ? <Loading id="pulsoid-loading" onClick={showDialog} />
+            ? <Loading name="pulsoid" onClick={showDialog} />
             : <button
-                id="pulsoid-token"
                 className={`connection-button ${pulsoidHeartRate.deviceClass}`}
                 onClick={showDialog}
                 title="Set Pulsoid Token"
