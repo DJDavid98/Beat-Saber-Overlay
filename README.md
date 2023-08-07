@@ -127,4 +127,4 @@ possibly be through any combination of constructive feedback, improvement ideas,
 of inspiration:
 
 * [TheBlackParrot](https://www.twitch.tv/theblackparrot)
-* [UwutaV](https://www.twitch.tv/uwtwav)
+* [UwtwaV](https://www.twitch.tv/uwtwav)
