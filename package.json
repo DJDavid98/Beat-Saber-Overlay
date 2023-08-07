@@ -16,7 +16,6 @@
   "author": "DJDavid98 <https://djdavid98.art>",
   "license": "MIT",
   "devDependencies": {
-    "react-lottie-player": "^1.5.4",
     "@parcel/transformer-sass": "^2.8.3",
     "@types/intl-unofficial-duration-unit-format": "^3.1.0",
     "@types/jest": "^29.4.0",
@@ -44,6 +43,8 @@
     "process": "^0.11.10",
     "react": "^18",
     "react-dom": "^18",
+    "react-fast-marquee": "^1.6.0",
+    "react-lottie-player": "^1.5.4",
     "react-use-websocket": "^4.3.1",
     "sass": "^1.57.1",
     "timers-browserify": "^2.0.12",

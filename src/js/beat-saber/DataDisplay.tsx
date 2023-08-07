@@ -1,7 +1,7 @@
 import { FC, useEffect, useRef, useState } from 'react';
 import { ReadyState } from 'react-use-websocket';
 import { useObsControl } from '../hooks/use-obs-control';
-import { SongInfoDisplay, SongInfoDisplayProps } from './SongInfoDisplay';
+import { SongInfo, SongInfoDisplayProps } from './SongInfo';
 import { Connection } from './Connection';
 import { AdditionalDataDisplay } from './AdditionalDataDisplay';
 import { Modifiers } from '../model/modifiers';
@@ -37,9 +37,14 @@ export const DataDisplay: FC<DataDisplayProps> = ({ mapData, liveData, readyStat
     }, [inLevel]);
 
     return <>
-        <div className={classNames('data-layout', { show })}>
+        <div
+            className={classNames('data-layout', {
+                show,
+                connected: Boolean(wsConnected && mapData)
+            })}
+        >
             {wsConnected && mapData
-                ? <SongInfoDisplay {...mapData} />
+                ? <SongInfo {...mapData} />
                 : <RemovableElement id={RemovableElementId.CONNECTION}>
                     <Connection readyState={readyState} />
                 </RemovableElement>

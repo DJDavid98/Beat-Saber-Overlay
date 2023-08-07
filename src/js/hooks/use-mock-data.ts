@@ -84,7 +84,7 @@ export const useMockData = (enabled: boolean): DataDisplayProps => {
                             lifeCount = Infinity;
                         }
                         setMapData({
-                            name: 'Mock Song',
+                            name: 'Mock Somewhat Longer Than Usual Song Name',
                             author: 'Mock Author',
                             subName: 'Mock Sub-name',
                             duration: mockSongDuration,

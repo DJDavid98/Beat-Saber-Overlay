@@ -1,4 +1,7 @@
-@mixin float-in-idle {
+$additional-data-label-font-size: 2.5rem;
+$data-skew-amount: -10deg;
+
+@mixin float-in-idle($skew: false) {
   opacity: 0;
   transition-duration: 2s;
   transition-timing-function: cubic-bezier(0.68, -0.6, 0.32, 1.6);
@@ -7,63 +10,123 @@
   transform: translate(100%);
 }
 
-@mixin float-in-shown {
+@mixin float-in-shown($skew: false) {
   transform: translate(0%);
   opacity: 1;
 }
-
-$additional-data-label-font-size: 2.5rem;
-
 
 .song-name, .song-author, .song-details, #connection {
   line-height: 1em;
 }
 
 #beat-saber {
+  $horizontal-spacing: $edge-spacing * 1.5;
   color: $text-color;
   font-size: $font-size;
   text-align: right;
   position: absolute;
   top: $edge-spacing;
-  right: $edge-spacing * 1.5;
+  right: $horizontal-spacing;
   z-index: map-get($z-index-map, 'beat-saber');
+  max-width: calc(100% - #{2 * $horizontal-spacing});
   @include special-font;
 }
 
 .data-layout {
+  width: 100%;
   display: flex;
   justify-content: flex-end;
   align-items: center;
   flex-flow: row nowrap;
   margin-bottom: 1rem;
+  @include float-in-idle;
 
-  &, .song-name, .song-author, .song-details, #connection {
+  &.connected > * {
+    font-style: normal;
+    transform: skew($data-skew-amount);
+  }
+
+  .song-name, .song-author, .song-details, #connection {
     @include float-in-idle;
   }
 
   &.show {
-    &, .song-name, .song-author, .song-details, #connection {
+    @include float-in-shown;
+
+    .song-name, .song-author, .song-details, #connection {
       @include float-in-shown;
     }
   }
-}
 
-.song-cover-image {
-  display: block;
-  width: $cover-size;
-  height: $cover-size;
-  transform: skew(-10deg);
-  border-radius: $cover-size * 0.1;
-  background: #000;
-  margin-left: $image-spacing;
+  .song-info-block {
+    min-width: 0;
+    flex: 0 0 calc(100% - $cover-size);
+    display: flex;
+    align-items: stretch;
+    justify-content: space-around;
+    flex-flow: column nowrap;
+    padding-right: $image-spacing * .6;
+
+    .song-info-line {
+      white-space: nowrap;
+      width: 100%;
+      box-sizing: border-box;
+      position: relative;
+      $cutoff-protection: 0.2em;
+
+      &, * {
+        overflow: hidden;
+      }
+
+      > * {
+        transform: skew(-5deg);
+      }
+
+      &, > * {
+        padding-top: $cutoff-protection;
+        padding-bottom: $cutoff-protection;
+        margin-top: -$cutoff-protection;
+        margin-bottom: -$cutoff-protection;
+      }
+
+      .song-info-line-original.hide {
+        visibility: hidden;
+      }
+
+      .song-info-line-marquee {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+
+        &.hide {
+          visibility: hidden;
+        }
+
+        .song-info-line-marquee-item {
+          margin-right: 1em;
+        }
+      }
+    }
+  }
+
+  .song-cover-image {
+    flex: 0 0 $cover-size;
+    display: block;
+    width: $cover-size;
+    height: $cover-size;
+    border-radius: $cover-size * 0.1;
+    background: #000;
+  }
 }
 
 .song-name {
   transition-delay: $transition-delay * 1;
-  margin-right: -($image-spacing * .5);
 
   .sub-name {
     font-size: .8em;
+    margin-left: .35em;
   }
 }
 
@@ -71,7 +134,6 @@ $additional-data-label-font-size: 2.5rem;
   transition-delay: $transition-delay * 2;
   color: rgba($text-color, .75);
   font-size: $font-size * .7;
-  margin-right: -($image-spacing * .25);
 
   .mapper {
     color: $mapper-text-color;
@@ -86,7 +148,9 @@ $additional-data-label-font-size: 2.5rem;
     display: none;
   }
 
-  @include dots-between-children;
+  .song-detail-items {
+    @include dots-between-children;
+  }
 }
 
 #beat-saber-additional-data-root {
@@ -114,6 +178,10 @@ $additional-data-label-font-size: 2.5rem;
   // Minimum widths are used to prevent the UI from
   // jumping around too much as numbers change rapidly
   .accuracy-graph-label {
+    > * {
+      white-space: nowrap;
+    }
+
     > :not(:last-child) {
       margin-right: .75rem;
     }

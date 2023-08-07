@@ -1,5 +1,5 @@
 import { FunctionComponent } from 'react';
-import { SongInfo } from './SongInfo';
+import { SongInfoLine } from './SongInfoLine';
 
 export interface SongNameProps {
     name?: string,
@@ -8,9 +8,9 @@ export interface SongNameProps {
 
 export const SongName: FunctionComponent<SongNameProps> = ({ name, subName }) => {
     return (
-        <SongInfo className="song-name">
+        <SongInfoLine className="song-name">
             <span className="main-name">{name}</span>
-            {subName && <>{' '}<span className="sub-name">{subName}</span></>}
-        </SongInfo>
+            {subName && <span className="sub-name">{subName}</span>}
+        </SongInfoLine>
     );
 };
