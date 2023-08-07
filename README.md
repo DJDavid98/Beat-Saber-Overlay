@@ -12,8 +12,8 @@ An overlay created by [DJDavid98] for the [BSDataPuller] and [BeatSaberPlus] mod
 
 > [!IMPORTANT]
 > Some customization options refer to "query parameters" which is a technical term for values in a
-> URL that are denoted by a starting `?`character and a `&` between individual values. If you want
-> to provide multiple options at once, be sure to use the format `?param1=value1&param2=value2&…`.
+> URL that are denoted by a starting `?` character and a `&` between individual values. If you want
+> to provide multiple options at once, be sure to use the format `?param1=value1&param2=value2&…`
 >
 > "Deprecated" means the functionality might still work bit it is not actively maintained, and it is
 > subject for removal in the future. You should avoid using it, and if you are currently using it,
