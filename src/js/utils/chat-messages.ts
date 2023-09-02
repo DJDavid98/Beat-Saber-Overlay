@@ -104,3 +104,25 @@ export const tokenizeMessage = (
     }
     return { tokens, emoteOnly };
 };
+
+
+const messageTypeColorMap: Record<SystemMessageType, string> = {
+    [SystemMessageType.INFO]: '#aaaaaa',
+    [SystemMessageType.SUCCESS]: '#aaffaa',
+    [SystemMessageType.ERROR]: '#ffaaaa',
+    [SystemMessageType.WARN]: '#ffdd00',
+    [SystemMessageType.FOLLOW]: '#7ba6f2',
+    [SystemMessageType.DONATION]: '#ccaa00',
+};
+
+export const accentColorCssVariable = '--accent-color';
+export const accentColor80CssVariable = '--accent-color-80';
+export const accentColor20CssVariable = '--accent-color-20';
+
+export const getAccentColor = (message: ChatUserMessage | ChatSystemMessage) => {
+    if ('type' in message) {
+        return messageTypeColorMap[message.type];
+    }
+
+    return message.nameColor;
+};

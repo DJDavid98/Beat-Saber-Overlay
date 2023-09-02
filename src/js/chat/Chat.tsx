@@ -1,7 +1,6 @@
-import { FC, useCallback, useEffect, useMemo, useState } from 'react';
+import { FC, Fragment, useCallback, useEffect, useMemo, useState } from 'react';
 import { useSocket } from '../utils/socket-context';
 import { ServerToClientEvents, } from '../model/app-scoket';
-import { useAutoScrollToBottom } from '../hooks/use-auto-scroll-to-bottom';
 import {
     ChatSystemMessage,
     ChatUserMessage,
@@ -11,12 +10,10 @@ import {
 } from '../utils/chat-messages';
 import { ChatMessage } from './ChatMessage';
 import DurationUnitFormat from 'intl-unofficial-duration-unit-format';
-import { RemovableElementId } from '../model/removable-element-id';
 
 const MAX_MESSAGE_COUNT = 12;
 
 export const Chat: FC = () => {
-    const chatRef = useAutoScrollToBottom<HTMLDivElement>();
     const [messages, setMessages] = useState<Array<DisplayableMessage>>(() => []);
     const socket = useSocket();
     const df = useMemo(() => new DurationUnitFormat('en-US', {
@@ -152,7 +149,7 @@ export const Chat: FC = () => {
         };
     }, [addMessage, df, socket]);
 
-    return <div id={RemovableElementId.CHAT} ref={chatRef}>
+    return <Fragment>
         {messages.map(message => <ChatMessage key={message.id} message={message} />)}
-    </div>;
+    </Fragment>;
 };

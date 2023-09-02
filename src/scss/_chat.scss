@@ -6,8 +6,8 @@
   $hide-message-duration: 1s;
   position: absolute;
   left: 0;
-  top: 20vh;
-  bottom: 20vh;
+  top: 9rem;
+  bottom: 13rem;
   width: 500px;
   display: flex;
   flex-flow: column nowrap;
@@ -80,6 +80,7 @@
 
       .chat-message-author-name {
         font-weight: 700;
+        color: var(--accent-color);
       }
     }
   }
@@ -91,7 +92,7 @@
     position: relative;
     display: block;
     width: 100%;
-    padding: .15em .25em;
+    padding: .3em .25em;
     box-sizing: border-box;
 
     &::after {
@@ -104,9 +105,9 @@
       height: 100%;
       z-index: -1;
       pointer-events: none;
-      background-color: currentColor;
+      background-image: linear-gradient(to bottom, var(--accent-color-80) 0, var(--accent-color-20) 100%);
       border-radius: .2em;
-      opacity: .03;
+      opacity: .2;
       transform: scaleY(1);
       will-change: transform;
       animation-name: shrink-message-background;
@@ -114,6 +115,9 @@
       animation-delay: $show-message-duration + $show-message-delay;
       animation-timing-function: linear;
       animation-fill-mode: forwards;
+      border: .15em solid var(--accent-color);
+      border-right-width: 0;
+      box-sizing: border-box;
     }
 
     @keyframes shrink-message-background {
