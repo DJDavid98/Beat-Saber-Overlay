@@ -175,6 +175,7 @@ export const ttsMessageSubstitutions = (input: string): string =>
         .replace(/\blmao\b/gi, 'laughing my ass off')
         .replace(/\bwip\b/gi, 'work-in-progress')
         .replace(/\bsup\b/gi, "what's up")
+        .replace(/\bhru\b/gi, 'how are you')
         .replace(/\bggwp\b/gi, 'good game, well played')
         .replace(/\bgg(s)?\b/gi, 'good game$1')
         .replace(/\bez\b/gi, 'easy')
