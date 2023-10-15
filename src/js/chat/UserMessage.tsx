@@ -5,10 +5,10 @@ import { ChatPronouns } from './ChatPronouns';
 
 export const UserMessage: FC<ChatUserMessage> = ({
     timestamp,
-    message,
     name,
     pronouns,
-    emotes,
+    tokens,
+    emoteOnly,
     messageColor,
 }) => {
     return <Fragment>
@@ -18,8 +18,8 @@ export const UserMessage: FC<ChatUserMessage> = ({
         </div>
         <ChatMessageBody
             timestamp={timestamp}
-            message={message}
-            emotes={emotes}
+            tokens={tokens}
+            emoteOnly={emoteOnly}
             messageColor={messageColor}
         />
     </Fragment>;

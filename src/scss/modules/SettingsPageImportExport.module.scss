@@ -1,0 +1,24 @@
+@use "../variables";
+
+.import-form {
+  .import-success {
+    color: variables.$success-color;
+  }
+
+  .import-error {
+    color: variables.$error-color;
+  }
+
+  .export-output {
+    margin-top: 1em;
+
+    .export-code {
+      user-select: all;
+      display: block;
+      white-space: pre-wrap;
+      word-break: break-all;
+      padding: .75em;
+      margin-bottom: 1em;
+    }
+  }
+}

@@ -25,7 +25,6 @@ import { SCORE_UPDATE_MAX_GRANULARITY } from '../utils/draw-graphs';
 const tickUpdateFrequency = 1e3 * SCORE_UPDATE_MAX_GRANULARITY;
 
 const bsPlusDataReducer: Reducer<BsPlusDataState, BsPlusAction> = (state, action) => {
-    console.log('bsPlusDataReducer', action);
     if (typeof action !== 'object') {
         switch (action) {
             case BsPlusTickEventName:

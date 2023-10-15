@@ -164,20 +164,3 @@ $connect-icon-size: 3rem;
     @include loading-element($connect-icon-size, #fff);
   }
 }
-
-#bouncy-root video {
-  $bouncy-image-size: 112px;
-  display: block;
-  position: absolute;
-  width: $bouncy-image-size;
-  height: $bouncy-image-size;
-  margin: $edge-spacing;
-  bottom: 0;
-  right: 0;
-  z-index: map-get($z-index-map, 'bouncy');
-  opacity: 0;
-
-  &.show {
-    opacity: 1;
-  }
-}

@@ -6,7 +6,7 @@ const getSecondsSinceMidnight = (hours: number, minutes: number, seconds: number
     return seconds + (minutes * 60) + ((hours) * 60 * 60);
 };
 
-export const CreditsClock: FC<{ visibleTime: number }> = ({ visibleTime }) => {
+export const ChannelBugClock: FC<{ visibleTime: number }> = ({ visibleTime }) => {
     const [twelveHour, setTwelveHour] = useState(true);
     const [skipAnimation, setSkipAnimation] = useState(true);
     const dateFormatter = useMemo(() => new Intl.DateTimeFormat('en-US', {

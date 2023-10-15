@@ -1,25 +1,20 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback } from 'react';
 import { useFailsafeWebsocket } from './use-failsafe-websocket';
 import { HeartRateHookCommonFields } from '../utils/heart-rate-hook-common-fields';
 import Joi from 'joi';
-
-export interface WebsocketHeartRate extends HeartRateHookCommonFields {
-    changeHost: (newHost: string) => void;
-    getHost: () => string | null;
-    changePath: (newPath: string) => void;
-    getPath: () => string | null;
-}
+import { useSettings } from '../contexts/settings-context';
+import { SettingName } from '../model/settings';
 
 const numericStringSchema = Joi.string().regex(/^\d+$/);
 
-const websocketHostKey = 'websocket-host';
-const websocketPathKey = 'websocket-path';
-const getHost = () => localStorage.getItem(websocketHostKey);
-const getPath = () => localStorage.getItem(websocketPathKey);
-
-export const useWebsocketHeartRate = (): WebsocketHeartRate => {
-    const [host, setHost] = useState<string | null>(null);
-    const [path, setPath] = useState<string | null>(null);
+export const useWebsocketHeartRate = (): HeartRateHookCommonFields => {
+    const {
+        settings: {
+            [SettingName.HEART_RATE_WEBSOCKET_HOST]: host,
+            [SettingName.HEART_RATE_WEBSOCKET_PATH]: path,
+        },
+        setSetting
+    } = useSettings();
     const validateWebsocketData = useCallback((data: unknown): number | undefined => {
         if (data === null) return undefined;
 
@@ -49,55 +44,17 @@ export const useWebsocketHeartRate = (): WebsocketHeartRate => {
             return undefined;
         }
 
-        const pathValue = pathParts.reduce((finalValue, part) => finalValue[part], result.value) as string | number;
+        const pathValue = pathParts.reduce((finalValue,
+            part) => finalValue[part], result.value) as string | number;
         return typeof pathValue === 'number' ? pathValue : parseInt(pathValue, 10);
     }, [path]);
     const {
         message: websocketData,
         readyState,
     } = useFailsafeWebsocket(host, validateWebsocketData);
-    const saveHost = useCallback((value: string) => {
-        setHost(value);
-        localStorage.setItem(websocketHostKey, value);
-    }, []);
-    const savePath = useCallback((value: string) => {
-        setPath(value);
-        localStorage.setItem(websocketPathKey, value);
-    }, []);
     const disconnect = useCallback(() => {
-        setHost(null);
-    }, []);
-    const changeHost = useCallback((result: string) => {
-        const newHost = result.trim();
-        console.debug('newHost', newHost);
-        if (/^wss?:\/\/.+$/.test(newHost)) {
-            saveHost(newHost);
-            return;
-        } else {
-            if (newHost === '') {
-                localStorage.removeItem(websocketHostKey);
-            }
-            disconnect();
-        }
-    }, [saveHost, disconnect]);
-    const changePath = useCallback((result: string) => {
-        const newPath = result.trim();
-        console.debug('newPath', newPath);
-        if (/^[a-z\d_.-]+$/.test(newPath)) {
-            savePath(newPath);
-            return;
-        } else {
-            if (newPath === '') {
-                localStorage.removeItem(websocketPathKey);
-            }
-            setPath(null);
-        }
-    }, [savePath]);
-
-    useEffect(() => {
-        setHost(getHost());
-        setPath(getPath());
-    }, []);
+        setSetting(SettingName.HEART_RATE_WEBSOCKET_HOST, null);
+    }, [setSetting]);
 
     return {
         heartRate: websocketData ?? null,
@@ -105,9 +62,5 @@ export const useWebsocketHeartRate = (): WebsocketHeartRate => {
         deviceName: 'Websocket',
         disconnect,
         readyState,
-        changeHost,
-        getHost,
-        changePath,
-        getPath,
     };
 };

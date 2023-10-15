@@ -1,36 +1,43 @@
 import { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { CreditsClock } from './CreditsClock';
+import { ChannelBugClock } from './ChannelBugClock';
 import { useSocket } from '../utils/socket-context';
 import { EventAlert } from '../EventAlert';
+import { useSettings } from '../contexts/settings-context';
+import { SettingsPage } from '../model/settings';
+import * as styles from '../../scss/modules/ChannelBug.module.scss';
 
-enum CreditsScene {
-    LINKS = 'credits-links',
-    TIME = 'credits-time',
-    FOLLOW = 'credits-follow',
-    DONATION = 'credits-donation',
+enum ChannelBugScene {
+    LINKS = 'channel-bug-links',
+    TIME = 'channel-bug-time',
+    FOLLOW = 'channel-bug-follow',
+    DONATION = 'channel-bug-donation',
 }
 
-const sceneOrder = [CreditsScene.LINKS, CreditsScene.TIME];
+const sceneOrder = [ChannelBugScene.LINKS, ChannelBugScene.TIME];
 const [initialScene, ...initialSceneQueue] = sceneOrder;
 
 const FORCE_NEXT_SCENE = 'next';
 
 const sceneTransitionDurationMs = 500;
-const sceneDisplayTimeMap: Record<CreditsScene, number> = {
-    [CreditsScene.LINKS]: 20e3,
-    [CreditsScene.TIME]: 20e3,
-    [CreditsScene.FOLLOW]: 8e3,
-    [CreditsScene.DONATION]: 8e3,
+const sceneDisplayTimeMap: Record<ChannelBugScene, number> = {
+    [ChannelBugScene.LINKS]: 20e3,
+    [ChannelBugScene.TIME]: 20e3,
+    [ChannelBugScene.FOLLOW]: 8e3,
+    [ChannelBugScene.DONATION]: 8e3,
 };
-const clockSceneVisibleTimeMs = sceneDisplayTimeMap[CreditsScene.TIME] + sceneTransitionDurationMs;
+const clockSceneVisibleTimeMs = sceneDisplayTimeMap[ChannelBugScene.TIME] + sceneTransitionDurationMs;
 const forceSceneSwitchDefault = (): void => {
     throw new Error('forceSceneSwitch is not set');
 };
 
-export const Credits: FC = () => {
+/**
+ * @see https://en.wikipedia.org/wiki/Digital_on-screen_graphic
+ */
+export const ChannelBug: FC = () => {
+    const { openSettings } = useSettings();
     const creditsRef = useRef<HTMLDivElement>(null);
-    const sceneQueue = useRef<Array<CreditsScene>>(initialSceneQueue);
-    const forceSceneSwitch = useRef<(to: CreditsScene | typeof FORCE_NEXT_SCENE) => void>(forceSceneSwitchDefault);
+    const sceneQueue = useRef<Array<ChannelBugScene>>(initialSceneQueue);
+    const forceSceneSwitch = useRef<(to: ChannelBugScene | typeof FORCE_NEXT_SCENE) => void>(forceSceneSwitchDefault);
     const [scene, setScene] = useState(initialScene);
     const socket = useSocket();
 
@@ -43,6 +50,9 @@ export const Credits: FC = () => {
         }
         return nextScene;
     }, []);
+    const openChannelBugSettings = useCallback(() => {
+        openSettings(SettingsPage.CHANNEL_BUG);
+    }, [openSettings]);
 
     useEffect(() => {
         if (!creditsRef.current) return;
@@ -91,11 +101,11 @@ export const Credits: FC = () => {
 
         const followEventListener = () => {
             sceneQueue.current.unshift(scene);
-            forceSceneSwitch.current?.(CreditsScene.FOLLOW);
+            forceSceneSwitch.current?.(ChannelBugScene.FOLLOW);
         };
         const donationEventListener = () => {
             sceneQueue.current.unshift(scene);
-            forceSceneSwitch.current?.(CreditsScene.DONATION);
+            forceSceneSwitch.current?.(ChannelBugScene.DONATION);
         };
         socket.on('follow', followEventListener);
         socket.on('donation', donationEventListener);
@@ -109,31 +119,33 @@ export const Credits: FC = () => {
     const sceneJsx = useMemo(() => {
         // noinspection JSUnreachableSwitchBranches
         switch (scene) {
-            case CreditsScene.LINKS:
+            case ChannelBugScene.LINKS:
                 return (
-                    <div id={CreditsScene.LINKS} hidden={scene !== CreditsScene.LINKS}>
-                        <a href="https://djdavid98.art" target="_blank" rel="noopener noreferrer">
-                            <img src="https://djdavid98.art/logos/djdavid98.svg" alt="DJDavid98" />
-                        </a>
+                    <div id={ChannelBugScene.LINKS} hidden={scene !== ChannelBugScene.LINKS}>
+                        <img
+                            className={styles['logo-image']}
+                            src="https://djdavid98.art/logos/djdavid98.svg"
+                            alt="DJDavid98"
+                        />
                     </div>
                 );
-            case CreditsScene.TIME:
+            case ChannelBugScene.TIME:
                 return (
-                    <div id={CreditsScene.TIME} hidden={scene !== CreditsScene.TIME}>
-                        <CreditsClock visibleTime={clockSceneVisibleTimeMs} />
+                    <div id={ChannelBugScene.TIME} hidden={scene !== ChannelBugScene.TIME}>
+                        <ChannelBugClock visibleTime={clockSceneVisibleTimeMs} />
                     </div>
                 );
-            case CreditsScene.FOLLOW:
+            case ChannelBugScene.FOLLOW:
                 return (
-                    <div id={CreditsScene.FOLLOW} hidden={scene !== CreditsScene.FOLLOW}>
+                    <div id={ChannelBugScene.FOLLOW} hidden={scene !== ChannelBugScene.FOLLOW}>
                         <EventAlert>
                             Thank you for the follow!
                         </EventAlert>;
                     </div>
                 );
-            case CreditsScene.DONATION:
+            case ChannelBugScene.DONATION:
                 return (
-                    <div id={CreditsScene.DONATION} hidden={scene !== CreditsScene.DONATION}>
+                    <div id={ChannelBugScene.DONATION} hidden={scene !== ChannelBugScene.DONATION}>
                         <EventAlert>
                             Thank you for your support!
                         </EventAlert>;
@@ -143,7 +155,7 @@ export const Credits: FC = () => {
     }, [scene]);
 
     return (
-        <div id="credits" ref={creditsRef}>
+        <div className={styles['channel-bug']} ref={creditsRef} onClick={openChannelBugSettings}>
             {sceneJsx}
         </div>
     );

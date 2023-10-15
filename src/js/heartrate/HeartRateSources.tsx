@@ -1,16 +1,15 @@
 import { FC } from 'react';
 import { BleHeartRate } from '../hooks/use-ble-heart-rate';
-import { PulsoidHeartRate } from '../hooks/use-pulsoid-heart-rate';
 import { HeartRateConnectionPulsoid } from './HeartRateConnectionPulsoid';
 import { ReadyState } from 'react-use-websocket';
 import { Loading } from '../Loading';
 import { HeartRateConnectionWebsocket } from './HeartRateConnectionWebsocket';
-import { WebsocketHeartRate } from '../hooks/use-websocket-heart-rate';
+import { HeartRateHookCommonFields } from '../utils/heart-rate-hook-common-fields';
 
 export interface HeartRateSourcesProps {
     bleHeartRate: BleHeartRate;
-    pulsoidHeartRate: PulsoidHeartRate;
-    websocketHeartRate: WebsocketHeartRate;
+    pulsoidHeartRate: HeartRateHookCommonFields;
+    websocketHeartRate: HeartRateHookCommonFields;
 }
 
 export const HeartRateSources: FC<HeartRateSourcesProps> = ({

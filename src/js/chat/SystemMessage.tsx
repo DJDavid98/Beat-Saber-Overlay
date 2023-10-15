@@ -1,11 +1,13 @@
-import { FC } from 'react';
+import { FC, useMemo } from 'react';
 import { ChatMessageBody } from './ChatMessageBody';
-import { accentColorCssVariable, ChatSystemMessage } from '../utils/chat-messages';
+import { accentColorCssVariable, ChatSystemMessage, tokenizeMessage } from '../utils/chat-messages';
 
-export const SystemMessage: FC<ChatSystemMessage> = ({ timestamp, message }) =>
-    <ChatMessageBody
+export const SystemMessage: FC<ChatSystemMessage> = ({ timestamp, message }) => {
+    const { tokens, emoteOnly } = useMemo(() => tokenizeMessage(message, undefined), [message]);
+    return <ChatMessageBody
         timestamp={timestamp}
-        message={message}
+        tokens={tokens}
         messageColor={`var(${accentColorCssVariable})`}
-        emotes={undefined}
+        emoteOnly={emoteOnly}
     />;
+};

@@ -5,17 +5,27 @@ import {
     ChatSystemMessage,
     ChatUserMessage,
     DisplayableMessage,
-    getChatWebsocketMessageTimestamp,
-    SystemMessageType
+    getChatWebsocketMessageTimestamp, removeEmotes,
+    SystemMessageType, tokenizeMessage, ttsNameSubstitutions
 } from '../utils/chat-messages';
 import { ChatMessage } from './ChatMessage';
 import DurationUnitFormat from 'intl-unofficial-duration-unit-format';
+import { useSettings } from '../contexts/settings-context';
+import { SettingName } from '../model/settings';
+import { useTts } from '../hooks/use-tts';
 
 const MAX_MESSAGE_COUNT = 12;
 
 export const Chat: FC = () => {
+    const {
+        settings: {
+            [SettingName.ELEVEN_LABS_TOKEN]: elevenLabsToken,
+            [SettingName.TTS_ENABLED]: ttsEnabled,
+        }
+    } = useSettings();
     const [messages, setMessages] = useState<Array<DisplayableMessage>>(() => []);
     const socket = useSocket();
+    const tts = useTts(elevenLabsToken, ttsEnabled);
     const df = useMemo(() => new DurationUnitFormat('en-US', {
         style: DurationUnitFormat.styles.LONG,
         format: '{days} {hour} {minutes} {seconds}'
@@ -45,18 +55,20 @@ export const Chat: FC = () => {
                     message: `Joined room #${room}`,
                 };
                 addMessage(data);
+                tts.readText(data.message);
             },
             follow(message) {
                 const data: ChatSystemMessage = {
                     id: window.crypto.randomUUID(),
                     timestamp: new Date(),
                     type: SystemMessageType.FOLLOW,
-                    message: `We have a new follower!`,
+                    message: 'We have a new follower!',
                 };
                 if (typeof message.total === 'number') {
                     data.message = data.message.replace('!', `, that's ${message.total} in total!`);
                 }
                 addMessage(data);
+                tts.readText(data.message);
             },
             donation(message) {
                 const data: ChatSystemMessage = {
@@ -66,20 +78,26 @@ export const Chat: FC = () => {
                     message: `${message.from} just donated!`,
                 };
                 addMessage(data);
+                tts.readText(data.message);
             },
             chat(message) {
+                const { tokens, emoteOnly } = tokenizeMessage(message.message, message.tags.emotes);
                 const data: ChatUserMessage = {
                     id: message.tags.id || window.crypto.randomUUID(),
                     name: message.name,
                     username: message.username,
-                    message: message.message,
                     nameColor: message.tags.color,
                     messageColor: undefined,
                     pronouns: message.pronouns,
-                    emotes: message.tags.emotes,
+                    message: message.message,
+                    tokens,
+                    emoteOnly,
                     timestamp: getChatWebsocketMessageTimestamp(message),
                 };
                 addMessage(data);
+                if (!emoteOnly) {
+                    tts.readText(`${ttsNameSubstitutions(message.username)}. ${removeEmotes(tokens)}`);
+                }
             },
             clearChat() {
                 const data: ChatSystemMessage = {
@@ -89,6 +107,7 @@ export const Chat: FC = () => {
                     message: `Chat has been cleared`,
                 };
                 setMessages([data]);
+                tts.clearQueue();
             },
             connect() {
                 const data: ChatSystemMessage = {
@@ -98,6 +117,7 @@ export const Chat: FC = () => {
                     message: `Chat connected`,
                 };
                 addMessage(data);
+                tts.readText(data.message);
             },
             disconnect() {
                 const data: ChatSystemMessage = {
@@ -107,6 +127,7 @@ export const Chat: FC = () => {
                     message: `Chat disconnected`,
                 };
                 addMessage(data);
+                tts.readText(data.message);
             },
             ban(message) {
                 let data: ChatSystemMessage | undefined;
@@ -147,7 +168,7 @@ export const Chat: FC = () => {
                 socket.off(kex, listeners[kex]);
             }
         };
-    }, [addMessage, df, socket]);
+    }, [addMessage, df, socket, tts]);
 
     return <Fragment>
         {messages.map(message => <ChatMessage key={message.id} message={message} />)}

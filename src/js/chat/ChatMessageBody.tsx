@@ -1,15 +1,14 @@
 import { FC, memo } from 'react';
 import { ChatEmote } from './ChatEmote';
-import { ChatUserMessage, tokenizeMessage } from '../utils/chat-messages';
+import { ChatUserMessage } from '../utils/chat-messages';
 import { format } from 'date-fns';
 
-const ChatMessageBodyComponent: FC<Pick<ChatUserMessage, 'timestamp' | 'message' | 'emotes' | 'messageColor'>> = ({
+const ChatMessageBodyComponent: FC<Pick<ChatUserMessage, 'timestamp' | 'tokens' | 'emoteOnly' | 'messageColor'>> = ({
     timestamp,
-    message,
-    emotes,
+    tokens,
+    emoteOnly,
     messageColor
 }) => {
-    const { tokens, emoteOnly } = tokenizeMessage(message, emotes);
     const formattedTs = format(timestamp, 'HH:mm:ss');
     return <div className="chat-message-body" style={{ color: messageColor }}>
         <span className="chat-message-send-timestamp">{formattedTs}</span>

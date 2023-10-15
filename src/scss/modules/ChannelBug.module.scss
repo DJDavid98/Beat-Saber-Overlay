@@ -1,0 +1,18 @@
+@use "../variables";
+
+.channel-bug {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: map-get(variables.$z-index-map, 'credits');
+  margin: variables.$edge-spacing;
+  transform: scale(1, 1);
+  text-align: left;
+  opacity: 1;
+  cursor: pointer;
+}
+
+.logo-image {
+  opacity: 0.25;
+  width: 14rem;
+}

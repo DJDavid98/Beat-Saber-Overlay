@@ -14,10 +14,12 @@ export function findClosestValues<T>(
     value: number,
     mapValue: (val: T) => number
 ): [T, T] | [T] {
-    if (value < arr[0]) {
+    const firstValue = mapValue(arr[0]);
+    if (value < firstValue) {
         throw new RangeError('Value is less than first array item');
     }
-    if (value > arr[arr.length - 1]) {
+    const lastValue = mapValue(arr[arr.length - 1]);
+    if (value > lastValue) {
         throw new RangeError('Value is greater than last array item');
     }
 

@@ -1,26 +1,36 @@
-$dialog-bg: #101010;
-$dialog-fg: #ddd;
-$dialog-edge: #555;
-$dialog-input-border: #808080;
-$dialog-input-border-focus: $dialog-fg;
+@use "variables";
+@use "mixins";
 
 dialog {
-  border: .15rem solid $dialog-edge;
-  box-shadow: 0 0 1rem $dialog-edge;
+  border: .15rem solid variables.$dialog-edge;
+  box-shadow: 0 0 1rem variables.$dialog-edge;
   border-radius: 1rem;
-  color: $dialog-fg;
-  background-color: $dialog-bg;
+  color: variables.$dialog-fg;
+  background-color: variables.$dialog-bg;
   padding: 2rem;
-  text-align: center;
   font-style: normal;
   // OBS Browser Source interaction window is tiny by default, so this has a larger font-size
-  font-size: 2rem;
+  font-size: 1.75rem;
   cursor: initial;
 
-  h1, h2 {
+  h1, h2, h3 {
     margin: 0 0 1rem;
     font-weight: normal;
-    @include special-font;
+  }
+
+  details {
+    margin-bottom: 1em;
+    border-left: .05em solid;
+    padding-left: 1em;
+
+    summary {
+      cursor: pointer;
+
+      h1, h2, h3 {
+        display: inline-block;
+        margin: 0;
+      }
+    }
   }
 
   p {
@@ -35,14 +45,23 @@ dialog {
     }
   }
 
-  input {
+  input[type="text"], input[type="password"], input[type="url"], textarea {
     display: block;
     width: 100%;
     margin-bottom: 1rem;
-    @include input;
+    @include mixins.input;
+  }
 
+  input[type="checkbox"] {
+    width: 1em;
+    height: 1em;
+    font-size: 1em;
+    line-height: 1em;
+  }
+
+  input, textarea {
     &:focus {
-      border-bottom-color: $dialog-input-border-focus;
+      border-bottom-color: variables.$dialog-input-border-focus;
     }
 
     &.small {
@@ -52,9 +71,8 @@ dialog {
   }
 
   button {
-    @include special-font;
     font-style: normal;
-    @include input;
+    @include mixins.input;
 
     &:not(:last-child) {
       margin-right: 1rem;

@@ -1,0 +1,20 @@
+@use "../variables";
+
+$bouncy-image-size: 112px;
+
+video.bouncy {
+  display: block;
+  position: absolute;
+  width: $bouncy-image-size;
+  height: $bouncy-image-size;
+  margin: variables.$edge-spacing;
+  bottom: 0;
+  right: 0;
+  z-index: map-get(variables.$z-index-map, 'bouncy');
+  opacity: 0;
+  cursor: pointer;
+
+  &.show {
+    opacity: 1;
+  }
+}

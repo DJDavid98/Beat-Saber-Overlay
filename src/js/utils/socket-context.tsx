@@ -9,6 +9,8 @@ import React, {
     useState
 } from 'react';
 import { AppSocket } from '../model/app-scoket';
+import { useSettings } from '../contexts/settings-context';
+import { SettingName } from '../model/settings';
 
 
 interface SocketContextProps {
@@ -24,13 +26,14 @@ export const useSocket = () => {
     return socket;
 };
 
-export interface SocketProviderProps extends PropsWithChildren {
-    serverUrl: string | null;
-    room: string | null;
-}
-
 // SocketProvider component
-export const SocketProvider: FC<SocketProviderProps> = ({ serverUrl, room, children }) => {
+export const SocketProvider: FC<PropsWithChildren> = ({ children }) => {
+    const {
+        settings: {
+            [SettingName.CHAT_SOCKET_SERVER_URL]: serverUrl,
+            [SettingName.CHAT_SOCKET_ROOM]: room,
+        }
+    } = useSettings();
     const [socket, setSocket] = useState<AppSocket | null>(null);
 
     useEffect(() => {
@@ -45,10 +48,6 @@ export const SocketProvider: FC<SocketProviderProps> = ({ serverUrl, room, child
             socketInstance = io(serverUrl);
             setSocket(socketInstance);
         });
-
-        // You can also handle socket events or any other configurations here if needed
-        // Example:
-        // socketInstance.on('connect', () => console.log('Connected to the server'));
 
         // Clean up the socket instance when the component unmounts
         return () => {

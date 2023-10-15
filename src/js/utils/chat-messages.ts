@@ -21,13 +21,12 @@ export interface ChatSystemMessage extends BaseChatMessage {
     type: SystemMessageType;
 }
 
-export interface ChatUserMessage extends BaseChatMessage {
+export interface ChatUserMessage extends BaseChatMessage, TokenizeMessage {
     name: string;
     username: string;
     pronouns: string[];
     nameColor: string | undefined;
     messageColor: string | undefined;
-    emotes: Record<string, string[]> | undefined;
 }
 
 export type DisplayableMessage = ChatUserMessage | ChatSystemMessage;
@@ -58,7 +57,7 @@ export interface TokenizeMessage {
 
 export const tokenizeMessage = (
     message: string,
-    emotes: ChatUserMessage['emotes']
+    emotes: Record<string, string[]> | undefined
 ): TokenizeMessage => {
     const tokens: Array<MessageToken> = [];
     const emoteKeys = typeof emotes === 'object' && emotes !== null ? Object.keys(emotes) : [];
@@ -105,6 +104,111 @@ export const tokenizeMessage = (
     return { tokens, emoteOnly };
 };
 
+const emoteTextReadAloud: Record<string, string> = {
+    Kappa: 'kappa',
+    LUL: 'lawl',
+    NotLikeThis: 'not like this',
+    SeemsGood: 'thumbs up',
+    WutFace: 'whut',
+    ResidentSleeper: 'falls asleep',
+    HeyGuys: 'hey',
+    PJSalt: 'salt',
+    PJSugar: 'sugar',
+    Kreygasm: 'ooouuuaahhh',
+    thebla273Pet: 'pets',
+    DoritosChip: 'Doritos',
+    VoteNay: 'votes with nay',
+    VoteYea: 'votes with yea',
+    imGlitch: 'Twitch logo',
+    TheIlluminati: 'illuminati',
+    PopCorn: 'popcorn',
+    VirtualHug: 'virtual hug',
+    ImTyping: 'typing',
+    PizzaTime: 'pizza time',
+};
+
+export const removeEmotes = (tokens: Array<MessageToken>): string => tokens
+    .reduce((output: string[], token) => {
+        if (typeof token === 'string') {
+            return [...output, token];
+        }
+        if (typeof token.text === 'string' && token.text in emoteTextReadAloud) {
+            return [...output, `(${emoteTextReadAloud[token.text]})`];
+        }
+        return output;
+    }, [])
+    .join(' ');
+
+export const ttsNameSubstitutions = (input: string): string => {
+    let output = input;
+    const isAllUppercase = output.toUpperCase() === output;
+    if (isAllUppercase) {
+        output = output.toLowerCase();
+    }
+
+    return output
+        .replace(/[._-]/g, ' ')
+        .replace(/([A-Z])/g, ' $1')
+        .replace(/(\d{4,})/g, '')
+        .replace(/(\d{1,3})/g, ' $1 ')
+        .trim()
+        .replace(/\s+/, ' ');
+};
+
+export const ttsMessageSubstitutions = (input: string): string =>
+    input
+        .replace(/\b(?:gm)+\b/g, (match) => match.replace(/gm/g, 'good morning ').trim())
+        .replace(/\b(?:ni)+\b/g, 'good night')
+        .replace(/\bbb\b/g, 'bye bye')
+        .replace(/\bg[2t]g\b/gi, 'gotta go')
+        .replace(/\bcya\b/gi, 'see ya')
+        .replace(/\bwtf\b/gi, 'what the fuck')
+        .replace(/\bbrb\b/gi, 'be right back')
+        .replace(/\biou\b/gi, 'i owe you')
+        .replace(/\bl8r\b/g, 'later')
+        .replace(/\batm\b/g, 'at the moment')
+        .replace(/\bw\/e\b/g, 'whatever')
+        .replace(/\btxt\b/gi, 'text')
+        .replace(/\broflmao\b/gi, 'rolling on the floor laughing my ass off')
+        .replace(/\broflol\b/gi, 'rolling on the floor laughing out loud')
+        .replace(/\blol\b/gi, 'laughing out loud')
+        .replace(/\blmao\b/gi, 'laughing my ass off')
+        .replace(/\bwip\b/gi, 'work-in-progress')
+        .replace(/\bsup\b/gi, "what's up")
+        .replace(/\bggwp\b/gi, 'good game, well played')
+        .replace(/\bgg(s)?\b/gi, 'good game$1')
+        .replace(/\bez\b/gi, 'easy')
+        .replace(/\bwp\b/gi, 'well played')
+        .replace(/\bkk\b/gi, 'okay')
+        .replace(/\bm8(s)?\b/gi, 'mate$1')
+        .replace(/\bwyd(\?)?\b/gi, 'what are you doing$1')
+        .replace(/\bhyd(\?)?\b/gi, 'how are you doing$1')
+        .replace(/\bwd?ym(\?)?\b/gi, 'what do you mean$1')
+        .replace(/\bnm\b/gi, 'not much')
+        .replace(/\bnp\b/gi, 'no problem')
+        .replace(/\byw\b/gi, "you're welcome")
+        .replace(/\bbs(?:\+\b|\splus\b)/gi, 'beat saber plus')
+        .replace(/\bnjs\b/gi, 'note jump speed')
+        .replace(/\bjd\b/gi, 'jump distance')
+        .replace(/\bnjd\b/gi, 'note jump distance')
+        .replace(/\bpb\b/gi, 'personal best')
+        .replace(/\bpbj\b/gi, 'peanut butter jelly')
+        .replace(/\bbs\b/gi, 'bullshit')
+        .replace(/\bsrs(ly)?(\?)?\b/gi, 'serious$1$2')
+        .replace(/\b:3\b/gi, 'cat face')
+        .replace(/\b:\)\b/g, 'smiling face')
+        .replace(/\b[(C]:\b/gi, 'backwards smiling face')
+        .replace(/\b:[(c<]\b/gi, 'sad face')
+        .replace(/\bkbd?\b/gi, 'keyboard')
+        .replace(/\bog\b/gi, 'original')
+        .replace(/\bop\b/gi, 'overpowered')
+        .replace(/\bpl(?:[sz]|0x)\b/gi, 'please')
+        .replace(/\bltt\b/gi, 'Linus Tech Tips')
+        .replace(/\bk\/?d\/?r\b/gi, 'kill-death ratio')
+        .replace(/\bk\/?d\b/gi, 'kill-death')
+        .replace(/\bf2p\b/gi, 'free-to-play')
+        .replace(/\b\/s\b/gi, '(sarcastically)')
+        .replace(/\b\/gen\b/gi, '(genuinely)');
 
 const messageTypeColorMap: Record<SystemMessageType, string> = {
     [SystemMessageType.INFO]: '#aaaaaa',

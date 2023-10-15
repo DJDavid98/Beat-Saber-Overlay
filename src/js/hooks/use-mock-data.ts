@@ -119,9 +119,9 @@ export const useMockData = (enabled: boolean): DataDisplayProps => {
                         missCount = defaultDataPoint.misses;
                         accuracyValue = defaultDataPoint.accuracy;
                         energyValue = lifeCount !== Infinity ? 100 : defaultDataPoint.energy;
-                        console.debug(`Song Speed: ${songSpeedMultiplier}x`);
-                        console.debug(`Song Length: ${mockSongDuration}s`);
-                        console.debug(`Realtime Length: ${mockSongDuration / songSpeedMultiplier}s`);
+                        console.info(`Song Speed: ${songSpeedMultiplier}x`);
+                        console.info(`Song Length: ${mockSongDuration}s`);
+                        console.info(`Realtime Length: ${mockSongDuration / songSpeedMultiplier}s`);
                     }]
                 },
                 {

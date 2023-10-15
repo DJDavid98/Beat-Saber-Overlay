@@ -1,0 +1,25 @@
+@use "../variables";
+@use "../dialog";
+
+.settings-navigation {
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: flex-start;
+  flex: 0 0 20rem;
+
+  .nav-button {
+    margin: 0 0 .5em;
+    text-align: left;
+    width: auto;
+    cursor: pointer;
+
+    &[disabled] {
+      cursor: not-allowed;
+    }
+
+    &.nav-current {
+      cursor: default;
+      background-color: rgba(variables.$dialog-input-border, .75);
+    }
+  }
+}

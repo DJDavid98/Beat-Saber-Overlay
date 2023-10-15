@@ -1,0 +1,32 @@
+.element-settings-tree {
+  &:not([data-level="0"]):not([data-level="1"]) {
+    padding-left: 1.5em;
+    border-left: .05em solid;
+
+  }
+
+  padding: .5rem 0;
+
+  .meta {
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: .4em;
+    padding-bottom: .3em;
+
+    input[type="checkbox"] {
+      flex: 0 0 auto;
+    }
+
+    label {
+      flex: 1 1 100%;
+
+      p {
+        margin: 0;
+        font-size: .85em;
+        opacity: .85;
+      }
+    }
+  }
+}

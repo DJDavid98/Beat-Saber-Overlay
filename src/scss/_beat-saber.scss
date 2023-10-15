@@ -20,6 +20,7 @@ $data-skew-amount: -10deg;
 }
 
 #beat-saber {
+  cursor: pointer;
   $horizontal-spacing: $edge-spacing * 1.5;
   color: $text-color;
   font-size: $font-size;

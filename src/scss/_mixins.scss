@@ -1,7 +1,7 @@
-$special-font: 'Teko', sans-serif;
+@use "variables";
 
 @mixin special-font {
-  font-family: $special-font;
+  font-family: variables.$special-font;
   font-style: italic;
 }
 
@@ -11,7 +11,7 @@ $special-font: 'Teko', sans-serif;
     @if $i != 0 {
       @for $j from -1 through 1 {
         @if $j != 0 {
-          $shadow: $shadow + ' ' + drop-shadow(#{$i}px #{$j}px $outline-size $outline-color);
+          $shadow: $shadow + ' ' + drop-shadow(#{$i}px #{$j}px variables.$outline-size variables.$outline-color);
         }
       }
     }
@@ -19,7 +19,7 @@ $special-font: 'Teko', sans-serif;
   filter: #{$shadow};
 }
 
-@mixin loading-element($loader-size, $color: $text-color, $frozen: false) {
+@mixin loading-element($loader-size, $color: variables.$text-color, $frozen: false) {
   $loader-spacing: .2;
   $loader-thickness-multiplier: .08;
   $loader-rotations-per-cycle: 3;
@@ -65,18 +65,20 @@ $special-font: 'Teko', sans-serif;
 
 
 @mixin input {
-  color: $dialog-fg;
+  color: variables.$dialog-fg;
   background-color: transparent;
-  border: 2px solid $dialog-input-border;
-  border-radius: .25rem;
-  padding: .25rem .75rem;
-  line-height: 1em;
-  transform: skew(-12deg);
+  border: 2px solid variables.$dialog-input-border;
+  border-radius: .25em;
+  padding: .25em .75em;
+  line-height: 1;
   box-sizing: border-box;
-  text-align: center;
   font-size: inherit;
 
+  &:disabled {
+    opacity: .5;
+  }
+
   &:active {
-    border-color: $dialog-input-border-focus;
+    border-color: variables.$dialog-input-border-focus;
   }
 }

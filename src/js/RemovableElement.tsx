@@ -1,18 +1,19 @@
-import { FC, memo, PropsWithChildren } from 'react';
+import { FC, memo, MouseEventHandler, PropsWithChildren } from 'react';
 import { RemovableElementId } from './model/removable-element-id';
 import { useIsElementRemoved } from './contexts/removled-elements-context';
 
 export interface RemovableElementProps extends PropsWithChildren {
     id: RemovableElementId;
-    className?: string
+    className?: string;
+    onClick?: MouseEventHandler<HTMLDivElement>;
 }
 
-const RemovableElementComponent: FC<RemovableElementProps> = ({ id, className, children }) => {
+const RemovableElementComponent: FC<RemovableElementProps> = ({ id, className, children, onClick }) => {
     const removed = useIsElementRemoved(id);
 
     if (removed) return null;
 
-    return <div id={id} className={className}>{children}</div>;
+    return <div id={id} className={className} onClick={onClick}>{children}</div>;
 };
 
 export const RemovableElement = memo(RemovableElementComponent);

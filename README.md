@@ -112,6 +112,8 @@ and displaying heart rate data, saving you some CPU resources.
 
 ## Attributions
 
+<!-- Keep in sync with SettingsPageCredits.tsx -->
+
 If I'm going to ask others to credit me for my work, you can bet that I'm going to credit everyone
 whose work I myself used during the creation of this overlay.
 

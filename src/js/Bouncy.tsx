@@ -1,6 +1,10 @@
-import { FC, useEffect, useRef } from 'react';
+import { FC, useCallback, useEffect, useRef } from 'react';
 import bouncy from '../img/bouncy.webm';
 import bouncyBlep from '../img/bouncy-blep.webm';
+import { useSettings } from './contexts/settings-context';
+import { SettingsPage } from './model/settings';
+import classNames from 'classnames';
+import * as styles from '../scss/modules/Bouncy.module.scss';
 
 const HEART_RATE_BLEP_THRESHOLD = 120;
 const RESTING_HEART_RATE = 60;
@@ -20,10 +24,15 @@ const getNewPlaybackRate = (heartRate: number | null): number => {
 };
 
 export const Bouncy: FC<{ heartRate: number | null }> = ({ heartRate }) => {
+    const { openSettings } = useSettings();
     const videoRef = useRef<HTMLVideoElement>(null);
     const blepVideoRef = useRef<HTMLVideoElement>(null);
 
     const showBlep = heartRate !== null && heartRate > HEART_RATE_BLEP_THRESHOLD;
+
+    const openBouncySettings = useCallback(() => {
+        openSettings(SettingsPage.BOUNCY);
+    }, [openSettings]);
 
     useEffect(() => {
         const newPlaybackRate = getNewPlaybackRate(heartRate);
@@ -43,7 +52,8 @@ export const Bouncy: FC<{ heartRate: number | null }> = ({ heartRate }) => {
                 preload="auto"
                 muted
                 ref={videoRef}
-                className={showBlep ? undefined : 'show'}
+                className={classNames(styles['bouncy'], { [styles['show']]: !showBlep })}
+                onClick={openBouncySettings}
             >
                 <source type="video/webm" src={bouncy} />
             </video>
@@ -53,7 +63,8 @@ export const Bouncy: FC<{ heartRate: number | null }> = ({ heartRate }) => {
                 preload="auto"
                 muted
                 ref={blepVideoRef}
-                className={showBlep ? 'show' : undefined}
+                className={classNames(styles['bouncy'], { [styles['show']]: showBlep })}
+                onClick={openBouncySettings}
             >
                 <source type="video/webm" src={bouncyBlep} />
             </video>

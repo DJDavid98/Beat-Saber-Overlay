@@ -1,45 +1,18 @@
-import {
-    ChangeEventHandler,
-    FC,
-    FormEventHandler,
-    MouseEvent,
-    useCallback,
-    useRef,
-    useState
-} from 'react';
-import { PulsoidHeartRate } from '../hooks/use-pulsoid-heart-rate';
+import { FC, useCallback } from 'react';
 import { ReadyState } from 'react-use-websocket';
 import { Loading } from '../Loading';
+import { useSettings } from '../contexts/settings-context';
+import { SettingsPage } from '../model/settings';
+import { HeartRateHookCommonFields } from '../utils/heart-rate-hook-common-fields';
 
 export const HeartRateConnectionPulsoid: FC<{
-    pulsoidHeartRate: PulsoidHeartRate
+    pulsoidHeartRate: HeartRateHookCommonFields
 }> = ({ pulsoidHeartRate }) => {
-    const [tokenInputValue, setTokenInputValue] = useState<string>('');
-    const dialogRef = useRef<HTMLDialogElement>(null);
-    const inputRef = useRef<HTMLInputElement>(null);
+    const { openSettings } = useSettings();
 
-    const updateInputValue = useCallback(() => {
-        setTokenInputValue(pulsoidHeartRate.getToken() ?? '');
-    }, [pulsoidHeartRate]);
     const showDialog = useCallback(() => {
-        updateInputValue();
-        dialogRef.current?.showModal();
-        inputRef.current?.focus();
-    }, [updateInputValue]);
-    const closeDialog = useCallback((e?: MouseEvent<HTMLButtonElement>) => {
-        e?.preventDefault();
-
-        dialogRef.current?.close();
-    }, []);
-    const updateToken: FormEventHandler = useCallback((e) => {
-        e.preventDefault();
-
-        pulsoidHeartRate.changeToken(tokenInputValue);
-        closeDialog();
-    }, [closeDialog, pulsoidHeartRate, tokenInputValue]);
-    const handleTokenInputChange: ChangeEventHandler<HTMLInputElement> = useCallback((e) => {
-        setTokenInputValue(e.target.value);
-    }, []);
+        openSettings(SettingsPage.HEART_RATE);
+    }, [openSettings]);
 
     return <>
         {pulsoidHeartRate.readyState === ReadyState.CONNECTING
@@ -49,29 +22,5 @@ export const HeartRateConnectionPulsoid: FC<{
                 onClick={showDialog}
                 title="Set Pulsoid Token"
             />}
-
-        <dialog ref={dialogRef}>
-            <form onSubmit={updateToken}>
-                <h1>Pulsoid Heart Rate Connection</h1>
-                <h2>Pulsoid API Key</h2>
-                <p>Generate a token on <a
-                    href="https://pulsoid.net/ui/keys"
-                    rel="noreferrer noopener"
-                    target="_blank"
-                >pulsoid.net</a> and paste it below.</p>
-                <p>This requires a paid Pulsoid subscription plan.</p>
-                <p>Leave the input empty to remove an already stored API key.</p>
-                <input
-                    type="password"
-                    name="pulsoid-api-key"
-                    autoComplete="off"
-                    value={tokenInputValue}
-                    onChange={handleTokenInputChange}
-                    ref={inputRef}
-                />
-                <button type="submit">Save</button>
-                <button type="button" onClick={closeDialog}>Cancel</button>
-            </form>
-        </dialog>
     </>;
 };

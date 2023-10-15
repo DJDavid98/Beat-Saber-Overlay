@@ -1,33 +1,3 @@
-#credits {
-  position: absolute;
-  top: 0;
-  left: 0;
-  z-index: map-get($z-index-map, 'credits');
-  margin: $edge-spacing;
-  transform: scale(1, 1);
-  text-align: left;
-  opacity: 1;
-
-  a {
-    display: block;
-    opacity: 0.25;
-    will-change: opacity;
-    transition: .1s opacity;
-    font-size: 2rem;
-    color: #fff;
-    text-decoration: none;
-    line-height: 1.3rem;
-
-    &:hover {
-      opacity: 1;
-    }
-  }
-
-  img {
-    width: 14rem;
-  }
-}
-
 .credits-clock {
   color: #fff;
   display: flex;
