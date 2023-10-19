@@ -11,6 +11,11 @@ export enum SettingName {
     ELEVEN_LABS_TOKEN = 'elevenLabsToken',
     TTS_ENABLED = 'ttsEnabled',
     BEAT_SABER_DATA_SOURCE = 'beatSaberDataSource',
+    OBS_PRIMARY_SCENE = 'obsPrimaryScene',
+    OBS_BRB_SCENE = 'obsBrbScene',
+    OBS_FAREWELL_SCENE = 'obsFarewellScene',
+    OUTRO_SONG_BSR = 'outro-song-bsr',
+    CHAT_SONG_PREVIEWS = 'chat-song-previews',
 }
 
 export interface SettingTypes {
@@ -23,6 +28,11 @@ export interface SettingTypes {
     [SettingName.BEAT_SABER_DATA_SOURCE]: BeatSaberDataSource;
     [SettingName.ELEVEN_LABS_TOKEN]: string;
     [SettingName.TTS_ENABLED]: boolean;
+    [SettingName.OBS_PRIMARY_SCENE]: string;
+    [SettingName.OBS_BRB_SCENE]: string;
+    [SettingName.OBS_FAREWELL_SCENE]: string;
+    [SettingName.OUTRO_SONG_BSR]: string;
+    [SettingName.CHAT_SONG_PREVIEWS]: boolean;
 }
 
 export type SettingsObject = {
@@ -37,6 +47,7 @@ export enum SettingsPage {
     CHAT_OVERLAY = 'chat-overlay',
     BOUNCY = 'bouncy',
     IMPORT_EXPORT = 'import-export',
+    OBS_INTEGRATION = 'obs-integration',
     CREDITS = 'credits',
 }
 

@@ -1,47 +1,19 @@
-import { useCallback, useEffect, useState } from 'react';
-import { isInBrowserSource } from '../utils/is-in-browser-source';
+import { useCallback, useEffect } from 'react';
 import { ReadyState } from 'react-use-websocket';
-
-const brbSceneName = 'BRB';
-const mainSceneName = 'Main';
-const farewellSceneName = 'Farewell';
-const outroSongBsr = '39';
+import { useObs } from './use-obs';
+import { useSettings } from '../contexts/settings-context';
+import { SettingName } from '../model/settings';
 
 export const useObsControl = (mapDataReadyState: ReadyState, bsrKey: unknown) => {
-    const [controlLevel, setControlLevel] = useState<OBSControlLevel>(0);
-    const [streaming, setStreaming] = useState<OBSStatus['streaming']>(false);
-    const [currentSceneName, setCurrentSceneName] = useState<OBSSceneInfo['name']>('');
-
-    useEffect(() => {
-        if (!isInBrowserSource()) return;
-
-        window.obsstudio.getControlLevel((level) => {
-            setControlLevel(level);
-        });
-        window.obsstudio.getStatus((status) => {
-            setStreaming(status !== null && status.streaming);
-        });
-        const listeners = {
-            obsSceneChanged(event: CustomEvent<OBSSceneInfo>) {
-                setCurrentSceneName(event.detail.name);
-            },
-            obsStreamingStarting() {
-                setStreaming(true);
-            },
-            obsStreamingStopping() {
-                setStreaming(false);
-            },
-        } satisfies Partial<{ [k in keyof OBSStudioEventMap]: (event: OBSStudioEventMap[k]) => void }>;
-
-        Object.entries(listeners).forEach(([event, handler]) => {
-            window.addEventListener(event as never, handler as never);
-        });
-        return () => {
-            Object.entries(listeners).forEach(([event, handler]) => {
-                window.removeEventListener(event as never, handler as never);
-            });
-        };
-    }, []);
+    const {
+        settings: {
+            [SettingName.OBS_BRB_SCENE]: brbSceneName,
+            [SettingName.OBS_PRIMARY_SCENE]: primarySceneName,
+            [SettingName.OBS_FAREWELL_SCENE]: farewellSceneName,
+            [SettingName.OUTRO_SONG_BSR]: outroSongBsr,
+        }
+    } = useSettings();
+    const { controlLevel, streaming, currentSceneName } = useObs();
 
     const getTargetSceneName = useCallback(() => {
         if (bsrKey === outroSongBsr) {
@@ -50,15 +22,15 @@ export const useObsControl = (mapDataReadyState: ReadyState, bsrKey: unknown) =>
         }
 
         // Show BRB scene while overlay is disconnected during streaming
-        return mapDataReadyState !== ReadyState.OPEN ? brbSceneName : mainSceneName;
-    }, [bsrKey, mapDataReadyState]);
+        return mapDataReadyState !== ReadyState.OPEN ? brbSceneName : primarySceneName;
+    }, [brbSceneName, bsrKey, farewellSceneName, primarySceneName, mapDataReadyState, outroSongBsr]);
 
     useEffect(() => {
         // At sufficient control level, switch to the pre-defined scene
         if (controlLevel < 4 || !streaming) return;
 
         const targetSceneName = getTargetSceneName();
-        if (currentSceneName !== targetSceneName) {
+        if (targetSceneName && currentSceneName !== targetSceneName) {
             window.obsstudio.setCurrentScene(targetSceneName);
         }
     }, [controlLevel, currentSceneName, getTargetSceneName, streaming]);

@@ -5,7 +5,7 @@ import {
     ChatSystemMessage,
     ChatUserMessage,
     DisplayableMessage,
-    getChatWebsocketMessageTimestamp, removeEmotes,
+    getChatWebsocketMessageTimestamp, isSongRequest, removeEmotes,
     SystemMessageType, tokenizeMessage, ttsNameSubstitutions
 } from '../utils/chat-messages';
 import { ChatMessage } from './ChatMessage';
@@ -21,6 +21,7 @@ export const Chat: FC = () => {
         settings: {
             [SettingName.ELEVEN_LABS_TOKEN]: elevenLabsToken,
             [SettingName.TTS_ENABLED]: ttsEnabled,
+            [SettingName.CHAT_SONG_PREVIEWS]: chatSongPreviews,
         }
     } = useSettings();
     const [messages, setMessages] = useState<Array<DisplayableMessage>>(() => []);
@@ -81,7 +82,14 @@ export const Chat: FC = () => {
                 tts.readText(data.message);
             },
             chat(message) {
-                const { tokens, emoteOnly } = tokenizeMessage(message.message, message.tags.emotes);
+                if (!chatSongPreviews && isSongRequest(message.message)) {
+                    return;
+                }
+
+                const {
+                    tokens,
+                    emoteOnly
+                } = tokenizeMessage(message.message, message.tags.emotes);
                 const data: ChatUserMessage = {
                     id: message.tags.id || window.crypto.randomUUID(),
                     name: message.name,
@@ -168,7 +176,7 @@ export const Chat: FC = () => {
                 socket.off(kex, listeners[kex]);
             }
         };
-    }, [addMessage, df, socket, tts]);
+    }, [addMessage, chatSongPreviews, df, socket, tts]);
 
     return <Fragment>
         {messages.map(message => <ChatMessage key={message.id} message={message} />)}

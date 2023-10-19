@@ -45,7 +45,7 @@ export interface SettingsManagerProps extends PropsWithChildren {
     queryParams: URLSearchParams;
 }
 
-export const SettingsManager: FC<SettingsManagerProps> = ({ queryParams, children }) => {
+export const SettingsProvider: FC<SettingsManagerProps> = ({ queryParams, children }) => {
     const [settings, setSettings] = useState<SettingsObject>(defaultSettings);
     const [dialogOpen, setDialogOpen] = useState(false);
     const [dialogPage, setDialogPage] = useState<SettingsPage | undefined>();

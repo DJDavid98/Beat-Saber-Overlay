@@ -1,0 +1,21 @@
+.obs-control-levels {
+  padding-left: 2rem;
+  margin: 0 0 1rem;
+
+  li {
+    color: #daa;
+
+    &::after {
+      content: "×";
+      margin-left: .5em;
+    }
+
+    &.access-granted {
+      color: #ada;
+
+      &::after {
+        content: "✓";
+      }
+    }
+  }
+}

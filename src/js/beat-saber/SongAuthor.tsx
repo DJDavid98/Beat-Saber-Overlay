@@ -7,6 +7,8 @@ export interface SongAuthorProps {
 }
 
 export const SongAuthor: FunctionComponent<SongAuthorProps> = ({ author, mapper }) => {
+    if (!author && !mapper) return null;
+
     return (
         <SongInfoLine className="song-author">
             {author}

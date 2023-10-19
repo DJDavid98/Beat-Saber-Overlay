@@ -56,6 +56,36 @@ export const settingValidators: { [k in SettingName]: (input: unknown) => Settin
             return input;
         }
         return null;
+    },
+    [SettingName.OBS_PRIMARY_SCENE]: input => {
+        if (typeof input === 'string') {
+            return input;
+        }
+        return null;
+    },
+    [SettingName.OBS_BRB_SCENE]: input => {
+        if (typeof input === 'string') {
+            return input;
+        }
+        return null;
+    },
+    [SettingName.OBS_FAREWELL_SCENE]: input => {
+        if (typeof input === 'string') {
+            return input;
+        }
+        return null;
+    },
+    [SettingName.OUTRO_SONG_BSR]: input => {
+        if (typeof input === 'string' && /^[a-f\d]+$/i.test(input)) {
+            return input.toLowerCase();
+        }
+        return null;
+    },
+    [SettingName.CHAT_SONG_PREVIEWS]: input => {
+        if (typeof input === 'boolean') {
+            return input;
+        }
+        return null;
     }
 };
 

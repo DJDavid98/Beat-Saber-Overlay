@@ -1,0 +1,34 @@
+@use "../variables";
+
+.beat-saver-map {
+  display: block;
+
+  &.in-chat {
+    margin-top: .5em;
+    font-size: .8em;
+
+
+    :global .song-info-block .song-info-line {
+      &.song-name {
+        font-size: 1em;
+      }
+
+      &.song-author, &.song-details {
+        font-size: .75em;
+      }
+    }
+  }
+
+  .beat-saver-song-info {
+    display: flex;
+    flex-flow: row-reverse nowrap;
+    font-family: variables.$special-font;
+    font-size: 1.5em;
+    transform: skew(-8deg);
+
+    :global .song-info-block {
+      padding-left: .35em;
+      box-sizing: border-box;
+    }
+  }
+}

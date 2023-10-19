@@ -21,14 +21,28 @@ export const SongDetails: FunctionComponent<SongDetails> = ({
     const nf = useMemo(() => new Intl.NumberFormat('en-US', { maximumFractionDigits: 2 }), []);
     const df = useDurationFormatTimer();
 
+    const items = [];
+    if (difficulty) {
+        items.push(<span className="difficulty">{mapDifficulty(difficulty)}</span>);
+    }
+    if (duration) {
+        items.push(<span className="duration">{df.format(duration)}</span>);
+    }
+    if (star) {
+        items.push(<span className="star">☆ {nf.format(star)}</span>);
+    }
+    if (pp) {
+        items.push(<span className="pp">{nf.format(pp)}pp</span>);
+    }
+    if (bsr) {
+        items.push(<span className="bsr">!bsr {mapDifficulty(bsr)}</span>);
+    }
+
+    if (items.length === 0) return null;
+
     return <SongInfoLine className="song-details">
         <span className="song-detail-items">
-        {difficulty &&
-            <span className="difficulty">{mapDifficulty(difficulty)}</span>}
-            {!!duration && <span className="duration">{df.format(duration)}</span>}
-            {!!star && <span className="star">☆ {nf.format(star)}</span>}
-            {!!pp && <span className="pp">{nf.format(pp)}pp</span>}
-            {bsr && <span className="bsr">!bsr {mapDifficulty(bsr)}</span>}
+            {items}
         </span>
     </SongInfoLine>;
 };

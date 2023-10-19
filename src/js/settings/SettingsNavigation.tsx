@@ -37,6 +37,10 @@ export const settingPages: Record<SettingsPage, SettingsPageOptions> = {
         name: 'Import / Export',
         icon: '💾',
     },
+    [SettingsPage.OBS_INTEGRATION]: {
+        name: 'OBS Integration',
+        icon: '🔴',
+    },
     [SettingsPage.CREDITS]: {
         name: 'Credits',
         icon: 'ℹ️',

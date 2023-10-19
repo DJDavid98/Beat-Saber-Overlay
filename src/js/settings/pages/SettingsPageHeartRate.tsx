@@ -108,7 +108,7 @@ export const SettingsPageHeartRate: FC = () => {
                 only.</p>
             <input
                 type="text"
-                name="websocket-host"
+                name="websocket-path"
                 autoComplete="off"
                 value={pathInputValue}
                 onChange={handlePathInputChange}

@@ -163,4 +163,8 @@ $connect-icon-size: 3rem;
   &.websocket-loading {
     @include loading-element($connect-icon-size, #fff);
   }
+
+  &.beat-saver-map {
+    @include loading-element($connect-icon-size, #375a7f);
+  }
 }

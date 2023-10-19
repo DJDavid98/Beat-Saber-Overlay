@@ -7,6 +7,7 @@ type LoaderName =
     | 'ble'
     | 'pulsoid'
     | 'connection'
+    | 'beat-saver-map'
 
 type LoaderClass = `${LoaderName}-loading`;
 

@@ -1,6 +1,6 @@
 import {
     ChangeEventHandler,
-    FC,
+    FC, FormEvent,
     FormEventHandler,
     useCallback,
     useEffect, useId,
@@ -9,6 +9,7 @@ import {
 } from 'react';
 import { useSettings } from '../../contexts/settings-context';
 import { SettingName } from '../../model/settings';
+import { BeatSaverMap } from '../../BeatSaverMap';
 
 export const SettingsPageChatOverlay: FC = () => {
     const {
@@ -17,6 +18,7 @@ export const SettingsPageChatOverlay: FC = () => {
             [SettingName.CHAT_SOCKET_ROOM]: room,
             [SettingName.ELEVEN_LABS_TOKEN]: elevenLabsToken,
             [SettingName.TTS_ENABLED]: ttsEnabled,
+            [SettingName.CHAT_SONG_PREVIEWS]: songPreviews,
         },
         setSetting,
     } = useSettings();
@@ -24,8 +26,10 @@ export const SettingsPageChatOverlay: FC = () => {
     const [roomInputValue, setRoomInputValue] = useState<string>('');
     const [tokenInputValue, setTokenInputValue] = useState<string>('');
     const [ttsEnabledInputValue, setTtsEnabledInputValue] = useState(false);
+    const [songPreviewsInputValue, setSongPreviewsInputValue] = useState(false);
     const firstInputRef = useRef<HTMLInputElement>(null);
 
+    const songPreviewsInputId = useId();
     const ttsInputId = useId();
 
     const updateInputValue = useCallback(() => {
@@ -33,7 +37,8 @@ export const SettingsPageChatOverlay: FC = () => {
         setRoomInputValue(room ?? '');
         setTokenInputValue(elevenLabsToken ?? '');
         setTtsEnabledInputValue(ttsEnabled ?? false);
-    }, [elevenLabsToken, room, serverUrl, ttsEnabled]);
+        setSongPreviewsInputValue(songPreviews ?? false);
+    }, [elevenLabsToken, room, serverUrl, songPreviews, ttsEnabled]);
     const changeHost = useCallback(() => {
         setSetting(SettingName.CHAT_SOCKET_SERVER_URL, serverUrlInputValue.trim());
     }, [serverUrlInputValue, setSetting]);
@@ -58,17 +63,26 @@ export const SettingsPageChatOverlay: FC = () => {
     const handleTtsEnabledInputChange: ChangeEventHandler<HTMLInputElement> = useCallback((e) => {
         setTtsEnabledInputValue(e.target.checked);
     }, []);
+    const changeSongPreviewsEnabled = useCallback(() => {
+        setSetting(SettingName.CHAT_SONG_PREVIEWS, songPreviewsInputValue);
+    }, [setSetting, songPreviewsInputValue]);
+    const handleSongPreviewsInputChange: ChangeEventHandler<HTMLInputElement> = useCallback((e) => {
+        setSongPreviewsInputValue(e.target.checked);
+    }, []);
 
     const handleSubmit: FormEventHandler<HTMLFormElement> = useCallback((e) => {
         e.preventDefault();
         changeHost();
         changePath();
+        changeSongPreviewsEnabled();
         changeTtsEnabled();
         updateToken();
-    }, [changeHost, changePath, changeTtsEnabled, updateToken]);
+    }, [changeHost, changePath, changeSongPreviewsEnabled, changeTtsEnabled, updateToken]);
 
     // Used to reset the state of the page on mount/reset button click
-    const init = useCallback(() => {
+    const init = useCallback((e?: FormEvent) => {
+        e?.preventDefault();
+
         updateInputValue();
         firstInputRef.current?.focus();
     }, [updateInputValue]);
@@ -113,6 +127,27 @@ export const SettingsPageChatOverlay: FC = () => {
         </details>
         <details open>
             <summary>
+                <h2>Song Requests</h2>
+            </summary>
+
+            <p>When a BeatSaver song is requested in chat via the <code>!bsr</code> command, its
+                details will be visible as part of the chat message.</p>
+
+            <p><input
+                type="checkbox"
+                name="song-previews"
+                id={songPreviewsInputId}
+                checked={songPreviewsInputValue}
+                onChange={handleSongPreviewsInputChange}
+            /> <label htmlFor={songPreviewsInputId}>Display song previews</label>
+            </p>
+
+            <p>Example:</p>
+
+            <BeatSaverMap mapId="bd45" inChat />
+        </details>
+        <details open>
+            <summary>
                 <h2>Text-to-Speech</h2>
             </summary>
 
@@ -123,6 +158,11 @@ export const SettingsPageChatOverlay: FC = () => {
                 checked={ttsEnabledInputValue}
                 onChange={handleTtsEnabledInputChange}
             /> <label htmlFor={ttsInputId}>Read chat messages via ElevenLabs TTS</label></p>
+            <p>Usernames and messages are processed before being passed to the API, e.g. omitting
+                large numbers from names, adding spaces before capital letters in names, expansion
+                of certain acronyms and slang words, etc.</p>
+            <p>Emotes are only read out if they have a hard-coded text representation defined in the
+                overlay.</p>
 
             <h3>ElevenLabs API Key</h3>
             <p>Generate a token on <a

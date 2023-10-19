@@ -1,6 +1,6 @@
 import { mountAppComponent } from './js/utils/mount-app-component';
 import { App } from './js/App';
-import { SettingsManager } from './js/settings/SettingsManager';
+import { SettingsProvider } from './js/settings/SettingsProvider';
 
 /**
  * Get the query parameters
@@ -9,9 +9,9 @@ import { SettingsManager } from './js/settings/SettingsManager';
 const params = new URLSearchParams(window.location.search);
 
 const WrappedApp: typeof App = (props) => (
-    <SettingsManager queryParams={params}>
+    <SettingsProvider queryParams={params}>
         <App {...props} />
-    </SettingsManager>
+    </SettingsProvider>
 );
 
 mountAppComponent('app-root', WrappedApp, {});

@@ -7,6 +7,7 @@ import * as styles from '../../scss/modules/SettingsDialog.module.scss';
 import { SettingsPageImportExport } from './pages/SettingsPageImportExport';
 import { SettingsPageChatOverlay } from './pages/SettingsPageChatOverlay';
 import { SettingsPageCredits } from './pages/SettingsPageCredits';
+import { SettingsPageObsIntegration } from './pages/SettingsPageObsIntegration';
 
 interface SettingsDialogProps {
     isOpen: boolean;
@@ -58,6 +59,9 @@ export const SettingsDialog: FC<SettingsDialogProps> = ({
             break;
         case SettingsPage.CREDITS:
             settingsPage = <SettingsPageCredits />;
+            break;
+        case SettingsPage.OBS_INTEGRATION:
+            settingsPage = <SettingsPageObsIntegration />;
             break;
         default:
             settingsPage = <p><em>There are no settings in this section yet.</em></p>;

@@ -1,6 +1,7 @@
 import { ChatWebsocketMessage } from '../model/app-scoket';
 import { isValid, parseISO } from 'date-fns';
 import { ChatEmoteProps } from '../chat/ChatEmote';
+import { BeatSaverMapProps } from '../BeatSaverMap';
 
 export enum SystemMessageType {
     INFO,
@@ -46,8 +47,10 @@ export const getChatWebsocketMessageTimestamp = (message: ChatWebsocketMessage):
     return new Date();
 };
 
+const bsrPattern = /^!bsr\s+([a-f\d]+)(?:\s+|$)/;
+export const isSongRequest = (message: string) => bsrPattern.test(message);
 
-type MessageToken = string | ChatEmoteProps;
+type MessageToken = string | ChatEmoteProps | BeatSaverMapProps;
 type EmoteRange = { start: number, finish: number, id: string, text: string };
 
 export interface TokenizeMessage {
@@ -57,9 +60,12 @@ export interface TokenizeMessage {
 
 export const tokenizeMessage = (
     message: string,
-    emotes: Record<string, string[]> | undefined
+    emotes: Record<string, string[]> | undefined,
 ): TokenizeMessage => {
     const tokens: Array<MessageToken> = [];
+    const bsrMatch = message.match(bsrPattern);
+    const bsrPrefixLength = bsrMatch ? bsrMatch[0].length : 0;
+
     const emoteKeys = typeof emotes === 'object' && emotes !== null ? Object.keys(emotes) : [];
     let emoteOnly = false;
     if (emoteKeys.length > 0) {
@@ -78,7 +84,7 @@ export const tokenizeMessage = (
             return finalRanges;
         }, [] as EmoteRange[]).sort(({ start: startA }, { start: startB }) => startA - startB);
 
-        let lastRangeFinish = 0;
+        let lastRangeFinish = bsrPrefixLength;
         // For every range
         normalizedEmoteRanges.forEach(emoteRange => {
             if (emoteRange.start > lastRangeFinish) {
@@ -99,7 +105,11 @@ export const tokenizeMessage = (
         emoteOnly = tokens.every(token => typeof token !== 'string');
     } else {
         // We don't have emotes, take the full text as-is
-        tokens.push(message);
+        tokens.push(bsrPrefixLength ? message.substring(bsrPrefixLength) : message);
+    }
+    if (bsrMatch) {
+        const [, mapId] = bsrMatch;
+        tokens.push({ mapId, text: `(song request, ${mapId})` });
     }
     return { tokens, emoteOnly };
 };
@@ -132,8 +142,12 @@ export const removeEmotes = (tokens: Array<MessageToken>): string => tokens
         if (typeof token === 'string') {
             return [...output, token];
         }
-        if (typeof token.text === 'string' && token.text in emoteTextReadAloud) {
-            return [...output, `(${emoteTextReadAloud[token.text]})`];
+        if ('text' in token && typeof token.text === 'string') {
+            if ('mapId' in token) {
+                return [...output, token.text];
+            } else if (token.text in emoteTextReadAloud) {
+                return [...output, `(${emoteTextReadAloud[token.text]})`];
+            }
         }
         return output;
     }, [])
