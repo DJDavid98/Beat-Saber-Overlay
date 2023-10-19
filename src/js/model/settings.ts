@@ -1,5 +1,6 @@
 import { RemovableElementId } from './removable-element-id';
 import { BeatSaberDataSource } from '../beat-saber/BeatSaber';
+import { FC } from 'react';
 
 export enum SettingName {
     PULSOID_TOKEN = 'pulsoidToken',
@@ -54,5 +55,5 @@ export enum SettingsPage {
 export interface SettingsPageOptions {
     name: string;
     icon: string;
-    disabled?: boolean;
+    component?: FC;
 }

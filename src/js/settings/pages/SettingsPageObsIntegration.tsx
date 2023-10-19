@@ -12,6 +12,7 @@ import { useSettings } from '../../contexts/settings-context';
 import { useObs } from '../../hooks/use-obs';
 import * as styles from '../../../scss/modules/SettingsPageObsIntegration.module.scss';
 import { BeatSaverMap } from '../../BeatSaverMap';
+import { ExternalLink } from '../../ExternalLink';
 
 export const SettingsPageObsIntegration: FC = () => {
     const {
@@ -146,12 +147,9 @@ export const SettingsPageObsIntegration: FC = () => {
                 list={scenesDatalistId}
             />
             <h3>Outro Song</h3>
-            <p>The <a
-                href="https://beatsaver.com"
-                target="_blank"
-                rel="noreferrer noopener"
-            >BeatSaver</a> song ID which is played as the outro for the stream. Playing this
-                triggers the change to the Farewell scene.</p>
+            <p>The <ExternalLink href="https://beatsaver.com">BeatSaver</ExternalLink> song ID which
+                is played as the outro for the stream. Playing this triggers the change to the
+                Farewell scene.</p>
             <p>This is the same code you would use to request a song via chat using
                 the <code>!bsr</code> command</p>
             <input

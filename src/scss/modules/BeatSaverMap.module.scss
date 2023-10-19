@@ -6,17 +6,6 @@
   &.in-chat {
     margin-top: .5em;
     font-size: .8em;
-
-
-    :global .song-info-block .song-info-line {
-      &.song-name {
-        font-size: 1em;
-      }
-
-      &.song-author, &.song-details {
-        font-size: .75em;
-      }
-    }
   }
 
   .beat-saver-song-info {
@@ -29,6 +18,16 @@
     :global .song-info-block {
       padding-left: .35em;
       box-sizing: border-box;
+
+      .song-info-line {
+        &.song-name {
+          font-size: 1em;
+        }
+
+        &.song-author, &.song-details {
+          font-size: .75em;
+        }
+      }
     }
   }
 }

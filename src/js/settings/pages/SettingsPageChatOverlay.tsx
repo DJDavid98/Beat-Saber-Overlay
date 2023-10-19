@@ -10,6 +10,7 @@ import {
 import { useSettings } from '../../contexts/settings-context';
 import { SettingName } from '../../model/settings';
 import { BeatSaverMap } from '../../BeatSaverMap';
+import { ExternalLink } from '../../ExternalLink';
 
 export const SettingsPageChatOverlay: FC = () => {
     const {
@@ -97,11 +98,9 @@ export const SettingsPageChatOverlay: FC = () => {
                 <h2>Connection</h2>
             </summary>
             <h3>Server URL</h3>
-            <p>Enter the full URL of the <a
+            <p>Enter the full URL of the <ExternalLink
                 href="https://github.com/DJDavid98/DoubleColonBot"
-                target="_blank"
-                rel="noreferrer noopener"
-            >DoubleColonBot</a> server, including the port number</p>
+            >DoubleColonBot</ExternalLink> server, including the port number</p>
             <input
                 type="url"
                 name="chat-socket-server-url"
@@ -144,7 +143,7 @@ export const SettingsPageChatOverlay: FC = () => {
 
             <p>Example:</p>
 
-            <BeatSaverMap mapId="bd45" inChat />
+            <BeatSaverMap mapId="bd45" />
         </details>
         <details open>
             <summary>
@@ -165,11 +164,9 @@ export const SettingsPageChatOverlay: FC = () => {
                 overlay.</p>
 
             <h3>ElevenLabs API Key</h3>
-            <p>Generate a token on <a
+            <p>Generate a token on <ExternalLink
                 href="https://elevenlabs.io/"
-                rel="noreferrer noopener"
-                target="_blank"
-            >elevenlabs.io</a> and paste it below.</p>
+            >elevenlabs.io</ExternalLink> and paste it below.</p>
             <p>This requires a registered account with a verified e-mail address.</p>
             <p>Leave the input empty to remove an already stored API key.</p>
             <input

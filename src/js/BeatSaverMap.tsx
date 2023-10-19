@@ -27,13 +27,13 @@ export const BeatSaverMap: FC<BeatSaverMapProps> = ({ mapId, inChat }) => {
     return <div className={classNames(styles['beat-saver-map'], { [styles['in-chat']]: inChat })}>
         <div className={styles['beat-saver-song-info']}>
             <SongInfo
-                name={data?.metadata?.songName ?? (isLoading ? '' : 'Could not retrieve song information')}
-                author={isLoading ? 'Loading map data…' : data?.metadata?.songAuthorName}
+                name={data?.metadata?.songName ?? (isLoading ? '' : 'Unknown Song')}
+                author={isLoading ? 'Loading map data…' : (data?.metadata?.songAuthorName ?? 'Unknown Artist')}
                 duration={data?.metadata?.duration}
                 mapper={data?.metadata?.levelAuthorName}
                 subName={data?.metadata?.songSubName}
                 url={publishedVersion?.coverURL}
-                bsr={data?.id}
+                bsr={data?.id ?? mapId}
                 difficulty={publishedVersion?.diffs?.filter(diff => diff.characteristic === 'Standard').map(diff => mapDifficulty(diff.difficulty)).join(', ')}
             />
         </div>

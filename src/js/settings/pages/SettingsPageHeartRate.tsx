@@ -10,6 +10,7 @@ import {
 } from 'react';
 import { useSettings } from '../../contexts/settings-context';
 import { SettingName } from '../../model/settings';
+import { ExternalLink } from '../../ExternalLink';
 
 export const SettingsPageHeartRate: FC = () => {
     const {
@@ -122,11 +123,9 @@ export const SettingsPageHeartRate: FC = () => {
             </summary>
 
             <h3>Pulsoid API Key</h3>
-            <p>Generate a token on <a
-                href="https://pulsoid.net/ui/keys"
-                rel="noreferrer noopener"
-                target="_blank"
-            >pulsoid.net</a> and paste it below.</p>
+            <p>Generate a token
+                on <ExternalLink href="https://pulsoid.net/ui/keys">pulsoid.net</ExternalLink> and
+                paste it below.</p>
             <p>This requires a paid Pulsoid subscription plan.</p>
             <p>Leave the input empty to remove an already stored API key.</p>
             <input

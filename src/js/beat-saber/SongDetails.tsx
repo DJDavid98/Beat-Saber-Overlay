@@ -23,19 +23,22 @@ export const SongDetails: FunctionComponent<SongDetails> = ({
 
     const items = [];
     if (difficulty) {
-        items.push(<span className="difficulty">{mapDifficulty(difficulty)}</span>);
+        items.push(<span
+            key={items.length}
+            className="difficulty"
+        >{mapDifficulty(difficulty)}</span>);
     }
     if (duration) {
-        items.push(<span className="duration">{df.format(duration)}</span>);
+        items.push(<span key={items.length} className="duration">{df.format(duration)}</span>);
     }
     if (star) {
-        items.push(<span className="star">☆ {nf.format(star)}</span>);
+        items.push(<span key={items.length} className="star">☆ {nf.format(star)}</span>);
     }
     if (pp) {
-        items.push(<span className="pp">{nf.format(pp)}pp</span>);
+        items.push(<span key={items.length} className="pp">{nf.format(pp)}pp</span>);
     }
     if (bsr) {
-        items.push(<span className="bsr">!bsr {mapDifficulty(bsr)}</span>);
+        items.push(<span key={items.length} className="bsr">!bsr {bsr}</span>);
     }
 
     if (items.length === 0) return null;

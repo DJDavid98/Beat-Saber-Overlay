@@ -1,4 +1,5 @@
 import { FC } from 'react';
+import { ExternalLink } from '../../ExternalLink';
 
 const bluetoothLogoLink = 'https://commons.wikimedia.org/wiki/File:Bluetooth.svg';
 
@@ -8,15 +9,19 @@ export const SettingsPageCredits: FC = () => {
         <h2>Attributions</h2>
 
         <ul>
-            <li>Bluetooth logo: <a
-                href={bluetoothLogoLink}
-                target="_blank"
-                rel="noreferrer noopener"
-            >{bluetoothLogoLink}</a></li>
+            <li>Bluetooth
+                logo: <ExternalLink href={bluetoothLogoLink}>{bluetoothLogoLink}</ExternalLink></li>
             <li>Pulsoid logo is based on the Pulsoid App icon. This project is not affiliated with
                 Pulsoid in any way, shape, or form.
             </li>
-            <li>Bouncy icon made by <a href="https://www.twitch.tv/KisuPantteri">KisuPantteri</a>
+            <li>Bouncy icon made
+                by <ExternalLink href="https://www.twitch.tv/KisuPantteri">KisuPantteri</ExternalLink>
+            </li>
+            <li>Beat Saber UI
+                font: <ExternalLink href="https://fonts.google.com/specimen/Teko">Teko</ExternalLink>
+            </li>
+            <li>Overlay UI
+                font: <ExternalLink href="https://fonts.google.com/specimen/Kalam">Kalam</ExternalLink>
             </li>
         </ul>
 
@@ -28,18 +33,10 @@ export const SettingsPageCredits: FC = () => {
 
         <ul>
             <li>
-                <a
-                    href="https://www.twitch.tv/theblackparrot"
-                    target="_blank"
-                    rel="noreferrer noopener"
-                >TheBlackParrot</a>
+                <ExternalLink href="https://www.twitch.tv/theblackparrot">TheBlackParrot</ExternalLink>
             </li>
             <li>
-                <a
-                    href="https://www.twitch.tv/minniefoxx"
-                    target="_blank"
-                    rel="noreferrer noopener"
-                >MinnieFoxx</a>
+                <ExternalLink href="https://www.twitch.tv/minniefoxx">MinnieFoxx</ExternalLink>
             </li>
         </ul>
     </>;

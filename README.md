@@ -121,6 +121,8 @@ whose work I myself used during the creation of this overlay.
 * Pulsoid logo is based on the Pulsoid App icon. This project is not affiliated with Pulsoid in any
   way, shape, or form.
 * Bouncy icon made by [KisuPantteri](https://www.twitch.tv/KisuPantteri)
+* Beat Saber UI font: [Teko](https://fonts.google.com/specimen/Teko)
+* Overlay UI font: [Kalam](https://fonts.google.com/specimen/Kalam)
 
 ### Appreciation
 
