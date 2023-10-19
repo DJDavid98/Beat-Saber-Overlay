@@ -1,4 +1,4 @@
-import * as styles from '../../scss/modules/labelledInput.module.scss';
+import * as styles from '../../scss/modules/LabelledInput.module.scss';
 import {
     ChangeEventHandler,
     forwardRef,
