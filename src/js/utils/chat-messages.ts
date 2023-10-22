@@ -173,6 +173,7 @@ export const ttsMessageSubstitutions = (input: string): string =>
     input
         .replace(/\b(?:gm)+\b/g, (match) => match.replace(/gm/g, 'good morning ').trim())
         .replace(/\b(?:ni)+\b/g, 'good night')
+        .replace(/\bbby\b/g, 'baby')
         .replace(/\bbb\b/g, 'bye bye')
         .replace(/\bg[2t]g\b/gi, 'gotta go')
         .replace(/\bcya\b/gi, 'see ya')
@@ -210,10 +211,12 @@ export const ttsMessageSubstitutions = (input: string): string =>
         .replace(/\bpbj\b/gi, 'peanut butter jelly')
         .replace(/\bbs\b/gi, 'bullshit')
         .replace(/\bsrs(ly)?(\?)?\b/gi, 'serious$1$2')
-        .replace(/\b:3\b/gi, 'cat face')
-        .replace(/\b:\)\b/g, 'smiling face')
-        .replace(/\b[(C]:\b/gi, 'backwards smiling face')
-        .replace(/\b:[(c<]\b/gi, 'sad face')
+        .replace(/\b(>)?:3\b/gi, (_, evil) => `${evil ? 'evil ' : ''}cat face`)
+        .replace(/\b(>)?:\)\b/g, (_, evil) => `${evil ? 'evil ' : ''}smiling face`)
+        .replace(/\b[(C]:(<)?\b/gi, (_, evil) => `backwards ${evil ? 'evil ' : ''}smiling face`)
+        .replace(/\b(>)?:[(c<]\b/gi, (_, evil) => `${evil ? 'evil ' : ''}sad face`)
+        .replace(/\b>\.<["']?:\b/gi, 'annoyed face')
+        .replace(/\b>\/+<["']?:\b/gi, 'embarrassed face')
         .replace(/\bkbd?\b/gi, 'keyboard')
         .replace(/\bog\b/gi, 'original')
         .replace(/\bop\b/gi, 'overpowered')
@@ -223,7 +226,11 @@ export const ttsMessageSubstitutions = (input: string): string =>
         .replace(/\bk\/?d\b/gi, 'kill-death')
         .replace(/\bf2p\b/gi, 'free-to-play')
         .replace(/\b\/s\b/gi, '(sarcastically)')
-        .replace(/\b\/gen\b/gi, '(genuinely)');
+        .replace(/\b\/gen\b/gi, '(genuinely)')
+        .replace(/\bo7\b/gi, '(salute)')
+        .replace(/\b¯\\_\(ツ\)_\/¯\b/gi, '(shrugs)')
+        .replace(/\b\(╯°□°\)╯︵ ┻━┻\b/gi, '(flips table)')
+        .replace(/\b┬─┬ノ\( º _ ºノ\)\b/gi, '(un-flips table)');
 
 const messageTypeColorMap: Record<SystemMessageType, string> = {
     [SystemMessageType.INFO]: '#aaaaaa',
