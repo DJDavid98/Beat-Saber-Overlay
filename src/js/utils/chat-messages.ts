@@ -187,6 +187,7 @@ export const ttsMessageSubstitutions = (input: string): string =>
         .replace(/\broflmao\b/gi, 'rolling on the floor laughing my ass off')
         .replace(/\broflol\b/gi, 'rolling on the floor laughing out loud')
         .replace(/\blol\b/gi, 'laughing out loud')
+        .replace(/\blmfao\b/gi, 'laughing my fuckin\' ass off')
         .replace(/\blmao\b/gi, 'laughing my ass off')
         .replace(/\bwip\b/gi, 'work-in-progress')
         .replace(/\bsup\b/gi, "what's up")
