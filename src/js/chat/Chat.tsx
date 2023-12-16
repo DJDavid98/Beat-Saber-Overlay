@@ -5,8 +5,11 @@ import {
     ChatSystemMessage,
     ChatUserMessage,
     DisplayableMessage,
-    getChatWebsocketMessageTimestamp, isSongRequest, removeEmotes,
-    SystemMessageType, tokenizeMessage, ttsNameSubstitutions
+    getChatWebsocketMessageTimestamp,
+    isSongRequest,
+    removeEmotes,
+    SystemMessageType,
+    tokenizeMessage,
 } from '../utils/chat-messages';
 import { ChatMessage } from './ChatMessage';
 import DurationUnitFormat from 'intl-unofficial-duration-unit-format';
@@ -56,7 +59,7 @@ export const Chat: FC = () => {
                     message: `Joined room #${room}`,
                 };
                 addMessage(data);
-                tts.readText(data.message);
+                tts.readText({ message: data.message });
             },
             follow(message) {
                 const data: ChatSystemMessage = {
@@ -69,7 +72,7 @@ export const Chat: FC = () => {
                     data.message = data.message.replace('!', `, that's ${message.total} in total!`);
                 }
                 addMessage(data);
-                tts.readText(data.message);
+                tts.readText({ message: data.message });
             },
             donation(message) {
                 const data: ChatSystemMessage = {
@@ -79,7 +82,7 @@ export const Chat: FC = () => {
                     message: `${message.from} just donated!`,
                 };
                 addMessage(data);
-                tts.readText(data.message);
+                tts.readText({ message: data.message });
             },
             chat(message) {
                 if (!chatSongPreviews && isSongRequest(message.message)) {
@@ -90,8 +93,9 @@ export const Chat: FC = () => {
                     tokens,
                     emoteOnly
                 } = tokenizeMessage(message.message, message.tags.emotes);
+                const messageId = message.tags.id || window.crypto.randomUUID();
                 const data: ChatUserMessage = {
-                    id: message.tags.id || window.crypto.randomUUID(),
+                    id: messageId,
                     name: message.name,
                     username: message.username,
                     nameColor: message.tags.color,
@@ -104,7 +108,12 @@ export const Chat: FC = () => {
                 };
                 addMessage(data);
                 if (!emoteOnly) {
-                    tts.readText(`${ttsNameSubstitutions(message.username)}. ${removeEmotes(tokens)}`);
+                    tts.readText({
+                        id: messageId,
+                        name: message.username,
+                        message: removeEmotes(tokens),
+                        pronouns: message.pronouns
+                    });
                 }
             },
             clearChat() {
@@ -125,7 +134,7 @@ export const Chat: FC = () => {
                     message: `Chat connected`,
                 };
                 addMessage(data);
-                tts.readText(data.message);
+                tts.readText({ message: data.message });
             },
             disconnect() {
                 const data: ChatSystemMessage = {
@@ -135,7 +144,7 @@ export const Chat: FC = () => {
                     message: `Chat disconnected`,
                 };
                 addMessage(data);
-                tts.readText(data.message);
+                tts.readText({ message: data.message });
             },
             ban(message) {
                 let data: ChatSystemMessage | undefined;
@@ -152,17 +161,28 @@ export const Chat: FC = () => {
                         message: `${message.username} has been ${action}${bannedBy}${reason}`,
                     };
                 }
-                const filterMessagesFromUser = (oldState: Array<DisplayableMessage>) => (
-                    oldState.filter(m => 'username' in m ? m.username !== message.username : true)
-                );
+                const filteredMessageIds: string[] = [];
+                const filterMessagesFromUser = (oldState: Array<DisplayableMessage>) => {
+                    return (
+                        oldState.filter(m => {
+                            const keepMessage = 'username' in m ? m.username !== message.username : true;
+                            if (!keepMessage && m.id) {
+                                filteredMessageIds.push(m.id);
+                            }
+                            return keepMessage;
+                        })
+                    );
+                };
                 if (data) {
                     addMessage(data, filterMessagesFromUser);
                 } else {
                     setMessages((oldState) => filterMessagesFromUser(oldState));
                 }
+                tts.clearIds(filteredMessageIds);
             },
             messageDeleted(data) {
                 setMessages((oldState) => oldState.filter(message => message.id !== data.id));
+                tts.clearIds([data.id]);
             }
         };
         for (const eventKey in listeners) {

@@ -1,18 +1,32 @@
 import { useCallback, useEffect, useRef } from 'react';
 import { VoiceData } from '../model/eleven-labs';
-import { ttsMessageSubstitutions } from '../utils/chat-messages';
+import {
+    mapPronounsToGender,
+    ttsMessageSubstitutions,
+    ttsNameSubstitutions,
+    VoiceGender
+} from '../utils/chat-messages';
+
+interface TtsInput {
+    id?: string;
+    name?: string;
+    message: string;
+    pronouns?: string[];
+}
 
 export interface TtsApi {
-    readText: (input: string) => Promise<void>;
+    readText: (input: TtsInput) => Promise<void>;
     clearQueue: VoidFunction;
+    clearIds: (ids: string[]) => void;
 }
 
 export const useTts = (token: string | null, enabled: boolean | null): TtsApi => {
     const voicesRef = useRef<VoiceData['voices']>([]);
     const mountedRef = useRef(true);
-    const textQueueRef = useRef<string[]>([]);
+    const textQueueRef = useRef<TtsInput[]>([]);
+    const currentlyReadingRef = useRef<TtsInput | null>(null);
     const audioPlayerRef = useRef<HTMLAudioElement | null>(null);
-    const getVoice = useCallback((targetGender = 'male') => {
+    const getVoice = useCallback((targetGender: VoiceGender) => {
         return voicesRef.current.find(voice => {
             const { age, gender, 'use case': useCase } = voice.labels;
             return age === 'young' && gender === targetGender && useCase === 'narration';
@@ -28,6 +42,9 @@ export const useTts = (token: string | null, enabled: boolean | null): TtsApi =>
             }
             audioPlayerRef.current = null;
         }
+        if (currentlyReadingRef.current) {
+            currentlyReadingRef.current = null;
+        }
     }, []);
 
     const processQueue = useCallback(async (debugSource: string) => {
@@ -42,8 +59,8 @@ export const useTts = (token: string | null, enabled: boolean | null): TtsApi =>
             return;
         }
 
-        // TODO Base voice on user pronouns
-        const voice = getVoice();
+        const firstQueueItem = textQueueRef.current[0] as TtsInput;
+        const voice = getVoice(mapPronounsToGender(firstQueueItem?.pronouns));
         if (!voice) {
             console.error('No voice found (%s)', debugSource);
             return;
@@ -57,7 +74,9 @@ export const useTts = (token: string | null, enabled: boolean | null): TtsApi =>
         }
         audioPlayerRef.current = new Audio();
 
-        const text = textQueueRef.current.shift() as string;
+        const ttsInput = textQueueRef.current.shift() as TtsInput;
+        currentlyReadingRef.current = ttsInput;
+        const textToRead = (ttsInput.name ? `${ttsNameSubstitutions(ttsInput.name)}. ` : '') + ttsMessageSubstitutions(ttsInput.message);
         const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voice_id}/stream`, {
             method: 'POST',
             headers: {
@@ -65,7 +84,7 @@ export const useTts = (token: string | null, enabled: boolean | null): TtsApi =>
                 'xi-api-key': token,
                 'accept': 'audio/mpeg'
             },
-            body: JSON.stringify({ text: ttsMessageSubstitutions(text) })
+            body: JSON.stringify({ text: textToRead })
         });
         const audioBlob = await response.blob();
 
@@ -83,7 +102,7 @@ export const useTts = (token: string | null, enabled: boolean | null): TtsApi =>
         });
     }, [enabled, token, getVoice, clearPlayingAudio]);
 
-    const readText = useCallback(async (text: string) => {
+    const readText = useCallback(async (text: TtsInput) => {
         if (!enabled) return;
 
         textQueueRef.current.push(text);
@@ -94,6 +113,28 @@ export const useTts = (token: string | null, enabled: boolean | null): TtsApi =>
         mountedRef.current = false;
         clearPlayingAudio();
     }, [clearPlayingAudio]);
+
+    const clearIds = useCallback((clearedIds: string[]) => {
+        if (clearedIds.length === 0) return;
+
+        const clearedIdsSet = new Set(clearedIds);
+        if (currentlyReadingRef.current) {
+            const currentId = currentlyReadingRef.current?.id;
+            if (currentId && clearedIdsSet.has(currentId)) {
+                clearPlayingAudio();
+            }
+        }
+
+        if (textQueueRef.current.length > 0) {
+            textQueueRef.current = textQueueRef.current.filter(queueItem => {
+                return !queueItem.id || !clearedIdsSet.has(queueItem.id);
+            });
+        }
+
+        if (!currentlyReadingRef.current) {
+            void processQueue('clearIds');
+        }
+    }, [clearPlayingAudio, processQueue]);
 
     useEffect(() => {
         if (!enabled || !token || voicesRef.current.length) return;
@@ -120,5 +161,6 @@ export const useTts = (token: string | null, enabled: boolean | null): TtsApi =>
     return {
         readText,
         clearQueue,
+        clearIds,
     };
 };

@@ -253,3 +253,17 @@ export const getAccentColor = (message: ChatUserMessage | ChatSystemMessage) => 
 
     return message.nameColor;
 };
+
+
+export type VoiceGender = 'male' | 'female';
+
+export const mapPronounsToGender = (pronouns?: string[]): VoiceGender => {
+    const firstPronoun = pronouns?.[0];
+    switch (firstPronoun) {
+        case 'She/Her':
+        case 'She/They':
+            return 'female';
+        default:
+            return 'male';
+    }
+};
