@@ -1,4 +1,4 @@
-import { FC, useId, useMemo } from 'react';
+import { FC, useMemo } from 'react';
 import useSWR from 'swr';
 import * as styles from '../../scss/modules/TtsHealth.module.scss';
 
@@ -15,7 +15,6 @@ export const TtsHealth: FC<TtsHealthProps> = ({ token }) => {
         maximumFractionDigits: 0
     }), []);
     const nf = useMemo(() => new Intl.NumberFormat('en-US'), []);
-    const progressBarId = useId();
 
     const { data: subscriptionData } = useSWR(ELEVEN_LABS_SUBSCRIPTION_ENDPOINT, (key: string) => fetch(key, {
         method: 'GET',
@@ -42,20 +41,20 @@ export const TtsHealth: FC<TtsHealthProps> = ({ token }) => {
         return { maxChars, usedChars };
     }, [subscriptionData]);
 
+    const charsAvailable = limits.maxChars - limits.usedChars;
+    const progressBarStyle = useMemo(() => ({ width: limits.maxChars > 0 ? (100 * (charsAvailable / limits.maxChars)).toFixed(2) + '%' : '' }), [charsAvailable, limits.maxChars]);
+
     if (limits.maxChars === 0) return null;
 
-    const charsAvailable = limits.maxChars - limits.usedChars;
 
     return <div className={styles['tts-health']}>
-        <label htmlFor={progressBarId} className={styles['tts-label']}>
+        <label className={styles['tts-label']}>
             <div className={styles['tts-name']}>❤️ TTS Health</div>
             {limits.maxChars > 0 &&
                 <div className={styles['tts-percent']}>{nf.format(charsAvailable)} / {nf.format(limits.maxChars)} &bull; {pf.format(1 - limits.usedChars / limits.maxChars)}</div>}
         </label>
-        <progress
-            id={progressBarId}
-            max={limits.maxChars}
-            value={charsAvailable}
-        />
+        <div className={styles['progress']}>
+            <div className={styles['progress-bar']} style={progressBarStyle}></div>
+        </div>
     </div>;
 };

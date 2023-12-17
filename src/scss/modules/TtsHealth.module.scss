@@ -26,18 +26,19 @@
     }
   }
 
-  progress {
+  .progress {
     height: .2em;
     border-radius: .2em;
     background-color: #202020;
     width: 100%;
     border: .125em solid #202020;
     display: block;
+    appearance: none;
 
-
-    &::-moz-progress-bar, &::-webkit-progress-bar {
+    .progress-bar {
       background-color: currentColor;
       border-radius: inherit;
+      height: 100%;
     }
   }
 }
