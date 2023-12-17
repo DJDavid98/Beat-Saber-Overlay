@@ -16,6 +16,9 @@ import DurationUnitFormat from 'intl-unofficial-duration-unit-format';
 import { useSettings } from '../contexts/settings-context';
 import { SettingName } from '../model/settings';
 import { useTts } from '../hooks/use-tts';
+import { TtsHealth } from './TtsHealth';
+import { RemovableElement } from '../RemovableElement';
+import { RemovableElementId } from '../model/removable-element-id';
 
 const MAX_MESSAGE_COUNT = 12;
 
@@ -199,6 +202,8 @@ export const Chat: FC = () => {
     }, [addMessage, chatSongPreviews, df, socket, tts]);
 
     return <Fragment>
+        {ttsEnabled && elevenLabsToken &&
+            <RemovableElement id={RemovableElementId.TTS_HEALTH}><TtsHealth token={elevenLabsToken} /></RemovableElement>}
         {messages.map(message => <ChatMessage key={message.id} message={message} />)}
     </Fragment>;
 };

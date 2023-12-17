@@ -1,0 +1,43 @@
+.tts-health {
+  position: absolute;
+  top: 0;
+  left: 1rem;
+  right: 0;
+  z-index: 10;
+  box-sizing: border-box;
+  color: rgba(255, 0, 0, .75);
+  background-color: rgb(40, 0, 0);
+  padding: .5em;
+  border-radius: .4em;
+  font-size: .6em;
+  width: calc(100% - 2em);
+
+  .tts-label {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: space-between;
+
+    .tts-name {
+      font-weight: bold;
+    }
+
+    .tts-percent {
+      text-align: right;
+    }
+  }
+
+  progress {
+    height: .2em;
+    border-radius: .2em;
+    background-color: #202020;
+    width: 100%;
+    border: .125em solid #202020;
+    display: block;
+
+
+    &::-moz-progress-bar, &::-webkit-progress-bar {
+      background-color: currentColor;
+      border-radius: inherit;
+    }
+  }
+}

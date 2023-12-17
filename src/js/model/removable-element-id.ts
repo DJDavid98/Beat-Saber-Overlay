@@ -8,6 +8,7 @@ export enum RemovableElementId {
     BEAT_SABER = 'beat-saber-root',
     BOUNCY = 'bouncy-root',
     CHAT = 'chat-root',
+    TTS_HEALTH = 'tts-health-root',
     CONNECTION = 'connection-root',
     CHANNEL_BUG = 'credits-root',
     HEART_RATE = 'heart-rate-root',
@@ -72,6 +73,9 @@ export const elementsTree: RemovableElementsTree = {
     [RemovableElementId.CHAT]: {
         name: 'Chat Overlay',
         description: 'Shows incoming chat messages based on the provided configuration',
+        children: [
+            RemovableElementId.TTS_HEALTH
+        ],
     },
     [RemovableElementId.HEART_RATE]: {
         name: 'Heart Rate',
@@ -87,6 +91,10 @@ export const elementsTree: RemovableElementsTree = {
     [RemovableElementId.CHANNEL_BUG]: {
         name: 'Channel Bug',
         description: 'Also known as "digital on-screen graphic", a dynamically changing element that cycles between various states'
+    },
+    [RemovableElementId.TTS_HEALTH]: {
+        name: 'TTS Health Bar',
+        description: 'Shows the percentage of available TTS characters in the current subscription tier'
     },
 };
 

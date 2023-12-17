@@ -6,6 +6,8 @@ import {
     ttsNameSubstitutions,
     VoiceGender
 } from '../utils/chat-messages';
+import { useSWRConfig } from 'swr';
+import { ELEVEN_LABS_SUBSCRIPTION_ENDPOINT } from '../chat/TtsHealth';
 
 interface TtsInput {
     id?: string;
@@ -32,6 +34,7 @@ export const useTts = (token: string | null, enabled: boolean | null): TtsApi =>
             return age === 'young' && gender === targetGender && useCase === 'narration';
         });
     }, []);
+    const { mutate } = useSWRConfig();
 
     const clearPlayingAudio = useCallback(() => {
         if (audioPlayerRef.current) {
@@ -87,6 +90,7 @@ export const useTts = (token: string | null, enabled: boolean | null): TtsApi =>
             body: JSON.stringify({ text: textToRead })
         });
         const audioBlob = await response.blob();
+        void mutate(ELEVEN_LABS_SUBSCRIPTION_ENDPOINT);
 
         if (!audioPlayerRef.current) {
             audioPlayerRef.current = new Audio();
@@ -100,7 +104,7 @@ export const useTts = (token: string | null, enabled: boolean | null): TtsApi =>
                 processQueue('ended handler').then(resolve);
             });
         });
-    }, [enabled, token, getVoice, clearPlayingAudio]);
+    }, [enabled, token, getVoice, mutate, clearPlayingAudio]);
 
     const readText = useCallback(async (text: TtsInput) => {
         if (!enabled) return;
