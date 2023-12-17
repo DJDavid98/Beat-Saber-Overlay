@@ -57,3 +57,17 @@ export interface BsdpMapData {
     CoverImage: string | null;
     Modifiers: BsdpModifiers;
 }
+
+export interface BsdpModData {
+    EnabledPlugins: BsdpPluginMetadata[];
+}
+
+export interface BsdpPluginMetadata {
+    Name: string;
+    Version: string;
+    Author: string;
+    Description: string;
+    HomeLink: string;
+    SourceLink: string;
+    DonateLink: string;
+}

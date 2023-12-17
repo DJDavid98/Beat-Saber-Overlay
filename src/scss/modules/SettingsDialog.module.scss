@@ -19,6 +19,7 @@
     width: 0;
 
     .close-button {
+      position: absolute;
       border: 0;
       padding: .25em;
       margin: 0;
@@ -61,6 +62,7 @@
   overflow: auto;
   flex: 1 1 auto;
   padding-right: 1em;
+  box-sizing: border-box;
 }
 
 .settings-header {

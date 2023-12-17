@@ -1,5 +1,6 @@
 import { FC } from 'react';
 import { ExternalLink } from '../../ExternalLink';
+import { InstalledMods } from '../../beat-saber/InstalledMods';
 
 const bluetoothLogoLink = 'https://commons.wikimedia.org/wiki/File:Bluetooth.svg';
 
@@ -39,5 +40,7 @@ export const SettingsPageCredits: FC = () => {
                 <ExternalLink href="https://www.twitch.tv/minniefoxx">MinnieFoxx</ExternalLink>
             </li>
         </ul>
+
+        <InstalledMods />
     </>;
 };
