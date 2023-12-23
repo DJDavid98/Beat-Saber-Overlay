@@ -11,6 +11,12 @@
   border-radius: .4em;
   font-size: .6em;
   width: calc(100% - 2em);
+  transition: opacity .3s linear;
+  cursor: pointer;
+
+  &:hover {
+    opacity: 1 !important;
+  }
 
   .tts-label {
     display: flex;
