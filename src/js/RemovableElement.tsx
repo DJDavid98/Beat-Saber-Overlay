@@ -1,6 +1,6 @@
 import { FC, memo, MouseEventHandler, PropsWithChildren } from 'react';
 import { RemovableElementId } from './model/removable-element-id';
-import { useIsElementRemoved } from './contexts/removled-elements-context';
+import { useIsElementRemoved } from './contexts/removed-elements-context';
 
 export interface RemovableElementProps extends PropsWithChildren {
     id: RemovableElementId;
@@ -8,7 +8,12 @@ export interface RemovableElementProps extends PropsWithChildren {
     onClick?: MouseEventHandler<HTMLDivElement>;
 }
 
-const RemovableElementComponent: FC<RemovableElementProps> = ({ id, className, children, onClick }) => {
+const RemovableElementComponent: FC<RemovableElementProps> = ({
+    id,
+    className,
+    children,
+    onClick
+}) => {
     const removed = useIsElementRemoved(id);
 
     if (removed) return null;

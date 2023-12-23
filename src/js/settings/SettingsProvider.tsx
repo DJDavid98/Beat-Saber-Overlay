@@ -14,7 +14,7 @@ import { isRemovableElementId, RemovableElementId } from '../model/removable-ele
 import {
     RemovedElementsContextProvider,
     RemovedElementsContextType
-} from '../contexts/removled-elements-context';
+} from '../contexts/removed-elements-context';
 import {
     defaultSettings,
     isValidSettings,
