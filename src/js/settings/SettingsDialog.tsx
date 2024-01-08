@@ -6,7 +6,7 @@ import * as styles from '../../scss/modules/SettingsDialog.module.scss';
 interface SettingsDialogProps {
     isOpen: boolean;
     page?: SettingsPage;
-    close: VoidFunction;
+    close: VoidFunction | undefined;
 }
 
 const FallbackSettingsPage: FC = () => <p><em>There are no settings in this section yet.</em></p>;
@@ -17,6 +17,7 @@ export const SettingsDialog: FC<SettingsDialogProps> = ({
     close,
 }) => {
     const dialogRef = useRef<HTMLDialogElement>(null);
+    const forceOpen = typeof close === 'undefined';
 
     useEffect(() => {
         if (!dialogRef.current) return;
@@ -34,13 +35,17 @@ export const SettingsDialog: FC<SettingsDialogProps> = ({
 
     useEffect(() => {
         dialogRef.current?.addEventListener('close', () => {
-            close();
+            close?.();
         });
     }, [close]);
 
     const SettingsPage = settingPages[page].component ?? FallbackSettingsPage;
 
-    return <dialog className={styles['settings-dialog'] + ' '} ref={dialogRef} hidden={!isOpen}>
+    return <dialog
+        className={styles['settings-dialog'] + (forceOpen ? ` ${styles['full-size']}` : '')}
+        ref={dialogRef}
+        hidden={!isOpen}
+    >
         <SettingsNavigation currentPage={page} />
         <div className={styles['settings-ui-wrap']}>
             <h1 className={styles['settings-header']}>
@@ -49,10 +54,16 @@ export const SettingsDialog: FC<SettingsDialogProps> = ({
             </h1>
             {isOpen && <SettingsPage />}
         </div>
-        <div className={styles['close-button-wrap']}>
-            <button className={styles['close-button']} type="button" onClick={close}>
-                &times;
-            </button>
-        </div>
+        {!forceOpen && (
+            <div className={styles['close-button-wrap']}>
+                <button
+                    className={styles['close-button']}
+                    type="button"
+                    onClick={close}
+                >
+                    &times;
+                </button>
+            </div>
+        )}
     </dialog>;
 };

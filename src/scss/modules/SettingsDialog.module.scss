@@ -14,6 +14,15 @@
     display: flex;
   }
 
+  &.full-size {
+    width: 100%;
+    height: 100%;
+    max-width: 100vw;
+    max-height: 100vh;
+    margin: auto;
+    box-shadow: none;
+  }
+
   .close-button-wrap {
     flex: 0 0 auto;
     width: 0;
@@ -24,7 +33,6 @@
       padding: .25em;
       margin: 0;
       background-color: transparent;
-      cursor: pointer;
       transform: translate(-.75em, -.75em);
       width: 1em;
       height: 1em;

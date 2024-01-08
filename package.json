@@ -6,8 +6,8 @@
     "lint:eslint": "eslint \"src/**/*.{ts,tsx}\" --max-warnings=0",
     "lint:tsc": "tsc --noEmit",
     "lint": "concurrently -p name npm:lint:*",
-    "start": "parcel src/index.html",
-    "build": "parcel build src/index.html",
+    "start": "parcel src/*.html",
+    "build": "parcel build src/*.html",
     "test": "jest --ci --randomize",
     "test:watch": "jest --watch --randomize",
     "prepare": "husky install"

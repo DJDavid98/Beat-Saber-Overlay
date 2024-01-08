@@ -43,9 +43,14 @@ const getSettingValue = <S extends SettingName>(settingName: S): SettingTypes[S]
 
 export interface SettingsManagerProps extends PropsWithChildren {
     queryParams: URLSearchParams;
+    forceDialogOpen?: boolean;
 }
 
-export const SettingsProvider: FC<SettingsManagerProps> = ({ queryParams, children }) => {
+export const SettingsProvider: FC<SettingsManagerProps> = ({
+    queryParams,
+    children,
+    forceDialogOpen = false
+}) => {
     const [settings, setSettings] = useState<SettingsObject>(defaultSettings);
     const [dialogOpen, setDialogOpen] = useState(false);
     const [dialogPage, setDialogPage] = useState<SettingsPage | undefined>();
@@ -85,8 +90,7 @@ export const SettingsProvider: FC<SettingsManagerProps> = ({ queryParams, childr
     const closeSettings = useCallback(() => {
         setDialogOpen(false);
     }, []);
-
-    useEffect(() => {
+    const processSettings = useCallback((force = false) => {
         // Migrate legacy settings which are all strings
         Object.keys(legacySettingsMap).forEach(legacySetting => {
             const value = localStorage.getItem(legacySetting);
@@ -124,11 +128,22 @@ export const SettingsProvider: FC<SettingsManagerProps> = ({ queryParams, childr
         // Read current settings
         settingNames.forEach((settingName) => {
             const value = getSettingValue(settingName);
-            if (value !== null) {
+            if (value !== null || force) {
                 setSetting(settingName, value);
             }
         });
-    }, [setSetting, queryParams]);
+    }, [queryParams, setSetting]);
+
+    useEffect(() => {
+        processSettings();
+
+        const forceProcessSettings = (e: StorageEvent) => {
+            console.debug(e);
+            processSettings(true);
+        };
+        window.addEventListener('storage', forceProcessSettings, { passive: true });
+        return () => window.removeEventListener('storage', forceProcessSettings);
+    }, [processSettings]);
 
     const removedElementsContext: RemovedElementsContextType = useMemo(() => {
         const settingValue = settings[SettingName.DISABLED_ELEMENTS] ?? [];
@@ -147,7 +162,11 @@ export const SettingsProvider: FC<SettingsManagerProps> = ({ queryParams, childr
     return <RemovedElementsContextProvider value={removedElementsContext}>
         <SettingsContextProvider value={settingsContextValue}>
             {children}
-            <SettingsDialog isOpen={dialogOpen} page={dialogPage} close={closeSettings} />
+            <SettingsDialog
+                isOpen={forceDialogOpen || dialogOpen}
+                page={dialogPage}
+                close={forceDialogOpen ? undefined : closeSettings}
+            />
         </SettingsContextProvider>
     </RemovedElementsContextProvider>;
 };
