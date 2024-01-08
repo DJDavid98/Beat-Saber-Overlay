@@ -12,6 +12,7 @@ export enum SettingName {
     ELEVEN_LABS_TOKEN = 'elevenLabsToken',
     TTS_ENABLED = 'ttsEnabled',
     BEAT_SABER_DATA_SOURCE = 'beatSaberDataSource',
+    BEAT_SABER_BASE_FONT_SIZE = 'beatSaberBaseFontSize',
     OBS_PRIMARY_SCENE = 'obsPrimaryScene',
     OBS_BRB_SCENE = 'obsBrbScene',
     OBS_FAREWELL_SCENE = 'obsFarewellScene',
@@ -27,6 +28,7 @@ export interface SettingTypes {
     [SettingName.CHAT_SOCKET_SERVER_URL]: string;
     [SettingName.CHAT_SOCKET_ROOM]: string;
     [SettingName.BEAT_SABER_DATA_SOURCE]: BeatSaberDataSource;
+    [SettingName.BEAT_SABER_BASE_FONT_SIZE]: number;
     [SettingName.ELEVEN_LABS_TOKEN]: string;
     [SettingName.TTS_ENABLED]: boolean;
     [SettingName.OBS_PRIMARY_SCENE]: string;
@@ -57,3 +59,5 @@ export interface SettingsPageOptions {
     icon: string;
     component?: FC;
 }
+
+export const DEFAULT_BEAT_SABER_BASE_FONT_SIZE = 16;

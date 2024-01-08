@@ -45,6 +45,12 @@ export const settingValidators: { [k in SettingName]: (input: unknown) => Settin
         }
         return null;
     },
+    [SettingName.BEAT_SABER_BASE_FONT_SIZE]: input => {
+        if (typeof input === 'number' && isFinite(input) && !isNaN(input) && input > 0) {
+            return input;
+        }
+        return null;
+    },
     [SettingName.ELEVEN_LABS_TOKEN]: input => {
         if (typeof input === 'string' && /^[a-f\d]+$/.test(input)) {
             return input;

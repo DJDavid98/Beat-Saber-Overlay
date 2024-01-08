@@ -24,7 +24,7 @@
   $loader-thickness-multiplier: .08;
   $loader-rotations-per-cycle: 3;
   $loader-border-opacity: .35;
-  $loader-thickness: $loader-size * $loader-thickness-multiplier;
+  $loader-thickness: calc(#{$loader-size} * #{$loader-thickness-multiplier});
 
   border-radius: 50%;
   border: $loader-thickness solid rgba($color, $loader-border-opacity);
@@ -33,10 +33,10 @@
     animation: rotate 2s cubic-bezier(0.37, 0, 0.63, 1) infinite;
   }
   transform-origin: 50% 50%;
-  $size: $loader-size * (1 - $loader-spacing);
-  width: $size;
-  height: $size;
-  margin: ($loader-size - $size) * 0.5;
+  $size: "#{$loader-size} * #{1 - $loader-spacing}";
+  width: calc(#{$size});
+  height: calc(#{$size});
+  margin: calc((#{$loader-size} - #{$size}) * 0.5);
   box-sizing: border-box;
   display: flex;
   align-items: center;

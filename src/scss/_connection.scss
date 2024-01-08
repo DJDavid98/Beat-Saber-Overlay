@@ -1,4 +1,4 @@
-$connection-loading-size: $cover-size * .65;
+$connection-loading-size: calc(var(--beat-saber-base-font-size) * 6.5);
 
 .loading-indicator.connection-loading {
   @include loading-element($connection-loading-size);
@@ -24,7 +24,7 @@ $connection-loading-size: $cover-size * .65;
     justify-content: flex-end;
     align-items: center;
     flex-flow: row nowrap;
-    margin-bottom: 1rem;
+    margin-bottom: calc(var(--beat-saber-base-font-size) * 1);
   }
 
   .connection-status {
@@ -32,19 +32,19 @@ $connection-loading-size: $cover-size * .65;
     flex-flow: column nowrap;
     justify-content: center;
     align-items: flex-end;
-    font-size: $font-size;
+    font-size: calc(var(--beat-saber-base-font-size) * 3.5);
 
     > * {
       display: block;
     }
 
     .status {
-      font-size: $font-size * .5;
+      font-size: calc(var(--beat-saber-base-font-size) * 1.75);
     }
   }
 
   .time-elapsed {
-    font-size: 2rem;
+    font-size: calc(var(--beat-saber-base-font-size) * 2);
     line-height: 1em;
   }
 }

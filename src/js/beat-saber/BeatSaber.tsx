@@ -1,11 +1,11 @@
-import { FunctionComponent, useCallback, useMemo } from 'react';
+import { CSSProperties, FunctionComponent, useCallback, useMemo } from 'react';
 import { DataDisplay, DataDisplayProps } from './DataDisplay';
 import { useBsdpData } from '../hooks/use-bsdp-data';
 import { useBsPlusData } from '../hooks/use-bs-plus-data';
 import { useMockData } from '../hooks/use-mock-data';
 import { useDisabledData } from '../hooks/use-disabled-data';
 import { useSettings } from '../contexts/settings-context';
-import { SettingName, SettingsPage } from '../model/settings';
+import { DEFAULT_BEAT_SABER_BASE_FONT_SIZE, SettingName, SettingsPage } from '../model/settings';
 
 export const enum BeatSaberDataSource {
     BSDP = 'BSDP',
@@ -22,7 +22,8 @@ export const isValidBeatSaberDataSource = (input: string): input is BeatSaberDat
 export const BeatSaber: FunctionComponent = () => {
     const {
         settings: {
-            [SettingName.BEAT_SABER_DATA_SOURCE]: dataSourceName
+            [SettingName.BEAT_SABER_DATA_SOURCE]: dataSourceName,
+            [SettingName.BEAT_SABER_BASE_FONT_SIZE]: baseFontSize
         },
         openSettings
     } = useSettings();
@@ -68,8 +69,10 @@ export const BeatSaber: FunctionComponent = () => {
             throw new Error('No valid data source is enabled');
     }
 
+    const style = useMemo(() => ({ '--beat-saber-base-font-size': `${baseFontSize ?? DEFAULT_BEAT_SABER_BASE_FONT_SIZE}px` }) as CSSProperties, [baseFontSize]);
+
     return (
-        <div id="beat-saber" onClick={openBeatSaberSettings}>
+        <div id="beat-saber" style={style} onClick={openBeatSaberSettings}>
             <DataDisplay {...dataSource} />
         </div>
     );
