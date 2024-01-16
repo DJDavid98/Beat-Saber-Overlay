@@ -1,3 +1,30 @@
+export enum ELiveDataEventTriggers {
+    Unknown = 0,
+    TimerElapsed = 1,
+    NoteMissed = 2,
+    EnergyChange = 3,
+    ScoreChange = 4,
+}
+
+export enum NoteCutDirection {
+    Up = 0,
+    Down = 1,
+    Left = 2,
+    Right = 3,
+    UpLeft = 4,
+    UpRight = 5,
+    DownLeft = 6,
+    DownRight = 7,
+    Any = 8,
+    None = 9,
+}
+
+export enum ColorType {
+    ColorA = 0,
+    ColorB = 1,
+    None = -1,
+}
+
 export interface BsdpSBlockHitScore {
     PreSwing: number;
     PostSwing: number;
@@ -19,6 +46,9 @@ export interface BsdpLiveData {
     PlayerHealth: number;
     TimeElapsed: number;
     UnixTimestamp: number;
+    ColorType: number;
+    CutDirection?: number;
+    EventTrigger: number;
 }
 
 export interface BsdpModifiers {
@@ -56,6 +86,7 @@ export interface BsdpMapData {
     BSRKey: string | null;
     CoverImage: string | null;
     Modifiers: BsdpModifiers;
+    ColorScheme?: Record<`Saber${'A' | 'B'}Color`, { HexCode: string } | null>;
 }
 
 export interface BsdpModData {

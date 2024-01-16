@@ -3,4 +3,7 @@ export interface LiveData {
     seconds: number;
     energy: number;
     misses: number;
+    trigger?: number;
+    color?: number;
+    cutDirection?: number;
 }

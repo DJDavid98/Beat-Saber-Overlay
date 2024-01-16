@@ -40,6 +40,8 @@ export const useBsdpData = (enabled: boolean): DataDisplayProps => {
         star: bsdpMapData.Star,
         subName: bsdpMapData.SongSubName,
         url: bsdpMapData.CoverImage ?? undefined,
+        leftSaberColor: bsdpMapData.ColorScheme?.SaberAColor?.HexCode ?? undefined,
+        rightSaberColor: bsdpMapData.ColorScheme?.SaberBColor?.HexCode ?? undefined,
     } : undefined, [bsdpMapData]);
     const { message: bsdpLiveData } = useFailsafeWebsocket(enabled ? `${bsdpDataSource}/LiveData` : null, validateBsdpLiveData);
 
@@ -48,6 +50,9 @@ export const useBsdpData = (enabled: boolean): DataDisplayProps => {
         seconds: bsdpLiveData.TimeElapsed,
         energy: bsdpLiveData.PlayerHealth,
         misses: bsdpLiveData.Misses,
+        trigger: bsdpLiveData.EventTrigger,
+        color: bsdpLiveData.ColorType,
+        cutDirection: bsdpLiveData.CutDirection,
     } : undefined, [bsdpLiveData]);
 
     return { mapData, liveData, readyState };

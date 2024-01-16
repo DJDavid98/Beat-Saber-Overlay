@@ -21,6 +21,9 @@ const schema = Joi.object<BsdpLiveData>({
     PlayerHealth: Joi.number(),
     TimeElapsed: Joi.number(),
     UnixTimestamp: Joi.number(),
+    ColorType: Joi.number(),
+    CutDirection: Joi.number().optional(),
+    EventTrigger: Joi.number(),
 });
 
 export const validateBsdpLiveData = dataValidatorFactory(schema);

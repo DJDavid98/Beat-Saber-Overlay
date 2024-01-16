@@ -35,6 +35,14 @@ const mapDataSchema = Joi.object<BsdpMapData>({
         FasterSong: Joi.boolean(),
         SuperFastSong: Joi.boolean(),
     }),
+    ColorScheme: Joi.object({
+        SaberAColor: Joi.object({
+            HexCode: Joi.string(),
+        }).allow(null),
+        SaberBColor: Joi.object({
+            HexCode: Joi.string(),
+        }).allow(null),
+    }).optional(),
 });
 
 export const validateBsdpMapData = dataValidatorFactory(mapDataSchema);

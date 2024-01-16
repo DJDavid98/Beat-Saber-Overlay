@@ -14,6 +14,8 @@ export interface DataDisplayProps {
     mapData?: {
         inLevel: boolean;
         modifiers?: Modifiers;
+        leftSaberColor?: string;
+        rightSaberColor?: string;
     } & SongInfoDisplayProps;
     liveData?: LiveData;
     readyState: ReadyState;
