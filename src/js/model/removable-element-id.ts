@@ -4,7 +4,6 @@ export enum RemovableElementId {
     BACKGROUND = 'background-root',
     BEAT_SABER_ACCURACY_GRAPH = 'beat-saber-accuracy-graph-root',
     BEAT_SABER_ADDITIONAL_DATA = 'beat-saber-additional-data-root',
-    BEAT_SABER_NOTE_PILE = 'beat-saber-note-pile-root',
     BEAT_SABER_MODIFIERS = 'beat-saber-modifiers-root',
     BEAT_SABER = 'beat-saber-root',
     BOUNCY = 'bouncy-root',
@@ -49,8 +48,7 @@ export const elementsTree: RemovableElementsTree = {
         name: 'Beat Saber',
         children: [
             RemovableElementId.CONNECTION,
-            RemovableElementId.BEAT_SABER_ADDITIONAL_DATA,
-            RemovableElementId.BEAT_SABER_NOTE_PILE
+            RemovableElementId.BEAT_SABER_ADDITIONAL_DATA
         ],
     },
     [RemovableElementId.CONNECTION]: {
@@ -67,10 +65,6 @@ export const elementsTree: RemovableElementsTree = {
     [RemovableElementId.BEAT_SABER_ACCURACY_GRAPH]: {
         name: 'Multifunctional Graph',
         description: 'Graph showing the current energy level, accuracy percentage and misses over time',
-    },
-    [RemovableElementId.BEAT_SABER_NOTE_PILE]: {
-        name: '🚧 Missed Notes Pile 🚧',
-        description: 'Physics-based pile of missed notes accumulated on the screen (still under construction)',
     },
     [RemovableElementId.BEAT_SABER_MODIFIERS]: {
         name: 'Modifiers List',

@@ -13,6 +13,7 @@ export enum SettingName {
     TTS_ENABLED = 'ttsEnabled',
     BEAT_SABER_DATA_SOURCE = 'beatSaberDataSource',
     BEAT_SABER_BASE_FONT_SIZE = 'beatSaberBaseFontSize',
+    BEAT_SABER_NOTES_PILE_ENABLED = 'beatSaberNotesPileEnabled',
     OBS_PRIMARY_SCENE = 'obsPrimaryScene',
     OBS_BRB_SCENE = 'obsBrbScene',
     OBS_FAREWELL_SCENE = 'obsFarewellScene',
@@ -29,6 +30,7 @@ export interface SettingTypes {
     [SettingName.CHAT_SOCKET_ROOM]: string;
     [SettingName.BEAT_SABER_DATA_SOURCE]: BeatSaberDataSource;
     [SettingName.BEAT_SABER_BASE_FONT_SIZE]: number;
+    [SettingName.BEAT_SABER_NOTES_PILE_ENABLED]: boolean;
     [SettingName.ELEVEN_LABS_TOKEN]: string;
     [SettingName.TTS_ENABLED]: boolean;
     [SettingName.OBS_PRIMARY_SCENE]: string;

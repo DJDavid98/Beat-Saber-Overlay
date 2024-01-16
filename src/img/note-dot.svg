@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+     xml:space="preserve"
+     style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2"
+     viewBox="0 0 256 256"><path d="M0 0h256v256H0z" style="fill:none"/>
+    <circle cx="128"
+            cy="128"
+            r="44.914"
+            style="fill:#fff"
+            transform="translate(-14.496 -14.496) scale(1.11325)" /></svg>

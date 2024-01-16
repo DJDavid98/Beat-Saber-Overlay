@@ -6,10 +6,7 @@ import { useMockData } from '../hooks/use-mock-data';
 import { useDisabledData } from '../hooks/use-disabled-data';
 import { useSettings } from '../contexts/settings-context';
 import { DEFAULT_BEAT_SABER_BASE_FONT_SIZE, SettingName, SettingsPage } from '../model/settings';
-import { RemovableElement } from '../RemovableElement';
-import { RemovableElementId } from '../model/removable-element-id';
-
-// import { NotePile } from './NotePile';
+import { NotePile } from './NotePile';
 
 export const enum BeatSaberDataSource {
     BSDP = 'BSDP',
@@ -27,7 +24,8 @@ export const BeatSaber: FunctionComponent = () => {
     const {
         settings: {
             [SettingName.BEAT_SABER_DATA_SOURCE]: dataSourceName,
-            [SettingName.BEAT_SABER_BASE_FONT_SIZE]: baseFontSize
+            [SettingName.BEAT_SABER_BASE_FONT_SIZE]: baseFontSize,
+            [SettingName.BEAT_SABER_NOTES_PILE_ENABLED]: notesPileEnabled,
         },
         openSettings
     } = useSettings();
@@ -80,10 +78,8 @@ export const BeatSaber: FunctionComponent = () => {
             <div id="beat-saber" style={style} onClick={openBeatSaberSettings}>
                 <DataDisplay {...dataSource} />
             </div>
-            {enabledSources[BeatSaberDataSource.BSDP] &&
-                <RemovableElement id={RemovableElementId.BEAT_SABER_NOTE_PILE}>
-                    {/* <NotePile dataSource={dataSource} /> */}
-                </RemovableElement>}
+            {notesPileEnabled && enabledSources[BeatSaberDataSource.BSDP] &&
+                <NotePile dataSource={dataSource} />}
         </>
     );
 };

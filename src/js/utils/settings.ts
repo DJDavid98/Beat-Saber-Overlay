@@ -51,6 +51,12 @@ export const settingValidators: { [k in SettingName]: (input: unknown) => Settin
         }
         return null;
     },
+    [SettingName.BEAT_SABER_NOTES_PILE_ENABLED]: input => {
+        if (typeof input === 'boolean') {
+            return input;
+        }
+        return null;
+    },
     [SettingName.ELEVEN_LABS_TOKEN]: input => {
         if (typeof input === 'string' && /^[a-f\d]+$/.test(input)) {
             return input;

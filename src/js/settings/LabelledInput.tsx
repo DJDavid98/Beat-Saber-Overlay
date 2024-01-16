@@ -13,6 +13,7 @@ export interface LabelledInputProps extends PropsWithChildren {
     value?: string;
     checked?: boolean;
     displayName: string;
+    disabled?: boolean;
     onChange: ChangeEventHandler<HTMLInputElement>;
 }
 
@@ -23,7 +24,8 @@ const LabelledInputComponent: ForwardRefRenderFunction<HTMLInputElement, Labelle
     checked,
     displayName,
     children,
-    onChange
+    onChange,
+    disabled,
 }, ref) => {
     const id = useId();
     return <div className={styles['labelled-input']}>
@@ -35,6 +37,7 @@ const LabelledInputComponent: ForwardRefRenderFunction<HTMLInputElement, Labelle
             checked={checked}
             onChange={onChange}
             ref={ref}
+            disabled={disabled}
         />
         <label htmlFor={id}>
             <span>{displayName}</span>

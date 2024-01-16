@@ -31,6 +31,7 @@ export const NotePile: FC<{ dataSource: DataDisplayProps }> = ({ dataSource }) =
     }), [dataSource.mapData?.leftSaberColor, dataSource.mapData?.rightSaberColor]);
 
     const addBox = useCallback(
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars -- Will be used later
         (cutDirection: number = NoteCutDirection.None, color: number = ColorType.None) => {
             const engine = engineRef.current;
             if (!engine || color === ColorType.None) return;
@@ -45,6 +46,8 @@ export const NotePile: FC<{ dataSource: DataDisplayProps }> = ({ dataSource }) =
                     fillStyle: colors[color],
                     lineWidth: amounts.blocks * 0.075,
                     strokeStyle: 'rgba(0,0,0,.5)',
+                    // TODO Find a way to render both sprite AND fill
+                    // sprite: getNoteSprite(cutDirection)
                 },
                 density,
                 frictionAir: .02,

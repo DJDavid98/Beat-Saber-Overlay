@@ -19,23 +19,29 @@ export const SettingsPageBeatSaber: FC = () => {
         settings: {
             [SettingName.BEAT_SABER_DATA_SOURCE]: dataSource,
             [SettingName.BEAT_SABER_BASE_FONT_SIZE]: baseFontSize,
+            [SettingName.BEAT_SABER_NOTES_PILE_ENABLED]: notesPileEnabled,
         },
         setSetting,
     } = useSettings();
     const [dataSourceInputValue, setDataSourceInputValue] = useState<BeatSaberDataSource | null>(null);
     const [baseFontSizeInputValue, setBaseFontSizeInputValue] = useState<number>(DEFAULT_BEAT_SABER_BASE_FONT_SIZE);
+    const [notesPileEnabledCheckedValue, setNotesPileEnabledCheckedValue] = useState<boolean>(false);
     const firstInputRef = useRef<HTMLInputElement>(null);
 
     const updateInputValue = useCallback(() => {
         setDataSourceInputValue(dataSource ?? BeatSaberDataSource.BSDP);
         setBaseFontSizeInputValue(baseFontSize ?? DEFAULT_BEAT_SABER_BASE_FONT_SIZE);
-    }, [baseFontSize, dataSource]);
+        setNotesPileEnabledCheckedValue(notesPileEnabled ?? false);
+    }, [baseFontSize, dataSource, notesPileEnabled]);
     const changeDataSource = useCallback(() => {
         setSetting(SettingName.BEAT_SABER_DATA_SOURCE, dataSourceInputValue);
     }, [dataSourceInputValue, setSetting]);
     const changeBaseFontSize = useCallback(() => {
         setSetting(SettingName.BEAT_SABER_BASE_FONT_SIZE, baseFontSizeInputValue);
     }, [baseFontSizeInputValue, setSetting]);
+    const changeNotesPileEnabled = useCallback(() => {
+        setSetting(SettingName.BEAT_SABER_NOTES_PILE_ENABLED, notesPileEnabledCheckedValue);
+    }, [notesPileEnabledCheckedValue, setSetting]);
     const handleDataSourceInputChange: ChangeEventHandler<HTMLInputElement> = useCallback((e) => {
         const { value } = e.target;
         setDataSourceInputValue(isValidBeatSaberDataSource(value) ? value : null);
@@ -48,12 +54,16 @@ export const SettingsPageBeatSaber: FC = () => {
             setBaseFontSizeInputValue(DEFAULT_BEAT_SABER_BASE_FONT_SIZE);
         }
     }, []);
+    const handleNotesPileCheckedChange: ChangeEventHandler<HTMLInputElement> = useCallback((e) => {
+        setNotesPileEnabledCheckedValue(e.target.checked);
+    }, []);
 
     const handleSubmit: FormEventHandler<HTMLFormElement> = useCallback((e) => {
         e.preventDefault();
         changeDataSource();
         changeBaseFontSize();
-    }, [changeBaseFontSize, changeDataSource]);
+        changeNotesPileEnabled();
+    }, [changeBaseFontSize, changeDataSource, changeNotesPileEnabled]);
 
     // Used to reset the state of the page on mount/reset button click
     const init = useCallback(() => {
@@ -64,6 +74,8 @@ export const SettingsPageBeatSaber: FC = () => {
         init();
         // eslint-disable-next-line react-hooks/exhaustive-deps -- This effect should only be called on mount
     }, []);
+
+    const isBsdpInputSource = dataSourceInputValue === BeatSaberDataSource.BSDP;
 
     return <form onSubmit={handleSubmit} onReset={init}>
         <details open>
@@ -129,6 +141,25 @@ export const SettingsPageBeatSaber: FC = () => {
                 value={baseFontSizeInputValue}
                 onChange={handleBaseFontSizeInputChange}
                 step="1"
+            />
+        </details>
+        <details open>
+            <summary>
+                <h2>🚧 Missed Notes Pile 🚧</h2>
+            </summary>
+
+            <p>Physics-based pile of missed notes accumulated on the screen (still under
+                construction)</p>
+
+            <p>Only works with the DataPuller data source.</p>
+
+            <LabelledInput
+                type="checkbox"
+                name="beat-saber-notes-pile-enabled"
+                checked={isBsdpInputSource && notesPileEnabledCheckedValue}
+                onChange={handleNotesPileCheckedChange}
+                displayName="Enable Note Pile"
+                disabled={!isBsdpInputSource}
             />
         </details>
         <button type="submit">Save</button>
