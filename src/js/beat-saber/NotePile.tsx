@@ -1,28 +1,35 @@
 import { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { DataDisplayProps } from './DataDisplay';
-import { Engine, Composite, World, Render, Runner, Bodies } from 'matter-js';
+import {
+    Bodies,
+    Composite,
+    Engine,
+    Events,
+    IEventTimestamped,
+    Runner,
+    World
+} from 'matter-js';
 import { useCurrentScreenSize } from '../hooks/use-current-screen-size';
 import { ColorType, ELiveDataEventTriggers, NoteCutDirection } from '../model/bsdp';
+import { getNoteSprite, Render } from '../utils/note-pile';
 
 const DEFAULT_LEFT_SABER_COLOR = '#a82020';
 const DEFAULT_RIGHT_SABER_COLOR = '#2064a8';
 
 /**
- * Renders a pile of notes affected by physics for each missed note (WIP)
- *
- * TODO Add sprites for dot/directional notes
- * TODO Add a clear sequence after level completion
+ * Renders a pile of notes affected by physics for each missed note
  */
 export const NotePile: FC<{ dataSource: DataDisplayProps }> = ({ dataSource }) => {
     const [notesPileCanvasRef, setNotesPileCanvasRef] = useState<HTMLCanvasElement | null>(null);
     const screenSize = useCurrentScreenSize();
     const engineRef = useRef<Engine | null>(null);
     const amounts = useMemo(() => ({
-        walls: screenSize.width * 0.012,
-        blocks: screenSize.width * 0.015,
-        baseTorque: screenSize.width * 4,
-        randomTorqueMax: screenSize.width * 0.4,
+        wallSize: screenSize.width * 0.012,
+        blockSize: screenSize.width * 0.015,
+        baseTorque: 1e5,
         horizontalForceMax: screenSize.width * 0.04,
+        clearThrowForceY: screenSize.width / 20,
+        clearThrowForceXMax: 50,
     }), [screenSize.width]);
 
     const colors: Record<number, string> = useMemo(() => ({
@@ -30,24 +37,23 @@ export const NotePile: FC<{ dataSource: DataDisplayProps }> = ({ dataSource }) =
         [ColorType.ColorB]: dataSource.mapData?.rightSaberColor ?? DEFAULT_RIGHT_SABER_COLOR,
     }), [dataSource.mapData?.leftSaberColor, dataSource.mapData?.rightSaberColor]);
 
-    const addBox = useCallback(
+    const addBlock = useCallback(
         // eslint-disable-next-line @typescript-eslint/no-unused-vars -- Will be used later
         (cutDirection: number = NoteCutDirection.None, color: number = ColorType.None) => {
             const engine = engineRef.current;
             if (!engine || color === ColorType.None) return;
 
             const screenCenterX = screenSize.width / 2;
-            const spawnY = amounts.blocks * -2;
+            const spawnY = amounts.blockSize * -2;
             const density = 1;
-            const box = Bodies.rectangle(screenCenterX, spawnY, amounts.blocks, amounts.blocks, {
+            const box = Bodies.rectangle(screenCenterX + (Math.random() - 0.5) * amounts.blockSize * 5, spawnY, amounts.blockSize, amounts.blockSize, {
                 chamfer: { radius: 5 },
-                torque: amounts.baseTorque + (Math.random() - 0.5) * amounts.randomTorqueMax,
+                torque: (Math.random() - 0.5) * amounts.baseTorque,
                 render: {
                     fillStyle: colors[color],
-                    lineWidth: amounts.blocks * 0.075,
+                    lineWidth: amounts.blockSize * 0.075,
                     strokeStyle: 'rgba(0,0,0,.5)',
-                    // TODO Find a way to render both sprite AND fill
-                    // sprite: getNoteSprite(cutDirection)
+                    sprite: getNoteSprite(cutDirection)
                 },
                 density,
                 frictionAir: .02,
@@ -58,8 +64,49 @@ export const NotePile: FC<{ dataSource: DataDisplayProps }> = ({ dataSource }) =
             });
             Composite.add(engine.world, [box]);
         },
-        [screenSize.width, amounts.blocks, amounts.baseTorque, amounts.randomTorqueMax, amounts.horizontalForceMax, colors]
+        [screenSize.width, amounts.blockSize, amounts.baseTorque, amounts.horizontalForceMax, colors]
     );
+
+    /**
+     * Removing the bodies when they go outside the screen
+     */
+    const cleanupBodies = useCallback((event: IEventTimestamped<Engine>) => {
+        if (event.name !== 'afterUpdate') {
+            return;
+        }
+        const engine = engineRef.current;
+        if (!engine) return;
+        const yThreshold = screenSize.height * 2;
+        if (yThreshold === 0) return;
+
+        for (const body of engine.world.bodies) {
+            if (body.position.y > yThreshold) {
+                World.remove(engine.world, body);
+            }
+        }
+    }, [screenSize.height]);
+
+    /**
+     * Throw blocks into the ari a bit and apply a collision filter,
+     * so they can fall below the cleanup threshold
+     */
+    const clearBlocks = useCallback(() => {
+        const engine = engineRef.current;
+        if (!engine) return;
+
+        Composite.allBodies(engine.world).forEach((body) => {
+            if (!body.render.visible) return;
+
+            body.collisionFilter = {
+                mask: 1,
+                group: 1,
+            };
+            body.force = {
+                x: amounts.clearThrowForceXMax * (Math.random() - 0.5),
+                y: -amounts.clearThrowForceY,
+            };
+        });
+    }, [amounts.clearThrowForceXMax, amounts.clearThrowForceY]);
 
     const trigger = dataSource.liveData?.trigger;
     const cutDirection = dataSource.liveData?.cutDirection;
@@ -70,8 +117,14 @@ export const NotePile: FC<{ dataSource: DataDisplayProps }> = ({ dataSource }) =
         }
 
         // If the event was fired due to a miss
-        addBox(cutDirection, color);
-    }, [addBox, color, cutDirection, trigger]);
+        addBlock(cutDirection, color);
+    }, [addBlock, color, cutDirection, trigger]);
+
+    useEffect(() => {
+        if (dataSource.mapData?.inLevel !== true) {
+            clearBlocks();
+        }
+    }, [clearBlocks, dataSource.mapData?.inLevel, dataSource.readyState]);
 
     useEffect(() => {
         if (!notesPileCanvasRef) return;
@@ -100,16 +153,16 @@ export const NotePile: FC<{ dataSource: DataDisplayProps }> = ({ dataSource }) =
         const screenCenterY = screenSize.height / 2;
 
         // create a ground
-        const groundSizeHalf = amounts.walls / 2;
-        const ground = Bodies.rectangle(screenCenterX, screenSize.height + groundSizeHalf, screenSize.width, amounts.walls, {
+        const groundSizeHalf = amounts.wallSize / 2;
+        const ground = Bodies.rectangle(screenCenterX, screenSize.height + groundSizeHalf, screenSize.width, amounts.wallSize, {
             isStatic: true,
             render: { visible: false }
         });
-        const leftWall = Bodies.rectangle(0 - groundSizeHalf, screenCenterY, amounts.walls, screenSize.height, {
+        const leftWall = Bodies.rectangle(0 - groundSizeHalf, screenCenterY, amounts.wallSize, screenSize.height, {
             isStatic: true,
             render: { visible: false }
         });
-        const rightWall = Bodies.rectangle(screenSize.width + groundSizeHalf, screenCenterY, amounts.walls, screenSize.height, {
+        const rightWall = Bodies.rectangle(screenSize.width + groundSizeHalf, screenCenterY, amounts.wallSize, screenSize.height, {
             isStatic: true,
             render: { visible: false }
         });
@@ -126,6 +179,9 @@ export const NotePile: FC<{ dataSource: DataDisplayProps }> = ({ dataSource }) =
         // run the engine
         Runner.run(runner, engine);
 
+        // Adding the event listener
+        Events.on(engine, 'afterUpdate', cleanupBodies);
+
         // unmount
         return () => {
             // destroy Matter
@@ -134,8 +190,9 @@ export const NotePile: FC<{ dataSource: DataDisplayProps }> = ({ dataSource }) =
             Engine.clear(engine);
             render.textures = {};
             engineRef.current = null;
+            window.removeEventListener('contextmenu', clearBlocks);
         };
-    }, [addBox, notesPileCanvasRef, screenSize.height, screenSize.width, amounts.walls]);
+    }, [addBlock, notesPileCanvasRef, screenSize.height, screenSize.width, amounts.wallSize, clearBlocks, cleanupBodies]);
 
     return <canvas
         ref={setNotesPileCanvasRef}

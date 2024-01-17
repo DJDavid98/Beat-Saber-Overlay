@@ -145,13 +145,13 @@ export const SettingsPageBeatSaber: FC = () => {
         </details>
         <details open>
             <summary>
-                <h2>🚧 Missed Notes Pile 🚧</h2>
+                <h2>Missed Notes Pile</h2>
             </summary>
 
-            <p>Physics-based pile of missed notes accumulated on the screen (still under
-                construction)</p>
+            <p>Physics-based pile of missed notes accumulated on the screen</p>
 
-            <p>Only works with the DataPuller data source.</p>
+            <p>Only works with the DataPuller data source, and requires at least mod version
+                2.1.9</p>
 
             <LabelledInput
                 type="checkbox"
