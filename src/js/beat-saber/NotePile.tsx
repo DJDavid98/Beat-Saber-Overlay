@@ -26,11 +26,10 @@ export const NotePile: FC<{ dataSource: DataDisplayProps }> = ({ dataSource }) =
     const amounts = useMemo(() => ({
         wallSize: screenSize.width * 0.012,
         blockSize: screenSize.width * 0.015,
-        baseTorque: 1e5,
+        baseTorque: screenSize.width * 3.5,
         horizontalForceMax: screenSize.width * 0.04,
-        clearThrowForceY: screenSize.width / 20,
-        clearThrowForceXMax: 50,
-    }), [screenSize.width]);
+        clearThrowForceY: screenSize.height * 0.05,
+    }), [screenSize.height, screenSize.width]);
 
     const colors: Record<number, string> = useMemo(() => ({
         [ColorType.ColorA]: dataSource.mapData?.leftSaberColor ?? DEFAULT_LEFT_SABER_COLOR,
@@ -102,11 +101,12 @@ export const NotePile: FC<{ dataSource: DataDisplayProps }> = ({ dataSource }) =
                 group: 1,
             };
             body.force = {
-                x: amounts.clearThrowForceXMax * (Math.random() - 0.5),
+                x: amounts.blockSize * (Math.random() - 0.5),
                 y: -amounts.clearThrowForceY,
             };
+            body.frictionAir = 0.01;
         });
-    }, [amounts.clearThrowForceXMax, amounts.clearThrowForceY]);
+    }, [amounts.blockSize, amounts.clearThrowForceY]);
 
     const trigger = dataSource.liveData?.trigger;
     const cutDirection = dataSource.liveData?.cutDirection;
@@ -191,6 +191,7 @@ export const NotePile: FC<{ dataSource: DataDisplayProps }> = ({ dataSource }) =
             render.textures = {};
             engineRef.current = null;
             window.removeEventListener('contextmenu', clearBlocks);
+            Events.off(engine, 'afterUpdate', cleanupBodies);
         };
     }, [addBlock, notesPileCanvasRef, screenSize.height, screenSize.width, amounts.wallSize, clearBlocks, cleanupBodies]);
 

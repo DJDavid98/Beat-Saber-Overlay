@@ -36,8 +36,8 @@ export const getNoteSprite = (cutDirection: number): IBodyRenderOptionsSprite | 
         return undefined;
     }
     return {
-        xScale: 0.35,
-        yScale: 0.35,
+        xScale: 0.3,
+        yScale: 0.3,
         texture: texture.toString(),
     };
 };
