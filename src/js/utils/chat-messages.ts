@@ -115,26 +115,49 @@ export const tokenizeMessage = (
 };
 
 const emoteTextReadAloud: Record<string, string> = {
+    DoritosChip: 'Doritos',
+    HeyGuys: 'hey',
+    ImTyping: 'typing',
     Kappa: 'kappa',
+    Kreygasm: 'ooouuuaahhh',
     LUL: 'lawl',
     NotLikeThis: 'not like this',
-    SeemsGood: 'thumbs up',
-    WutFace: 'whut',
-    ResidentSleeper: 'falls asleep',
-    HeyGuys: 'hey',
     PJSalt: 'salt',
     PJSugar: 'sugar',
-    Kreygasm: 'ooouuuaahhh',
-    thebla273Pet: 'pets',
-    DoritosChip: 'Doritos',
+    PizzaTime: 'pizza time',
+    PopCorn: 'popcorn',
+    PogChamp: 'pog',
+    ResidentSleeper: 'falls asleep',
+    SeemsGood: 'thumbs up',
+    TheIlluminati: 'illuminati',
+    VirtualHug: 'virtual hug',
     VoteNay: 'votes with nay',
     VoteYea: 'votes with yea',
+    WutFace: 'whut',
     imGlitch: 'Twitch logo',
-    TheIlluminati: 'illuminati',
-    PopCorn: 'popcorn',
-    VirtualHug: 'virtual hug',
-    ImTyping: 'typing',
-    PizzaTime: 'pizza time',
+    thebla273Beans: 'beans',
+    thebla273Blep2: 'blep',
+    thebla273Blep: 'blep',
+    thebla273Chad: 'chad',
+    thebla273Clap: 'clapping',
+    thebla273Comfy: 'comfy',
+    thebla273Concern: 'concern',
+    thebla273Hap: 'happy',
+    thebla273Jam: 'jamming',
+    thebla273LUL: 'lawl',
+    thebla273Lurk: 'lurks',
+    thebla273Pet: 'pets',
+    thebla273Plead: 'pleading',
+    thebla273Pog: 'pog',
+    thebla273ScreamA: 'screaming',
+    thebla273Smash: 'smash',
+    thebla273Squint: 'squint',
+    thebla273Think: 'thinking',
+    thebla273UGotGames: 'you got games?',
+    thebla273Wave: 'waves',
+    thebla273WaveA: 'waving',
+    thebla273Why: 'why',
+    thebla273Yay: 'yay',
 };
 
 export const removeEmotes = (tokens: Array<MessageToken>): string => tokens
@@ -169,69 +192,92 @@ export const ttsNameSubstitutions = (input: string): string => {
         .replace(/\s+/, ' ');
 };
 
-export const ttsMessageSubstitutions = (input: string): string =>
-    input
-        .replace(/\b(?:gm)+\b/g, (match) => match.replace(/gm/g, 'good morning ').trim())
-        .replace(/\b(?:ni)+\b/g, 'good night')
-        .replace(/\bbby\b/g, 'baby')
-        .replace(/\bbb\b/g, 'bye bye')
-        .replace(/\bg[2t]g\b/gi, 'gotta go')
-        .replace(/\bcya\b/gi, 'see ya')
-        .replace(/\bwtf\b/gi, 'what the fuck')
-        .replace(/\bbrb\b/gi, 'be right back')
-        .replace(/\biou\b/gi, 'i owe you')
-        .replace(/\bl8r\b/g, 'later')
-        .replace(/\batm\b/g, 'at the moment')
-        .replace(/\bw\/e\b/g, 'whatever')
-        .replace(/\btxt\b/gi, 'text')
-        .replace(/\broflmao\b/gi, 'rolling on the floor laughing my ass off')
-        .replace(/\broflol\b/gi, 'rolling on the floor laughing out loud')
-        .replace(/\blol\b/gi, 'laughing out loud')
-        .replace(/\blmfao\b/gi, 'laughing my fuckin\' ass off')
-        .replace(/\blmao\b/gi, 'laughing my ass off')
-        .replace(/\bwip\b/gi, 'work-in-progress')
-        .replace(/\bsup\b/gi, "what's up")
-        .replace(/\bhru\b/gi, 'how are you')
-        .replace(/\bggwp\b/gi, 'good game, well played')
-        .replace(/\bgg(s)?\b/gi, 'good game$1')
-        .replace(/\bez\b/gi, 'easy')
-        .replace(/\bwp\b/gi, 'well played')
-        .replace(/\bkk\b/gi, 'okay')
-        .replace(/\bm8(s)?\b/gi, 'mate$1')
-        .replace(/\bwyd(\?)?\b/gi, 'what are you doing$1')
-        .replace(/\bhyd(\?)?\b/gi, 'how are you doing$1')
-        .replace(/\bwd?ym(\?)?\b/gi, 'what do you mean$1')
-        .replace(/\bnm\b/gi, 'not much')
-        .replace(/\bnp\b/gi, 'no problem')
-        .replace(/\byw\b/gi, "you're welcome")
-        .replace(/\bbs(?:\+\b|\splus\b)/gi, 'beat saber plus')
-        .replace(/\bnjs\b/gi, 'note jump speed')
-        .replace(/\bjd\b/gi, 'jump distance')
-        .replace(/\bnjd\b/gi, 'note jump distance')
-        .replace(/\bpb\b/gi, 'personal best')
-        .replace(/\bpbj\b/gi, 'peanut butter jelly')
-        .replace(/\bbs\b/gi, 'bullshit')
-        .replace(/\bsrs(ly)?(\?)?\b/gi, 'serious$1$2')
-        .replace(/\b(>)?:3\b/gi, (_, evil) => `${evil ? 'evil ' : ''}cat face`)
-        .replace(/\b(>)?:\)\b/g, (_, evil) => `${evil ? 'evil ' : ''}smiling face`)
-        .replace(/\b[(C]:(<)?\b/gi, (_, evil) => `backwards ${evil ? 'evil ' : ''}smiling face`)
-        .replace(/\b(>)?:[(c<]\b/gi, (_, evil) => `${evil ? 'evil ' : ''}sad face`)
-        .replace(/\b>\.<["']?:\b/gi, 'annoyed face')
-        .replace(/\b>\/+<["']?:\b/gi, 'embarrassed face')
-        .replace(/\bkbd?\b/gi, 'keyboard')
-        .replace(/\bog\b/gi, 'original')
-        .replace(/\bop\b/gi, 'overpowered')
-        .replace(/\bpl(?:[sz]|0x)\b/gi, 'please')
-        .replace(/\bltt\b/gi, 'Linus Tech Tips')
-        .replace(/\bk\/?d\/?r\b/gi, 'kill-death ratio')
-        .replace(/\bk\/?d\b/gi, 'kill-death')
-        .replace(/\bf2p\b/gi, 'free-to-play')
-        .replace(/\b\/s\b/gi, '(sarcastically)')
-        .replace(/\b\/gen\b/gi, '(genuinely)')
-        .replace(/\bo7\b/gi, '(salute)')
-        .replace(/\b¯\\_\(ツ\)_\/¯\b/gi, '(shrugs)')
-        .replace(/\b\(╯°□°\)╯︵ ┻━┻\b/gi, '(flips table)')
-        .replace(/\b┬─┬ノ\( º _ ºノ\)\b/gi, '(un-flips table)');
+const replyRegex = /^@[a-z\d_-]+\b/;
+
+export const ttsMessageSubstitutions = (input: string): string => {
+    const replyMatch = input.match(replyRegex);
+    const reply = replyMatch
+        ? replyMatch[0].replace(replyRegex, (match) => `reply to ${ttsNameSubstitutions(match.replace('@', ''))}:`)
+        : '';
+
+    return reply + (
+        input
+            .replace(/\b(>)?:3\b/gi, (_, evil) => `${evil ? 'evil ' : ''}cat face`)
+            .replace(/\b(>)?:[(c<]\b/gi, (_, evil) => `${evil ? 'evil ' : ''}sad face`)
+            .replace(/\b(>)?:\)\b/g, (_, evil) => `${evil ? 'evil ' : ''}smiling face`)
+            .replace(/\b(?:gm)+\b/g, (match) => match.replace(/gm/g, 'good morning ').trim())
+            .replace(/\b(?:ni)+\b/g, 'good night')
+            .replace(/\b(play(?:ing|ed|s)?\s+|mod(?:d?ing|d?ed|s)?)bs\b/gi, '$1 beat saber')
+            .replace(/\b:3\b/gi, '(cat face)')
+            .replace(/\b:\)\b/gi, '(smiling face)')
+            .replace(/\b>\.<["']?:\b/gi, 'annoyed face')
+            .replace(/\b>\/+<["']?:\b/gi, 'embarrassed face')
+            .replace(/\b[(C]:(<)?\b/gi, (_, evil) => `backwards ${evil ? 'evil ' : ''}smiling face`)
+            .replace(/\b\(╯°□°\)╯︵ ┻━┻\b/gi, '(flips table)')
+            .replace(/\b\/gen\b/gi, '(genuinely)')
+            .replace(/\b\/s\b/gi, '(sarcastically)')
+            .replace(/\b\^\^\b/gi, '(happy face)')
+            .replace(/\batm\b/g, 'at the moment')
+            .replace(/\bbb\b/g, 'bye bye')
+            .replace(/\bbby\b/g, 'baby')
+            .replace(/\bbrb\b/gi, 'be right back')
+            .replace(/\bbs(?:\+\b|\splus\b)/gi, 'beat saber plus')
+            .replace(/\bbs\b/gi, 'bullshit')
+            .replace(/\bcya\b/gi, 'see ya')
+            .replace(/\bez\b/gi, 'easy')
+            .replace(/\bf2p\b/gi, 'free-to-play')
+            .replace(/\bfomo\b/gi, 'fear of missing out')
+            .replace(/\bg[2t]g\b/gi, 'gotta go')
+            .replace(/\bgg(s)?\b/gi, 'good game$1')
+            .replace(/\bggwp\b/gi, 'good game, well played')
+            .replace(/\bhru\b/gi, 'how are you')
+            .replace(/\bhyd(\?)?\b/gi, 'how are you doing$1')
+            .replace(/\bidc\b/gi, "i don't care")
+            .replace(/\bidk\b/gi, "i don't know")
+            .replace(/\big\b/gi, 'i guess')
+            .replace(/\biou\b/gi, 'i owe you')
+            .replace(/\bjd\b/gi, 'jump distance')
+            .replace(/\bk\/?d\/?r\b/gi, 'kill-death ratio')
+            .replace(/\bk\/?d\b/gi, 'kill-death')
+            .replace(/\bkbd?\b/gi, 'keyboard')
+            .replace(/\bkk\b/gi, 'okay')
+            .replace(/\bl8r\b/g, 'later')
+            .replace(/\blmao\b/gi, 'laughing my ass off')
+            .replace(/\blmfao\b/gi, 'laughing my fuckin\' ass off')
+            .replace(/\blol\b/gi, 'laughing out loud')
+            .replace(/\bltt\b/gi, 'Linus Tech Tips')
+            .replace(/\bm8(s)?\b/gi, 'mate$1')
+            .replace(/\bmb\b/gi, 'my bad')
+            .replace(/\bmobo\b/gi, 'motherboard')
+            .replace(/\bnjd\b/gi, 'note jump distance')
+            .replace(/\bnjs\b/gi, 'note jump speed')
+            .replace(/\bnm\b/gi, 'not much')
+            .replace(/\bnp\b/gi, 'no problem')
+            .replace(/\bo7\b/gi, '(salute)')
+            .replace(/\bog\b/gi, 'original')
+            .replace(/\bop\b/gi, 'overpowered')
+            .replace(/\bpb\b/gi, 'personal best')
+            .replace(/\bpbj\b/gi, 'peanut butter jelly')
+            .replace(/\bpl(?:[sz]|0x)\b/gi, 'please')
+            .replace(/\brn\b/gi, 'right now')
+            .replace(/\broflmao\b/gi, 'rolling on the floor laughing my ass off')
+            .replace(/\broflol\b/gi, 'rolling on the floor laughing out loud')
+            .replace(/\bsrs(ly)?(\?)?\b/gi, 'serious$1$2')
+            .replace(/\bsup\b/gi, "what's up")
+            .replace(/\btxt\b/gi, 'text')
+            .replace(/\bw\/e\b/g, 'whatever')
+            .replace(/\bwd?ym(\?)?\b/gi, 'what do you mean$1')
+            .replace(/\bwdym\b/g, 'what do you mean')
+            .replace(/\bwip\b/gi, 'work-in-progress')
+            .replace(/\bwp\b/gi, 'well played')
+            .replace(/\bwtf\b/gi, 'what the fuck')
+            .replace(/\bwyd(\?)?\b/gi, 'what are you doing$1')
+            .replace(/\bx3\b/gi, '(funny cat face)')
+            .replace(/\byw\b/gi, "you're welcome")
+            .replace(/\b¯\\_\(ツ\)_\/¯\b/gi, '(shrugs)')
+            .replace(/\b┬─┬ノ\( º _ ºノ\)\b/gi, '(un-flips table)')
+    );
+};
 
 const messageTypeColorMap: Record<SystemMessageType, string> = {
     [SystemMessageType.INFO]: '#aaaaaa',

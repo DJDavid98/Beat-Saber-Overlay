@@ -26,6 +26,7 @@ export const useTts = (token: string | null, enabled: boolean | null): TtsApi =>
     const voicesRef = useRef<VoiceData['voices']>([]);
     const mountedRef = useRef(true);
     const textQueueRef = useRef<TtsInput[]>([]);
+    const lastReadTextRef = useRef<TtsInput | null>(null);
     const currentlyReadingRef = useRef<TtsInput | null>(null);
     const audioPlayerRef = useRef<HTMLAudioElement | null>(null);
     const getVoice = useCallback((targetGender: VoiceGender) => {
@@ -36,7 +37,7 @@ export const useTts = (token: string | null, enabled: boolean | null): TtsApi =>
     }, []);
     const { mutate } = useSWRConfig();
 
-    const clearPlayingAudio = useCallback(() => {
+    const clearPlayingAudio = useCallback((lastRead: TtsInput | null = null) => {
         if (audioPlayerRef.current) {
             audioPlayerRef.current.pause();
             const currentSource = audioPlayerRef.current.src;
@@ -48,6 +49,7 @@ export const useTts = (token: string | null, enabled: boolean | null): TtsApi =>
         if (currentlyReadingRef.current) {
             currentlyReadingRef.current = null;
         }
+        lastReadTextRef.current = lastRead;
     }, []);
 
     const processQueue = useCallback(async (debugSource: string) => {
@@ -79,7 +81,8 @@ export const useTts = (token: string | null, enabled: boolean | null): TtsApi =>
 
         const ttsInput = textQueueRef.current.shift() as TtsInput;
         currentlyReadingRef.current = ttsInput;
-        const textToRead = (ttsInput.name ? `${ttsNameSubstitutions(ttsInput.name)}. ` : '') + ttsMessageSubstitutions(ttsInput.message);
+        // Do not repeat the name if it was the last one that was fully read out
+        const textToRead = (ttsInput.name && lastReadTextRef.current?.name !== ttsInput.name ? `${ttsNameSubstitutions(ttsInput.name)}. ` : '') + ttsMessageSubstitutions(ttsInput.message);
         const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voice_id}/stream`, {
             method: 'POST',
             headers: {
@@ -100,7 +103,7 @@ export const useTts = (token: string | null, enabled: boolean | null): TtsApi =>
         audioPlayerRef.current.play();
         return new Promise(resolve => {
             audioPlayerRef.current?.addEventListener('ended', () => {
-                clearPlayingAudio();
+                clearPlayingAudio(ttsInput);
                 processQueue('ended handler').then(resolve);
             });
         });
