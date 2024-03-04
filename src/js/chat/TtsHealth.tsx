@@ -1,14 +1,14 @@
 import { FC, useMemo } from 'react';
-import useSWR from 'swr';
 import * as styles from '../../scss/modules/TtsHealth.module.scss';
+import { TtsLimitProviderHook } from '../model/tts';
 
 export const ELEVEN_LABS_SUBSCRIPTION_ENDPOINT = 'https://api.elevenlabs.io/v1/user/subscription';
 
 export interface TtsHealthProps {
-    token: string;
+    useLimitProvider: TtsLimitProviderHook;
 }
 
-export const TtsHealth: FC<TtsHealthProps> = ({ token }) => {
+export const TtsHealth: FC<TtsHealthProps> = ({ useLimitProvider }) => {
     const pf = useMemo(() => new Intl.NumberFormat('en-US', {
         style: 'percent',
         minimumFractionDigits: 0,
@@ -16,30 +16,7 @@ export const TtsHealth: FC<TtsHealthProps> = ({ token }) => {
     }), []);
     const nf = useMemo(() => new Intl.NumberFormat('en-US'), []);
 
-    const { data: subscriptionData } = useSWR(ELEVEN_LABS_SUBSCRIPTION_ENDPOINT, (key: string) => fetch(key, {
-        method: 'GET',
-        headers: {
-            'xi-api-key': token,
-        },
-    }).then(r => r.json()), {
-        refreshInterval: 60e3,
-        revalidateOnFocus: false,
-        keepPreviousData: true,
-    });
-
-    const limits = useMemo(() => {
-        let maxChars = 0;
-        let usedChars = 0;
-        if (typeof subscriptionData === 'object' && subscriptionData !== null) {
-            if ('character_limit' in subscriptionData && typeof subscriptionData.character_limit === 'number') {
-                maxChars = subscriptionData.character_limit;
-            }
-            if ('character_count' in subscriptionData && typeof subscriptionData.character_count === 'number') {
-                usedChars = subscriptionData.character_count;
-            }
-        }
-        return { maxChars, usedChars };
-    }, [subscriptionData]);
+    const limits = useLimitProvider();
 
     const ttsUsedPercent = limits.maxChars > 0 ? limits.usedChars / limits.maxChars : 1;
     const charsAvailable = limits.maxChars - limits.usedChars;

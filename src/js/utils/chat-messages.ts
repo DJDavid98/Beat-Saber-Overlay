@@ -2,6 +2,7 @@ import { ChatWebsocketMessage } from '../model/app-scoket';
 import { isValid, parseISO } from 'date-fns';
 import { ChatEmoteProps } from '../chat/ChatEmote';
 import { BeatSaverMapProps } from '../BeatSaverMap';
+import { TtsInput } from '../model/tts';
 
 export enum SystemMessageType {
     INFO,
@@ -313,3 +314,7 @@ export const mapPronounsToGender = (pronouns?: string[]): VoiceGender => {
             return 'male';
     }
 };
+
+export const ttsInputToText = (ttsInput: TtsInput, lastRead: TtsInput | null): string =>
+    // Do not repeat the name if it was the last one that was fully read out
+    (ttsInput.name && lastRead?.name !== ttsInput.name ? `${ttsNameSubstitutions(ttsInput.name)}. ` : '') + ttsMessageSubstitutions(ttsInput.message);

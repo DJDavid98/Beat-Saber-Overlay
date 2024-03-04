@@ -1,6 +1,7 @@
 import { isRemovableElementId } from '../model/removable-element-id';
 import { SettingName, SettingsObject, SettingTypes } from '../model/settings';
 import { isValidBeatSaberDataSource } from '../beat-saber/BeatSaber';
+import { isValidTtsProvider } from '../model/tts';
 
 export const settingValidators: { [k in SettingName]: (input: unknown) => SettingTypes[k] | null } = {
     [SettingName.PULSOID_TOKEN]: (input) => {
@@ -63,6 +64,18 @@ export const settingValidators: { [k in SettingName]: (input: unknown) => Settin
         }
         return null;
     },
+    [SettingName.PLAY_HT_USER_ID]: input => {
+        if (typeof input === 'string' && /^[a-z\d]+$/i.test(input)) {
+            return input;
+        }
+        return null;
+    },
+    [SettingName.PLAY_HT_TOKEN]: input => {
+        if (typeof input === 'string' && /^[a-f\d]+$/.test(input)) {
+            return input;
+        }
+        return null;
+    },
     [SettingName.TTS_ENABLED]: input => {
         if (typeof input === 'boolean') {
             return input;
@@ -95,6 +108,12 @@ export const settingValidators: { [k in SettingName]: (input: unknown) => Settin
     },
     [SettingName.CHAT_SONG_PREVIEWS]: input => {
         if (typeof input === 'boolean') {
+            return input;
+        }
+        return null;
+    },
+    [SettingName.TTS_PROVIDER]: input => {
+        if (typeof input === 'string' && isValidTtsProvider(input)) {
             return input;
         }
         return null;

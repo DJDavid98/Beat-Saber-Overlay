@@ -1,6 +1,7 @@
 import { RemovableElementId } from './removable-element-id';
 import { BeatSaberDataSource } from '../beat-saber/BeatSaber';
 import { FC } from 'react';
+import { TtsProvider } from './tts';
 
 export enum SettingName {
     PULSOID_TOKEN = 'pulsoidToken',
@@ -11,6 +12,9 @@ export enum SettingName {
     CHAT_SOCKET_ROOM = 'chatSocketRoom',
     ELEVEN_LABS_TOKEN = 'elevenLabsToken',
     TTS_ENABLED = 'ttsEnabled',
+    TTS_PROVIDER = 'ttsProvider',
+    PLAY_HT_TOKEN = 'playHtToken',
+    PLAY_HT_USER_ID = 'playHtUserId',
     BEAT_SABER_DATA_SOURCE = 'beatSaberDataSource',
     BEAT_SABER_BASE_FONT_SIZE = 'beatSaberBaseFontSize',
     BEAT_SABER_NOTES_PILE_ENABLED = 'beatSaberNotesPileEnabled',
@@ -33,11 +37,14 @@ export interface SettingTypes {
     [SettingName.BEAT_SABER_NOTES_PILE_ENABLED]: boolean;
     [SettingName.ELEVEN_LABS_TOKEN]: string;
     [SettingName.TTS_ENABLED]: boolean;
+    [SettingName.PLAY_HT_TOKEN]: string;
+    [SettingName.PLAY_HT_USER_ID]: string;
     [SettingName.OBS_PRIMARY_SCENE]: string;
     [SettingName.OBS_BRB_SCENE]: string;
     [SettingName.OBS_FAREWELL_SCENE]: string;
     [SettingName.OUTRO_SONG_BSR]: string;
     [SettingName.CHAT_SONG_PREVIEWS]: boolean;
+    [SettingName.TTS_PROVIDER]: TtsProvider;
 }
 
 export type SettingsObject = {

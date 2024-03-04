@@ -1,4 +1,4 @@
-export interface VoiceData {
+export interface ElevenLabsVoiceData {
     voices: Array<{
         available_for_tiers: string[],
         category: string,

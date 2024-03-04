@@ -1,41 +1,71 @@
-import { useCallback, useEffect, useRef } from 'react';
-import { VoiceData } from '../model/eleven-labs';
-import {
-    mapPronounsToGender,
-    ttsMessageSubstitutions,
-    ttsNameSubstitutions,
-    VoiceGender
-} from '../utils/chat-messages';
-import { useSWRConfig } from 'swr';
-import { ELEVEN_LABS_SUBSCRIPTION_ENDPOINT } from '../chat/TtsHealth';
+import { TtsApi, TtsInput, TtsProvider } from '../model/tts';
+import { SettingName } from '../model/settings';
+import { useSettings } from '../contexts/settings-context';
+import { useElevenLabsTts } from './use-eleven-labs-tts';
+import { usePlayHtTts } from './use-play-ht-tts';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 
-interface TtsInput {
-    id?: string;
-    name?: string;
-    message: string;
-    pronouns?: string[];
-}
+const noopTts: TtsApi = {
+    clearIds: () => undefined,
+    clearQueue: () => undefined,
+    fetchVoices: () => undefined,
+    readText: () => Promise.resolve(),
+};
 
-export interface TtsApi {
-    readText: (input: TtsInput) => Promise<void>;
-    clearQueue: VoidFunction;
-    clearIds: (ids: string[]) => void;
-}
-
-export const useTts = (token: string | null, enabled: boolean | null): TtsApi => {
-    const voicesRef = useRef<VoiceData['voices']>([]);
-    const mountedRef = useRef(true);
-    const textQueueRef = useRef<TtsInput[]>([]);
+export const useTts = (): TtsApi => {
+    const {
+        settings: {
+            [SettingName.ELEVEN_LABS_TOKEN]: elevenLabsToken,
+            [SettingName.TTS_ENABLED]: ttsEnabled,
+            [SettingName.PLAY_HT_TOKEN]: playHtToken,
+            [SettingName.PLAY_HT_USER_ID]: playHtUserId,
+            [SettingName.TTS_PROVIDER]: ttsProvider,
+        }
+    } = useSettings();
     const lastReadTextRef = useRef<TtsInput | null>(null);
+
+    const mountedRef = useRef(true);
+    const inputQueueRef = useRef<TtsInput[]>([]);
     const currentlyReadingRef = useRef<TtsInput | null>(null);
     const audioPlayerRef = useRef<HTMLAudioElement | null>(null);
-    const getVoice = useCallback((targetGender: VoiceGender) => {
-        return voicesRef.current.find(voice => {
-            const { age, gender, 'use case': useCase } = voice.labels;
-            return age === 'young' && gender === targetGender && useCase === 'narration';
-        });
+
+    const pickQueueItem = useCallback(() => {
+        if (inputQueueRef.current.length === 0) {
+            console.info('TTS queue is empty');
+            return null;
+        }
+
+        return inputQueueRef.current[0] as TtsInput;
     }, []);
-    const { mutate } = useSWRConfig();
+
+    const requestPlayer = (): boolean => {
+        if (audioPlayerRef.current) {
+            console.info('TTS already playing');
+            return false;
+        }
+        audioPlayerRef.current = new Audio();
+        return true;
+    };
+
+    const readFirstInQueue = () => {
+        const ttsInput = inputQueueRef.current.shift() as TtsInput;
+        currentlyReadingRef.current = ttsInput;
+        return ttsInput;
+    };
+    const setAudioSource = async (src: string) => {
+        if (!audioPlayerRef.current) {
+            audioPlayerRef.current = new Audio();
+        }
+
+        audioPlayerRef.current.src = src;
+        audioPlayerRef.current.play();
+
+        return new Promise<void>(resolve => {
+            audioPlayerRef.current?.addEventListener('ended', () => {
+                resolve();
+            });
+        });
+    };
 
     const clearPlayingAudio = useCallback((lastRead: TtsInput | null = null) => {
         if (audioPlayerRef.current) {
@@ -50,78 +80,14 @@ export const useTts = (token: string | null, enabled: boolean | null): TtsApi =>
             currentlyReadingRef.current = null;
         }
         lastReadTextRef.current = lastRead;
-    }, []);
-
-    const processQueue = useCallback(async (debugSource: string) => {
-        if (!enabled) return;
-
-        if (!token) {
-            console.error('Token is missing (%s)', debugSource);
-            return;
-        }
-        if (textQueueRef.current.length === 0) {
-            console.info('TTS queue is empty (%s)', debugSource);
-            return;
-        }
-
-        const firstQueueItem = textQueueRef.current[0] as TtsInput;
-        const voice = getVoice(mapPronounsToGender(firstQueueItem?.pronouns));
-        if (!voice) {
-            console.error('No voice found (%s)', debugSource);
-            return;
-        }
-        const { voice_id } = voice;
-
-
-        if (audioPlayerRef.current) {
-            console.info('TTS already playing (%s)', debugSource);
-            return;
-        }
-        audioPlayerRef.current = new Audio();
-
-        const ttsInput = textQueueRef.current.shift() as TtsInput;
-        currentlyReadingRef.current = ttsInput;
-        // Do not repeat the name if it was the last one that was fully read out
-        const textToRead = (ttsInput.name && lastReadTextRef.current?.name !== ttsInput.name ? `${ttsNameSubstitutions(ttsInput.name)}. ` : '') + ttsMessageSubstitutions(ttsInput.message);
-        const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voice_id}/stream`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'xi-api-key': token,
-                'accept': 'audio/mpeg'
-            },
-            body: JSON.stringify({ text: textToRead })
-        });
-        const audioBlob = await response.blob();
-        void mutate(ELEVEN_LABS_SUBSCRIPTION_ENDPOINT);
-
-        if (!audioPlayerRef.current) {
-            audioPlayerRef.current = new Audio();
-        }
-
-        audioPlayerRef.current.src = URL.createObjectURL(audioBlob);
-        audioPlayerRef.current.play();
-        return new Promise(resolve => {
-            audioPlayerRef.current?.addEventListener('ended', () => {
-                clearPlayingAudio(ttsInput);
-                processQueue('ended handler').then(resolve);
-            });
-        });
-    }, [enabled, token, getVoice, mutate, clearPlayingAudio]);
-
-    const readText = useCallback(async (text: TtsInput) => {
-        if (!enabled) return;
-
-        textQueueRef.current.push(text);
-        void processQueue('readText');
-    }, [enabled, processQueue]);
+    }, [audioPlayerRef, currentlyReadingRef, lastReadTextRef]);
 
     const clearQueue = useCallback(() => {
         mountedRef.current = false;
         clearPlayingAudio();
-    }, [clearPlayingAudio]);
+    }, [clearPlayingAudio, mountedRef]);
 
-    const clearIds = useCallback((clearedIds: string[]) => {
+    const clearIdsFromQueue = useCallback((clearedIds: string[]) => {
         if (clearedIds.length === 0) return;
 
         const clearedIdsSet = new Set(clearedIds);
@@ -132,42 +98,68 @@ export const useTts = (token: string | null, enabled: boolean | null): TtsApi =>
             }
         }
 
-        if (textQueueRef.current.length > 0) {
-            textQueueRef.current = textQueueRef.current.filter(queueItem => {
+        if (inputQueueRef.current.length > 0) {
+            inputQueueRef.current = inputQueueRef.current.filter(queueItem => {
                 return !queueItem.id || !clearedIdsSet.has(queueItem.id);
             });
         }
+    }, [clearPlayingAudio]);
 
-        if (!currentlyReadingRef.current) {
-            void processQueue('clearIds');
-        }
-    }, [clearPlayingAudio, processQueue]);
 
-    useEffect(() => {
-        if (!enabled || !token || voicesRef.current.length) return;
+    const queueText = useCallback((text: TtsInput) => {
+        inputQueueRef.current.push(text);
+    }, [inputQueueRef]);
 
-        fetch('https://api.elevenlabs.io/v1/voices', {
-            method: 'GET',
-            headers: { accept: 'application/json' },
-        }).then(async (r) => {
-            // TODO data validation
-            const voiceData = await r.json();
-            voicesRef.current = voiceData['voices'];
-            void processQueue('voices fetching');
-        });
-    }, [enabled, processQueue, token]);
-
-    // Clear the queue on unmount
-    useEffect(() => {
-        if (!enabled) return;
-
-        mountedRef.current = true;
-        return clearQueue;
-    }, [clearQueue, enabled]);
-
-    return {
-        readText,
+    const elevenLabsTts = useElevenLabsTts({
+        token: elevenLabsToken,
+        enabled: ttsEnabled && ttsProvider === TtsProvider.ELEVEN_LABS,
+        lastReadTextRef,
+        currentlyReadingRef,
+        inputQueueRef,
+        pickQueueItem,
+        requestPlayer,
+        readFirstInQueue,
+        setAudioSource,
+        clearPlayingAudio,
         clearQueue,
-        clearIds,
-    };
+        clearIdsFromQueue,
+        queueText,
+    });
+    const playHtTts = usePlayHtTts({
+        token: playHtToken,
+        userId: playHtUserId,
+        enabled: ttsEnabled && ttsProvider === TtsProvider.PLAY_HT,
+        lastReadTextRef,
+        currentlyReadingRef,
+        inputQueueRef,
+        pickQueueItem,
+        requestPlayer,
+        readFirstInQueue,
+        setAudioSource,
+        clearPlayingAudio,
+        clearQueue,
+        clearIdsFromQueue,
+        queueText,
+    });
+
+    const chosenApi = useMemo(() => {
+        if (ttsEnabled) {
+            switch (ttsProvider) {
+                case TtsProvider.PLAY_HT:
+                    return playHtTts;
+                case TtsProvider.ELEVEN_LABS:
+                    return elevenLabsTts;
+            }
+        }
+        return noopTts;
+    }, [elevenLabsTts, ttsEnabled, playHtTts, ttsProvider]);
+
+    useEffect(() => {
+        mountedRef.current = true;
+        chosenApi.fetchVoices();
+        // Clear the queue on unmount
+        return chosenApi.clearQueue;
+    }, [chosenApi, mountedRef]);
+
+    return chosenApi;
 };
