@@ -13,8 +13,8 @@ export const usePlayHtTts = ({
     userId,
     lastReadTextRef,
     requestPlayer,
-    setAudioSource,
-    readFirstInQueue,
+    playThroughAudio,
+    takeAndReadFirstInQueue,
     pickQueueItem,
     clearQueue,
     clearIdsFromQueue,
@@ -60,11 +60,12 @@ export const usePlayHtTts = ({
             return;
         }
 
-        if (!requestPlayer()) {
+        const player = requestPlayer();
+        if (!player) {
             return;
         }
 
-        const ttsInput = readFirstInQueue();
+        const ttsInput = takeAndReadFirstInQueue();
         const textToRead = ttsInputToText(ttsInput, lastReadTextRef.current);
         try {
             // Make API request to Play.ht (adjust URL and headers)
@@ -90,11 +91,11 @@ export const usePlayHtTts = ({
                 throw new Error(response.statusText);
             }
 
-            return setAudioSource(audioUrl);
+            return playThroughAudio(player, audioUrl, ttsInput);
         } catch (error) {
             console.error('Error generating audio:', error);
         }
-    }, [apiAuthHeaders, enabled, getVoiceId, lastReadTextRef, pickQueueItem, readFirstInQueue, requestPlayer, setAudioSource, token, userId]);
+    }, [apiAuthHeaders, enabled, getVoiceId, lastReadTextRef, pickQueueItem, takeAndReadFirstInQueue, requestPlayer, playThroughAudio, token, userId]);
 
     const fetchVoices = useCallback(() => {
         if (!enabled || !token || voicesRef.current.length) return;

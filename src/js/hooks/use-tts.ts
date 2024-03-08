@@ -1,4 +1,10 @@
-import { TtsApi, TtsInput, TtsProvider } from '../model/tts';
+import {
+    AudioPlayerRequestResult,
+    CancellableTtsInput,
+    TtsApi,
+    TtsInput,
+    TtsProvider
+} from '../model/tts';
 import { SettingName } from '../model/settings';
 import { useSettings } from '../contexts/settings-context';
 import { useElevenLabsTts } from './use-eleven-labs-tts';
@@ -22,11 +28,11 @@ export const useTts = (): TtsApi => {
             [SettingName.TTS_PROVIDER]: ttsProvider,
         }
     } = useSettings();
-    const lastReadTextRef = useRef<TtsInput | null>(null);
+    const lastReadTextRef = useRef<CancellableTtsInput | null>(null);
 
     const mountedRef = useRef(true);
-    const inputQueueRef = useRef<TtsInput[]>([]);
-    const currentlyReadingRef = useRef<TtsInput | null>(null);
+    const inputQueueRef = useRef<CancellableTtsInput[]>([]);
+    const currentlyReadingRef = useRef<CancellableTtsInput | null>(null);
     const audioPlayerRef = useRef<HTMLAudioElement | null>(null);
 
     const pickQueueItem = useCallback(() => {
@@ -35,49 +41,61 @@ export const useTts = (): TtsApi => {
             return null;
         }
 
-        return inputQueueRef.current[0] as TtsInput;
+        return inputQueueRef.current[0] as CancellableTtsInput;
     }, []);
 
-    const requestPlayer = (): boolean => {
+    const requestPlayer = (): AudioPlayerRequestResult => {
         if (audioPlayerRef.current) {
             console.info('TTS already playing');
-            return false;
+            return null;
         }
         audioPlayerRef.current = new Audio();
-        return true;
+        return audioPlayerRef.current;
     };
 
-    const readFirstInQueue = () => {
-        const ttsInput = inputQueueRef.current.shift() as TtsInput;
+    const takeAndReadFirstInQueue = () => {
+        const ttsInput = inputQueueRef.current.shift() as CancellableTtsInput;
         currentlyReadingRef.current = ttsInput;
         return ttsInput;
     };
-    const setAudioSource = async (src: string) => {
-        if (!audioPlayerRef.current) {
-            audioPlayerRef.current = new Audio();
-        }
-
-        audioPlayerRef.current.src = src;
-        audioPlayerRef.current.play();
+    const playThroughAudio = async (player: HTMLAudioElement, src: string,
+        ttsInput: CancellableTtsInput) => {
+        player.src = src;
+        void player.play();
 
         return new Promise<void>(resolve => {
-            audioPlayerRef.current?.addEventListener('ended', () => {
+            const handleAbort = () => {
+                player.pause();
+                resolve();
+            };
+
+            if (ttsInput.abortSignal.aborted) {
+                handleAbort();
+                return;
+            }
+
+            ttsInput.abortSignal.addEventListener('abort', handleAbort);
+
+            player.addEventListener('ended', () => {
                 resolve();
             });
         });
     };
 
-    const clearPlayingAudio = useCallback((lastRead: TtsInput | null = null) => {
+    const clearPlayingAudio = useCallback((lastRead: CancellableTtsInput | null = null) => {
+        if (currentlyReadingRef.current) {
+            currentlyReadingRef.current.abort();
+            currentlyReadingRef.current = null;
+        }
         if (audioPlayerRef.current) {
-            audioPlayerRef.current.pause();
+            if (!audioPlayerRef.current.paused) {
+                audioPlayerRef.current.pause();
+            }
             const currentSource = audioPlayerRef.current.src;
             if (currentSource) {
                 URL.revokeObjectURL(currentSource);
             }
             audioPlayerRef.current = null;
-        }
-        if (currentlyReadingRef.current) {
-            currentlyReadingRef.current = null;
         }
         lastReadTextRef.current = lastRead;
     }, [audioPlayerRef, currentlyReadingRef, lastReadTextRef]);
@@ -85,6 +103,7 @@ export const useTts = (): TtsApi => {
     const clearQueue = useCallback(() => {
         mountedRef.current = false;
         clearPlayingAudio();
+        inputQueueRef.current = [];
     }, [clearPlayingAudio, mountedRef]);
 
     const clearIdsFromQueue = useCallback((clearedIds: string[]) => {
@@ -100,14 +119,23 @@ export const useTts = (): TtsApi => {
 
         if (inputQueueRef.current.length > 0) {
             inputQueueRef.current = inputQueueRef.current.filter(queueItem => {
-                return !queueItem.id || !clearedIdsSet.has(queueItem.id);
+                const keep = !queueItem.id || !clearedIdsSet.has(queueItem.id);
+                if (!keep) {
+                    queueItem.abort('clearIdsFromQueue');
+                }
+
+                return keep;
             });
         }
     }, [clearPlayingAudio]);
 
-
     const queueText = useCallback((text: TtsInput) => {
-        inputQueueRef.current.push(text);
+        const abortController = new AbortController();
+        inputQueueRef.current.push({
+            ...text,
+            abort: (reason?: string) => abortController.abort(reason),
+            abortSignal: abortController.signal,
+        });
     }, [inputQueueRef]);
 
     const elevenLabsTts = useElevenLabsTts({
@@ -118,8 +146,8 @@ export const useTts = (): TtsApi => {
         inputQueueRef,
         pickQueueItem,
         requestPlayer,
-        readFirstInQueue,
-        setAudioSource,
+        takeAndReadFirstInQueue,
+        playThroughAudio,
         clearPlayingAudio,
         clearQueue,
         clearIdsFromQueue,
@@ -134,8 +162,8 @@ export const useTts = (): TtsApi => {
         inputQueueRef,
         pickQueueItem,
         requestPlayer,
-        readFirstInQueue,
-        setAudioSource,
+        takeAndReadFirstInQueue,
+        playThroughAudio,
         clearPlayingAudio,
         clearQueue,
         clearIdsFromQueue,
@@ -155,11 +183,18 @@ export const useTts = (): TtsApi => {
     }, [elevenLabsTts, ttsEnabled, playHtTts, ttsProvider]);
 
     useEffect(() => {
-        mountedRef.current = true;
         chosenApi.fetchVoices();
-        // Clear the queue on unmount
-        return chosenApi.clearQueue;
-    }, [chosenApi, mountedRef]);
+    }, [chosenApi]);
+
+    useEffect(() => {
+        mountedRef.current = true;
+        return () => {
+            mountedRef.current = false;
+            // Clear the queue on unmount
+            chosenApi.clearQueue();
+        };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [mountedRef]);
 
     return chosenApi;
 };

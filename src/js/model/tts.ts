@@ -1,22 +1,25 @@
 import { MutableRefObject } from 'react';
 
+export type AudioPlayerRequestResult = HTMLAudioElement | null;
+
 export interface TtsHookOptions {
     token: string | null;
     enabled: boolean | null;
-    pickQueueItem: () => TtsInput | null;
-    readFirstInQueue: () => TtsInput;
-    requestPlayer: (logOnFail?: boolean) => boolean;
+    pickQueueItem: () => CancellableTtsInput | null;
+    takeAndReadFirstInQueue: () => CancellableTtsInput;
+    requestPlayer: (logOnFail?: boolean) => AudioPlayerRequestResult;
     /**
      * @returns promise that resolves when source audio has finished playing
      */
-    setAudioSource: (src: string) => Promise<void>;
-    clearPlayingAudio: (lastRead?: TtsInput | null) => void;
+    playThroughAudio: (element: HTMLAudioElement, src: string,
+        ttsInput: CancellableTtsInput) => Promise<void>;
+    clearPlayingAudio: (lastRead?: CancellableTtsInput | null) => void;
     clearQueue: VoidFunction;
     clearIdsFromQueue: (clearedIds: string[]) => void;
     queueText: (text: TtsInput) => void;
-    lastReadTextRef: MutableRefObject<TtsInput | null>;
-    inputQueueRef: MutableRefObject<TtsInput[]>;
-    currentlyReadingRef: MutableRefObject<TtsInput | null>;
+    lastReadTextRef: MutableRefObject<CancellableTtsInput | null>;
+    inputQueueRef: MutableRefObject<CancellableTtsInput[]>;
+    currentlyReadingRef: MutableRefObject<CancellableTtsInput | null>;
 }
 
 export interface TtsInput {
@@ -24,6 +27,11 @@ export interface TtsInput {
     name?: string;
     message: string;
     pronouns?: string[];
+}
+
+export interface CancellableTtsInput extends TtsInput {
+    abortSignal: AbortSignal;
+    abort: (reason?: string) => void;
 }
 
 export interface TtsApi {

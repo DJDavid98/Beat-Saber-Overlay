@@ -50,8 +50,8 @@ export const useElevenLabsTts = ({
     currentlyReadingRef,
     pickQueueItem,
     requestPlayer,
-    readFirstInQueue,
-    setAudioSource,
+    takeAndReadFirstInQueue,
+    playThroughAudio,
     clearPlayingAudio,
     clearQueue,
     clearIdsFromQueue,
@@ -88,11 +88,12 @@ export const useElevenLabsTts = ({
             return;
         }
 
-        if (!requestPlayer()) {
+        const player = requestPlayer();
+        if (!player) {
             return;
         }
 
-        const ttsInput = readFirstInQueue();
+        const ttsInput = takeAndReadFirstInQueue();
         const textToRead = ttsInputToText(ttsInput, lastReadTextRef.current);
         const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}/stream`, {
             method: 'POST',
@@ -104,13 +105,14 @@ export const useElevenLabsTts = ({
             body: JSON.stringify({ text: textToRead })
         });
         const audioBlob = await response.blob();
+        // Needed for limits hook to update values
         void mutate(ELEVEN_LABS_SUBSCRIPTION_ENDPOINT);
 
-        return setAudioSource(URL.createObjectURL(audioBlob)).then(() => {
+        return playThroughAudio(player, URL.createObjectURL(audioBlob), ttsInput).then(() => {
             clearPlayingAudio(ttsInput);
             return processQueue('ended handler');
         });
-    }, [clearPlayingAudio, enabled, getVoiceId, lastReadTextRef, mutate, pickQueueItem, readFirstInQueue, requestPlayer, setAudioSource, token]);
+    }, [clearPlayingAudio, enabled, getVoiceId, lastReadTextRef, mutate, pickQueueItem, takeAndReadFirstInQueue, requestPlayer, playThroughAudio, token]);
 
     const readText = useCallback((text: TtsInput) => {
         if (!enabled) return;
