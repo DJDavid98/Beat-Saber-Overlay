@@ -61,7 +61,7 @@ export const useElevenLabsTts = ({
     const getVoiceId = useCallback((ttsInput?: TtsInput): string | undefined => {
         const targetGender = mapPronounsToGender(ttsInput?.pronouns);
         const matchingVoice = voicesRef.current.find(voice => {
-            const { age, gender, 'use case': useCase } = voice.labels;
+            const { age, gender, use_case: useCase } = voice.labels;
             return age === 'young' && gender === targetGender && useCase === 'narration';
         });
         return matchingVoice ? matchingVoice.voice_id : undefined;
