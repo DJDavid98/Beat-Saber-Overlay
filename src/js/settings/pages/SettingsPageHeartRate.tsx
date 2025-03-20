@@ -113,7 +113,7 @@ export const SettingsPageHeartRate: FC = () => {
                 autoComplete="off"
                 value={pathInputValue}
                 onChange={handlePathInputChange}
-                pattern="^[a-z\d_.-]+$"
+                pattern="^[a-zA-Z\d_.-]+$"
                 placeholder="Enter path in JSON data (optional)"
             />
         </details>
