@@ -127,8 +127,9 @@ whose work I myself used during the creation of this overlay.
 ### Appreciation
 
 Thanks to the individuals below for their contributions towards making this overlay the best it can
-possibly be through any combination of constructive feedback, improvement ideas, and being sources
-of inspiration:
+possibly be through any combination of constructive feedback, improvement ideas, code contributions,
+and generally being sources of inspiration:
 
+* [Gosha](https://github.com/Gosha)
+* [MinnieFops](https://www.twitch.tv/minniefops)
 * [TheBlackParrot](https://www.twitch.tv/theblackparrot)
-* [MinnieFoxx](https://www.twitch.tv/minniefoxx)
