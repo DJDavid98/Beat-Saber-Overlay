@@ -17,7 +17,7 @@ export const settingValidators: { [k in SettingName]: (input: unknown) => Settin
         return null;
     },
     [SettingName.HEART_RATE_WEBSOCKET_PATH]: input => {
-        if (typeof input === 'string' && /^[a-z\d_.-]+$/.test(input)) {
+        if (typeof input === 'string' && /^[a-zA-Z\d_.-]+$/.test(input)) {
             return input;
         }
         return null;
